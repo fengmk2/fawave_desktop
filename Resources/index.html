@@ -1,0 +1,35 @@
+<html>
+<head>
+<script type="text/javascript" src="/lib/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="/lib/weibo/weibo.js"></script>
+<script type="text/javascript">
+weibo.init('/lib/weibo');
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	var appkey = '3434422667', secret = '523f2d0d134bfd5aa138f9e5af828bf9';
+	weibo.tapi.init('tsina', appkey, secret);
+	
+	$('#btn').click(function() {
+	    weibo.tapi.public_timeline({}, function(error, data, xhr) {
+	    	var tpl = '';
+	    	data.forEach(function(tweet) {
+	    		console.log(tweet);
+	    		tpl += '<li><a href="{{t_url}}">@{{user.screen_name}}</a>: {{text}} at {{created_at}}</li>'.format(tweet);
+	    	});
+	        $('#public_timeline').html(tpl);
+	    });
+	});
+});
+</script>
+</head>
+
+<body style="margin:0">
+<div style="border-top:1px solid #404040">
+    <div style="padding:10px">Welcome to Fawave</div>
+    <button id="btn">Get public_timeline</button>
+    <ul id="public_timeline"></ul>
+</div>
+</body>
+
+</html>
