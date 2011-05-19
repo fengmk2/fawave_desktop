@@ -1,6 +1,6 @@
 # 开发环境配置
 
-## 开发框架: [Titanium](www.appcelerator.com/)
+## 开发框架: [Titanium](http://www.appcelerator.com/)
 
 TODO...
 
