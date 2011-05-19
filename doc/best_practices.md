@@ -1,4 +1,4 @@
-# 约定的代码规范
+# 约定的代码和开发规范
 
 ## 命名
 
@@ -106,3 +106,4 @@
 ## 参考
 
 * [JavaScript Best Practices](http://wiki.appcelerator.org/display/guides/JavaScript+Best+Practices)
+* [Google JavaScript Style Guide](http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml)
