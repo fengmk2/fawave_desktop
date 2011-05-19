@@ -8,6 +8,7 @@
 * 新浪微博iPad版本
 * Twitter For Mac
 * mixero for twitter
+* Twitter clients for mac: Beak,Echofon,Kiwi,Nambu,QFeeder,Socialite,Tweetie,Twitterrific
 * Weico Air
 * [腾讯微博iPad版本](http://www.uisea.com/news/ITquan/2011/0425/454.html)
  * 详细页面
