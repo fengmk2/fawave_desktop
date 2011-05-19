@@ -11,6 +11,6 @@
 * Weico Air
 * [腾讯微博iPad版本](http://www.uisea.com/news/ITquan/2011/0425/454.html)
  * 详细页面
-  ![detail](http://www.uisea.com/uploads/allimg/110425/225F2G20-0.jpg)
+  ![detail](http://ww1.sinaimg.cn/large/6cfc7910jw1dhcf5l70h8j.jpg)
  * 列表页面
-  ![list](http://www.uisea.com/uploads/allimg/110425/225F23252-1.jpg)
+  ![list](http://ww3.sinaimg.cn/large/6cfc7910jw1dhcf5uoag1j.jpg)
