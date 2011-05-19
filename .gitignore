@@ -2,3 +2,4 @@ dist
 tmp
 .project
 .settings
+Resources/lib/weibo
