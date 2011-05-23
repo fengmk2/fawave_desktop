@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf8">
+<title>Test fast.js</title>
+<script type="text/javascript" src="../lib/fast.js"></script>
+<script type="text/javascript">
+$.ready(function() {
+	var $ele = $('#console');
+	console.dir($ele)
+	$ele.html('document ready<br/>');
+});
+</script>
+</head>
+<body>
+<div id="console"></div>
+</body>
+</html>
