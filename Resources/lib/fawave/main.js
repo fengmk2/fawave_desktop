@@ -1,0 +1,6 @@
+
+var FaWave = {};
+
+(function(){
+	
+})();
