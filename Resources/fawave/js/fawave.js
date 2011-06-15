@@ -10,7 +10,10 @@ FaWave.loadJS = function(src){
         src = [src];
     }
     for(var i=0; i<src.length; i++){
-        document.write('<script type="text/javascript" src="' + src[i] + '"></script>');
+        //document.write('<script type="text/javascript" src="' + src[i] + '"></script>');
+        var s = document.createElement("script");
+        s.setAttribute("src", src[i]); 
+        document.getElementsByTagName("head")[0].appendChild(s); 
     }
 };
 /****

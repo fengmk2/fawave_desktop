@@ -12,4 +12,5 @@ function initTab(){
 
 $(function(){
     initTab();
+    $("#menu li").eq(0).click();
 });
