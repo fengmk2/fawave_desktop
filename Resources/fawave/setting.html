@@ -5,6 +5,7 @@
 	<title>FaWave Desktop Setting</title>
 	<meta name="author" content="Net4 Team">
 	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/common.css">
 	<link rel="stylesheet" href="css/setting.css">
 	<script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
 	<script type="text/javascript" src="/fawave/js/fawave.js"></script>
@@ -16,8 +17,9 @@
 </head>
 
 <body>
-    <aside id="menu" class="menu"> 
-        <nav>
+<div id="app">
+    <div id="content">
+	    <div id="menu">
             <ul> 
                 <li class="active" target="common_set">基本设置</li> 
                 <li target="user_set">帐号设置</li> 
@@ -25,15 +27,20 @@
                 <li target="advanced_set">高级设置</li>
                 <li target="about_our">关于</li> 
             </ul>
-        </nav>
-    </aside>
-    <div class="main">
-        <div id="common_set" class="item">common_set</div>
-        <div id="user_set" class="item">user_set</div>
-        <div id="appearance_set" class="item">appearance_set</div>
-        <div id="advanced_set" class="item">advanced_set</div>
-        <div id="about_our" class="item">about_our</div>
+	    </div>
+	    <div id="main">
+	        <div id="common_set" class="item">common_set</div>
+	        <div id="user_set" class="item">user_set</div>
+	        <div id="appearance_set" class="item">appearance_set</div>
+	        <div id="advanced_set" class="item">advanced_set</div>
+	        <div id="about_our" class="item">about_our</div>
+	    </div>
     </div>
+    <div id="footer">
+        <button class="minibutton green">确定</button>
+        <button class="minibutton danger" onclick="Titanium.UI.currentWindow.close()">取消</button>
+    </div>
+</div>
 </body>
 
 </html>

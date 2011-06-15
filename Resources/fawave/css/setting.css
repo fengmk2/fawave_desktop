@@ -1,30 +1,44 @@
-html{ height:100%; }
+html, body{ height:100%; }
 body {
-	-webkit-box-flex: 1;
-	display: -webkit-box;
-	-webkit-box-orient: horizontal;
-	-webkit-box-align: stretch;
-	
 	color:#111;
 	font-size:14px;
-	width:100%;
-	height:100%;
+}
+#app { 
+    height:100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align:stretch;
+}
+#footer {
+	border-top:solid 1px #ccc;
+	padding:10px;
+	text-align:right;
+}
+#content {
+    -webkit-box-flex:1;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-align:stretch;
+}
+
+#main {
+    -webkit-box-flex:1;
+    padding:5px;
 }
 /* menu */
-aside.menu{
+#menu{
 	padding-left:10px;
 	width:85px;
-	height:100%;
 	border-right:solid 1px #ccc;
 	background:#e3e6ed;
 	position:relative;
 }
-aside.menu ul{
+#menu ul{
 	position: absolute;
 	right:-1px;
 	z-index:1;
 }
-aside.menu ul li{
+#menu ul li{
 	color:#555;
 	margin: 10px 0;
 	text-align:center;
@@ -37,25 +51,30 @@ aside.menu ul li{
     border-bottom-left-radius: 8px 8px;
     -webkit-box-shadow: -1px 1px rgba(0,0,0,.1);
 }
-aside.menu ul li:hover{
+#menu ul li:hover{
 	cursor:pointer;
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ddd), to(#fff));
 }
-aside.menu ul li.active{
+#menu ul li.active{
 	color:#333;
 	background:#fff;
 	border-right:solid 1px #fff;
 	text-shadow: 0px 1px 1px #000;
 	font-size:15px;
 }
-aside.menu ul li.active:hover{
+#menu ul li.active:hover{
 	cursor:default;
 }
-aside.menu ul li a{
+#menu ul li a{
 	text-decoration:none;
 }
 
-/* main */
-div.main{
-	padding:10px;
+#main .item{
+	display:none;
+}
+
+#footer .minibutton{
+	font-size:16px;
+	padding:6px 20px;
+	margin:0 10px;
 }

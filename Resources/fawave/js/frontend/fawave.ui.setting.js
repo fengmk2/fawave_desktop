@@ -5,7 +5,7 @@ function initTab(){
         if(t.hasClass('active')){ return; }
         $("#menu li").removeClass('active');
         t.addClass('active');
-        $(".main .item").hide();
+        $("#main .item").hide();
         $('#' + t.attr('target')).show();
     });
 };
