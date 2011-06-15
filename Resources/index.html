@@ -4,24 +4,58 @@
 <meta charset="utf-8">
 <title>FaWave Desktop</title>
 <script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
+<!--
 <script type="text/javascript" src="/lib/weibo/weibo.js"></script>
 <script type="text/javascript">
 weibo.load('/lib/weibo');
 </script>
+-->
 <script type="text/javascript">
 $(document).ready(function() {
 	var appkey = '3434422667', secret = '523f2d0d134bfd5aa138f9e5af828bf9';
-	weibo.tapi.init('tsina', appkey, secret);
+//	weibo.tapi.init('tsina', appkey, secret);
+//	
+//	$('#btn').click(function() {
+//	    weibo.tapi.public_timeline({}, function(error, data, xhr) {
+//	    	var tpl = '';
+//	    	data.forEach(function(tweet) {
+//	    		console.log(tweet);
+//	    		tpl += '<li><a href="{{t_url}}">@{{user.screen_name}}</a>: {{text}} at {{created_at}}</li>'.format(tweet);
+//	    	});
+//	        $('#public_timeline').html(tpl);
+//	    });
+//	});
 	
-	$('#btn').click(function() {
-	    weibo.tapi.public_timeline({}, function(error, data, xhr) {
-	    	var tpl = '';
-	    	data.forEach(function(tweet) {
-	    		console.log(tweet);
-	    		tpl += '<li><a href="{{t_url}}">@{{user.screen_name}}</a>: {{text}} at {{created_at}}</li>'.format(tweet);
-	    	});
-	        $('#public_timeline').html(tpl);
+	$('#setting').click(function(){
+		var window = Titanium.UI.currentWindow;
+		var sWin = window.createWindow({
+	        id: "settingWindow",
+	        url: "app://fawave/setting.html",
+	        title: "FaWave Setting",
+	        //contents: "",
+	        //baseURL: "",
+	        //x: 300,
+	        //y: 400,
+	        width: 700,
+	        minWidth: 700,
+	        maxWidth: 700,
+	        height: 500,
+	        minHeight: 500,
+	        maxHeight: 500,
+	        maximizable: true,
+	        minimizable: true,
+	        closeable: true,
+	        resizable: false,
+	        fullscreen: false,
+	        maximized: false,
+	        minimized: false,
+	        usingChrome: true,
+	        topMost: false,
+	        visible: true,
+	        transparentBackground: false,
+	        transparency: false
 	    });
+		sWin.open();
 	});
 });
 
@@ -31,6 +65,7 @@ $(document).ready(function() {
 <body style="margin:0">
 <div style="border-top:1px solid #404040">
     <div style="padding:10px">Welcome to Fawave</div>
+	<button id="setting">Setting</button>
     <button id="btn">Get public_timeline</button>
     <ul id="public_timeline"></ul>
 </div>
