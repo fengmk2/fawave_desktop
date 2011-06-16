@@ -57,6 +57,32 @@ $(document).ready(function() {
 	    });
 		sWin.open();
 	});
+
+	$('#main').click(function(){
+		var window = Titanium.UI.currentWindow;
+		var sWin = window.createWindow({
+	        id: "settingWindow",
+	        url: "app://fawave/main.html",
+	        title: "FaWave Desktop",
+	        width: 700,
+	        minWidth: 300,
+	        height: 600,
+	        minHeight: 300,
+	        maximizable: true,
+	        minimizable: true,
+	        closeable: true,
+	        resizable: true,
+	        fullscreen: false,
+	        maximized: false,
+	        minimized: false,
+	        usingChrome: false,
+	        topMost: false,
+	        visible: true,
+	        transparentBackground: true,
+	        transparency: true
+	    });
+		sWin.open();
+	});
 });
 
 </script>
@@ -66,6 +92,7 @@ $(document).ready(function() {
 <div style="border-top:1px solid #404040">
     <div style="padding:10px">Welcome to Fawave</div>
 	<button id="setting">Setting</button>
+	<button id="main">首 页</button>
     <button id="btn">Get public_timeline</button>
     <ul id="public_timeline"></ul>
 </div>
