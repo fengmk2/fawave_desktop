@@ -20,6 +20,7 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pr
 	font-size: 100%;
 	vertical-align: baseline;
 	background: transparent;
+	font-family: Arial, Tahoma, Geneva, sans-serif;
 }									
 
 article, aside, figure, footer, header, hgroup, nav, section {display: block;}
@@ -36,7 +37,7 @@ html {overflow-y: scroll;}
 
 /* we use a lot of ULs that aren't bulleted. 
 	don't forget to restore the bullets within content. */
-ul {list-style: none;}
+ul, menu {list-style: none;}
 
 blockquote, q {quotes: none;}
 
@@ -71,7 +72,7 @@ input[type="radio"] {vertical-align: text-bottom;}
 input[type="checkbox"] {vertical-align: bottom; *vertical-align: baseline;}
 .ie6 input {vertical-align: text-bottom;}
 
-select, input, textarea {font: 99% sans-serif;}
+select, input, textarea {font: 99%;}
 
 table {font-size: inherit; font: 100%;}
  
