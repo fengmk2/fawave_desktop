@@ -20,3 +20,11 @@ FaWave.loadJS = function(src){
  * Require
  */
 FaWave.require = FaWave.loadJS;
+
+/****
+ * Config
+ */
+FaWave.Config = {
+    //数据文件存放目录
+    dataDir: 'data'
+};

@@ -1,0 +1,1239 @@
+{
+    "language": {
+		"message": "简体中文",
+		"description": "language"
+	},
+	"defaultTitle": {
+		"message": "FaWave(发微) 多微博无缝切换插件",
+		"description": "default title"
+	},
+	"extName": {
+		"message": "FaWave(发微)",
+		"description": "name"
+	},
+	"extDes": {
+		"message": "FaWave(发微)，支持多微博的Chrome插件，各微博同时提示、无缝切换。有问题请找 @QLeelulu 反馈。",
+		"description": "该插件的简单描述"
+	},
+
+	//通用的
+	"comm_add": {
+		"message": "添加",
+		"description": "添加"
+	},
+	"comm_repost": {
+        "message": "转发",
+        "description": "转发"
+    },
+	"comm_blog": {
+		"message": "博客",
+		"description": "博客"
+	},
+    "comm_counts_info": {
+		"message": "粉{{friends_count}}, {{followers_count}}粉, {{statuses_count}}微博",
+		"description": "粉{{friends_count}}, {{followers_count}}粉, {{statuses_count}}微博"
+	},
+	"comm_mblog_type": {
+		"message": "微博类型",
+		"description": "微博类型"
+	},
+	"comm_cancel": {
+		"message": "取消",
+		"description": "取消"
+	},
+	"comm_clear": {
+		"message": "清空",
+		"description": "清空"
+	},
+	"comm_close": {
+		"message": "关闭",
+		"description": "关闭"
+	},
+    "comm_de": {
+		"message": "的",
+		"description": "的"
+	},
+	"comm_del_user": {
+		"message": "删除用户",
+		"description": "删除用户"
+	},
+	"comm_description": {
+		"message": "简介",
+		"description": "简介"
+	},
+	"comm_tags": {
+        "message": "标签",
+        "description": "标签"
+    },
+	"comm_disabled": {
+		"message": "停用",
+		"description": "停用"
+	},
+	"comm_emotional": {
+		"message": "表情",
+		"description": "表情"
+	},
+	"comm_enabled": {
+		"message": "启用",
+		"description": "启用"
+	},
+	"comm_error_return": {
+		"message": "服务器返回结果错误，本地解析错误。",
+		"description": "服务器返回结果错误，本地解析错误。"
+	},
+	"comm_fail": {
+		"message": "失败",
+		"description": "失败"
+	},
+	"comm_fans": {
+		"message": "粉丝",
+		"description": "粉丝"
+	},
+	"comm_follow": {
+		"message": "关注",
+		"description": "关注"
+	},
+	"comm_female": {
+		"message": "女",
+		"description": "女"
+	},
+	"comm_f_create": {
+		"message": "加关注",
+		"description": "加关注"
+	},
+	"comm_f_destroy": {
+		"message": "取消关注",
+		"description": "取消关注"
+	},
+	"comm_gender_unknow": {
+		"message": "性别未知",
+		"description": "性别未知"
+	},
+	"comm_go_to_top": {
+		"message": "返回顶部",
+		"description": "返回顶部"
+	},
+	"comm_has": {
+		"message": "已",
+		"description": "已经"
+	},
+	"comm_height": {
+		"message": "高度",
+		"description": "高度"
+	},
+	"comm_man": {
+		"message": "男",
+		"description": "男"
+	},
+	"comm_mbright_to_open": {
+		"message": "右键直接打开",
+		"description": "右键直接打开"
+	},
+	"comm_mbright_to_open_pic": {
+		"message": "右键打开原图",
+		"description": "右键打开原图"
+	},
+	"comm_mbleft_to_preview": {
+		"message": "左键点击预览",
+		"description": "左键点击预览"
+	},
+	"comm_me": {
+		"message": "我",
+		"description": "我"
+	},
+	"comm_my": {
+		"message": "我的",
+		"description": "我的"
+	},
+	"comm_no_api": {
+		"message": "没有提供接口",
+		"description": "没有提供接口"
+	},
+	"comm_not_alert_this_page": {
+		"message": "本页不再提示",
+		"description": "本页不再提示"
+	},
+	"comm_not_need_tran": {
+		"message": "无需翻译",
+		"description": "无需翻译"
+	},
+	"comm_could_not_tran": {
+		"message": "暂时无法翻译, ",
+		"description": "暂时无法翻译"
+	},
+	"comm_new_tweet": {
+		"message": "写微博",
+		"description": "写微博"
+	},
+	"comm_oauth_name": {
+		"message": "oAuth(更安全)",
+		"description": "oAuth(更安全)"
+	},
+	"comm_xauth_name": {
+		"message": "xAuth(oAuth的简化)",
+		"description": "xAuth(oAuth的简化)"
+	},
+	"comm_per_hour": {
+		"message": "每小时",
+		"description": "每小时"
+	},
+	"comm_pic": {
+		"message": "发图",
+		"description": "发图"
+	},
+	"comm_player": {
+		"message": "播放器",
+		"description": "播放器"
+	},
+	"comm_post_by": {
+		"message": "通过",
+		"description": "通过"
+	},
+	"comm_popup_play": {
+		"message": "弹出独立窗口播放",
+		"description": "弹出独立窗口播放"
+	},
+	"comm_quick_send": {
+		"message": "快捷发送微博",
+		"description": "快捷发送微博"
+	},
+	"comm_rate_limit": {
+		"message": "API访问频率限制",
+		"description": "API访问频率限制"
+	},
+	"comm_rate_limit_per_hour": {
+		"message": "每小时请求限制",
+		"description": "每小时请求限制"
+	},
+	"comm_refresh": {
+		"message": "刷新",
+		"description": "刷新"
+	},
+	"comm_request": {
+		"message": "请求",
+		"description": "请求"
+	},
+	"comm_reply": {
+		"message": "回复",
+		"description": "回复"
+	},
+	"comm_repost_default": {
+		"message": "转发微博.",
+		"description": "转发微博的时候在输入框的默认文字"
+	},
+	"comm_reset_time": {
+		"message": "重置时间",
+		"description": "重置时间"
+	},
+	"comm_remainder": {
+		"message": "剩余数",
+		"description": "剩余数"
+	},
+	"comm_save": {
+		"message": "保存",
+		"description": "保存"
+	},
+	"comm_search": {
+		"message": "搜索",
+		"description": "搜索"
+	},
+	"comm_search_user": {
+        "message": "搜人",
+        "description": "搜人"
+    },
+	"comm_setting": {
+		"message": "设置",
+		"description": "设置"
+	},
+	"comm_send": {
+		"message": "发微！",
+		"description": "发送"
+	},
+	"comm_send_tip": {
+		"message": "ctrl + enter 发送",
+		"description": "ctrl + enter 发送"
+	},
+	"comm_send_only": {
+		"message": "仅发送",
+		"description": "仅发送：帐号的启用状态"
+	},
+	"comm_second": {
+		"message": "秒",
+		"description": "秒"
+	},
+	"comm_share_whit_fawave": {
+		"message": "通过FaWave分享",
+		"description": "通过FaWave分享"
+	},
+	"comm_share_this_page": {
+		"message": "分享当前网页",
+		"description": "分享当前网页"
+	},
+	"comm_share_this_page_and_capture": {
+        "message": "分享当前网页并截图",
+        "description": "分享当前网页并截图"
+    },
+	"comm_show_related_dialogue": {
+		"message": "查看相关对话",
+		"description": "查看相关对话"
+	},
+	"comm_show_original": {
+		"message": "查看原文",
+		"description": "查看原文"
+	},
+	"comm_show_comments": {
+		"message": "查看评论",
+		"description": "查看评论"
+	},
+	"comm_show_repost_timeline": {
+        "message": "查看转发",
+        "description": "查看转发"
+    },
+	"comm_show_original_status": {
+		"message": "查看原信息",
+		"description": "查看原信息"
+	},
+	"comm_show_original_pic": {
+		"message": "查看原图",
+		"description": "查看原图"
+	},
+	"comm_show_original_vedio": {
+		"message": "查看原视频",
+		"description": "查看原视频"
+	},
+	"comm_success": {
+		"message": "成功",
+		"description": "成功"
+	},
+	"comm_total": {
+		"message": "总数",
+		"description": "总数"
+	},
+	"comm_tweet": {
+		"message": "微博",
+		"description": "微博"
+	},
+	"comm_url_shorten": {
+		"message": "缩短网址",
+		"description": "缩短网址"
+	},
+	"comm_user": {
+		"message": "用户",
+		"description": "用户"
+	},
+	"comm_verified": {
+		"message": "认证用户",
+		"description": "认证用户"
+	},
+	"comm_view": {
+		"message": "查看",
+		"description": "查看"
+	},
+	"comm_web_site": {
+		"message": "网站",
+		"description": "网站"
+	},
+	"comm_width": {
+		"message": "宽度",
+		"description": "宽度"
+	},
+
+	"comm_TabName_friends_timeline": {
+		"message": "首页",
+		"description": "首页时间线（跟随的人）的tab标签上显示的名称"
+	},
+	"comm_TabName_mentions": {
+		"message": "@我",
+		"description": "@我的时间线的tab标签上显示的名称"
+	},
+	"comm_TabName_comments_timeline": {
+		"message": "评论",
+		"description": "评论时间线的tab标签上显示的名称"
+	},
+	"comm_TabName_direct_messages": {
+		"message": "私信",
+		"description": "私信时间线的tab标签上显示的名称"
+	},
+	"comm_TabName_favorites": {
+		"message": "收藏",
+		"description": "收藏时间线的tab标签上显示的名称"
+	},
+	"comm_TabName_followers": {
+		"message": "粉丝",
+		"description": "粉丝时间线的tab标签上显示的名称"
+	},
+	"comm_TabName_user_timeline": {
+		"message": "微博",
+		"description": "用户自己的微博的时间线的tab标签上显示的名称"
+	},
+	"comm_show_rate_limit_stat": {
+		"message": "查看API请求数限制状态",
+		"description": "查看API请求数限制状态"
+	},
+	"comm_retweet_by_before": {
+		"message": "由",
+		"description": "由 *** 转发的前半部分"
+	},
+	"comm_retweet_by_after": {
+		"message": "等转发",
+		"description": "由 *** 转发的后半部分"
+	},
+	"comm_repost_to_before": {
+		"message": "转",
+		"description": "转 *** 的微博 的前半部分"
+	},
+	"comm_repost_to_after": {
+		"message": "的微博",
+		"description": "转 *** 的微博 的后半部分"
+	},
+	"comm_comment_to_before": {
+		"message": "评",
+		"description": "评 *** 的微博 的前半部分，后半部分同comm_repost_to_after"
+	},
+	"comm_dnd_tooltip": {
+		"message": "FaWave(发微): 免打扰模式",
+		"description": "开启免打扰模式后显示的提示语"
+	},
+	"comm_tqq_repost_pre": {
+        "message": "转播",
+        "description": "腾讯微博转发正文前缀"
+    },
+    "comm_tqq_comment_pre": {
+        "message": "点评",
+        "description": "腾讯微博点评正文前缀"
+    },
+
+	//abbreviation
+	"abb_all": {
+		"message": "全",
+		"description": "全部（全选）的缩写"
+	},
+	"abb_comments_timeline": {
+		"message": "评",
+		"description": "评论Timeline的简称"
+	},
+	"abb_direct_message": {
+		"message": "私",
+		"description": "私信的简称"
+	},
+	"abb_send_direct_message_to_user": {
+        "message": "发私信给",
+        "description": "发私信给"
+    },
+	"abb_send_direct_message": {
+		"message": "私",
+		"description": "发送私信的简称"
+	},
+	"abb_friends_timeline": {
+		"message": "新",
+		"description": "我关注的人的Timeline的简称"
+	},
+	"abb_comment": {
+		"message": "评",
+		"description": "评论的简称"
+	},
+	"abb_repost": {
+		"message": "转",
+		"description": "转发的简称"
+	},
+	"abb_play": {
+		"message": "播",
+		"description": "播放的简称"
+	},
+	"abb_delete": {
+		"message": "删",
+		"description": "删除的简称"
+	},
+	"abb_reply": {
+		"message": "回复",
+		"description": "回复评论或者回复私信的简称"
+	},
+	"abb_show": {
+		"message": "看",
+		"description": "查看评论或者其他的简称"
+	},
+
+	//btn
+	"btn_alert_mode_title": {
+	    "message": "提示模式。点击切换到免打扰模式",
+		"description": "提示模式。点击切换到免打扰模式"
+	},
+	"btn_dnd_mode_title": {
+	    "message": "已开启免打扰模式。点击切换到提示模式",
+		"description": "已开启免打扰模式。点击切换到提示模式"
+	},
+	"btn_not_auto_insert_title": {
+	    "message": "当前为仅提示新微博数模式。点击切换到自动插入新微博模式。",
+		"description": "当前为仅提示新微博数模式。点击切换到自动插入新微博模式。"
+	},
+	"btn_auto_insert_title": {
+	    "message": "当前为自动插入新微博模式，点击切换到仅提示新微博数模式。",
+		"description": "当前为自动插入新微博模式。点击切换到仅提示新微博数模式。"
+	},
+	"btn_add_favorites_title": {
+	    "message": "点击收藏",
+		"description": "点击收藏"
+	},
+	"btn_del_favorites_title": {
+	    "message": "点击取消收藏",
+		"description": "点击取消收藏"
+	},
+	"btn_comment_title": {
+	    "message": "点击添加评论",
+		"description": "点击添加评论"
+	},
+	"btn_reply_comment_title": {
+	    "message": "点击回复评论",
+		"description": "点击回复评论"
+	},
+	"btn_direct_message_title": {
+	    "message": "点击发送私信",
+		"description": "点击发送私信"
+	},
+	"btn_del_tweet_title": {
+	    "message": "点击删除微博",
+		"description": "点击删除微博"
+	},
+	"btn_del_comment_title": {
+	    "message": "点击删除评论",
+		"description": "点击删除评论"
+	},
+	"btn_del_direct_message_title": {
+	    "message": "点击删除私信",
+		"description": "点击删除私信"
+	},
+	"btn_geo_title": {
+	    "message": "点击查看地理位置信息",
+		"description": "点击查看地理位置信息"
+	},
+	"btn_hide_comments": {
+	    "message": "隐藏评论",
+		"description": "隐藏评论"
+	},
+	"btn_hide_repost_timeline": {
+        "message": "隐藏转发列表",
+        "description": "隐藏转发列表"
+    },
+	"btn_show_comments_title": {
+	    "message": "点击查看评论",
+		"description": "点击查看评论"
+	},
+	"btn_prev_page": {
+	    "message": "《上一页",
+		"description": "上一页"
+	},
+	"btn_next_page": {
+	    "message": "下一页》",
+		"description": "下一页"
+	},
+	"btn_mention_title": {
+	    "message": "进行@回复",
+		"description": "进行@回复"
+	},
+	"btn_translate": {
+	    "message": "译",
+		"description": "译"
+	},
+	"btn_translate_title": {
+	    "message": "翻译此微博",
+		"description": "翻译此微博"
+	},
+	"btn_read_later_title": {
+        "message": "稍后再读 Read Later",
+        "description": "稍后再读 Read Later"
+    },
+    "btn_read_it_later_title": {
+        "message": "稍后再读 Read It Later",
+        "description": "稍后再读 Read It Later"
+    },
+	"btn_emotional_title": {
+	    "message": "点击添加表情",
+		"description": "点击添加表情"
+	},
+	"btn_pic_title": {
+	    "message": "点击上传图片",
+		"description": "点击上传图片"
+	},
+	"btn_rt_title": {
+	    "message": "Twitter锐推",
+		"description": "Twitter锐推"
+	},
+	"btn_rted_title": {
+	    "message": "已成功锐推",
+		"description": "已成功锐推"
+	},
+	"btn_old_rt_title": {
+	    "message": "Twitter式转发",
+		"description": "Twitter式转发"
+	},
+	"btn_repost_title": {
+	    "message": "转发这条微博",
+		"description": "转发这条微博"
+	},
+	"btn_search_title": {
+	    "message": "点击开始搜索",
+		"description": "点击开始搜索"
+	},
+	"btn_search_user_title": {
+        "message": "点击开始搜人",
+        "description": "点击开始搜人"
+    },
+	"btn_share_title": {
+	    "message": "分享你正在看的网页",
+		"description": "分享你正在看的网页"
+	},
+	"btn_share_title_with_capture": {
+        "message": "分享你正在看的网页并截图",
+        "description": "分享你正在看的网页并截图"
+    },
+	"btn_show_source_status": {
+		"message": "对 $name$ 的回复",
+		"description": "对 *** 的回复,点击显示回复的tweet内容",
+		"placeholders": {
+            "name": {
+              "content": "$1",
+              "description": "用户名"
+            }
+		}
+	},
+	"btn_refresh_title": {
+	    "message": "点击则当前用户马上获取最新",
+		"description": "点击则当前用户马上获取最新"
+	},
+	"btn_new_win_title": {
+	    "message": "弹出到新窗口",
+		"description": "弹出到新窗口"
+	},
+	"btn_show_original_pic_title": {
+	    "message": "右键点击打开原图",
+		"description": "右键点击打开原图"
+	},
+	"btn_select_pic_title": {
+	    "message": "点此选择文件或者将文件拖放至此",
+		"description": "点此选择文件或者将文件拖放至此"
+	},
+	"btn_show_user_title": {
+	    "message": "左键查看微博，右键打开主页",
+		"description": "左键查看微博，右键打开主页"
+	},
+
+	//设置页面
+	//tab
+	"sett_TabName_common_set": {
+		"message": "基本设置",
+		"description": "设置页面基本设置tab的名称"
+	},
+	"sett_TabName_appearance_set": {
+		"message": "外观设置",
+		"description": "设置页面外观设置tab的名称"
+	},
+	"sett_TabName_user_set": {
+		"message": "帐号设置",
+		"description": "设置页面用户设置tab的名称"
+	},
+	"sett_TabName_advanced_set": {
+		"message": "高级设置",
+		"description": "设置页面高级设置tab的名称"
+	},
+	"sett_TabName_about": {
+		"message": "关于",
+		"description": "设置页面关于tab的名称"
+	},
+
+	//btn
+	"sett_btn_save_all": {
+		"message": "保存所有",
+		"description": "保存所有"
+	},
+	"sett_btn_add_new_account": {
+		"message": "添加新用户",
+		"description": "添加新用户"
+	},
+	"sett_btn_update_accounts": {
+		"message": "更新用户信息",
+		"description": "更新用户信息"
+	},
+
+	//基本设置
+	"sett_msg_donate": {
+		"message": "感谢以下朋友的捐助：<a href=\"http://item.taobao.com/item.htm?id=9279069357\" target=\"_blank\">(点此捐助FaWave)</a>",
+		"description": "感谢以下朋友的捐助：<a href=\"http://item.taobao.com/item.htm?id=9279069357\" target=\"_blank\">(点此捐助FaWave)</a>"
+	},
+	"sett_btn_clean_local_storage": {
+		"message": "清空本地缓存数据",
+		"description": "清空本地缓存数据的按钮上的文字"
+	},
+
+	"sett_itemName_g_refresh_time": {
+		"message": "获取信息间隔时间：",
+		"description": "全局的获取信息间隔时间"
+	},
+	"sett_jTip_g_refresh_time": {
+		"message": "这里的刷新时间间隔是全局设置，如果你需要对特定的账号进行特定的设置，可以到“<span class=\"note\">账号设置</span>”里面进行“修改用户属性”设置。例如新浪最高可以30秒刷新一次，而Twitter每小时的API请求是150次，所以30秒刷新一次Twitter肯定会超过限制，超过限制则会出错。所以Twitter的账号可以到“<span class=\"note\">账号设置</span>”里面进行自定义的设置。至于各帐号具体的API请求频率限制可以点击“<span class=\"note\">查看API请求数限制状态</span>”查看。最低可以设置的值为<span class=\"note\">30秒</span>",
+		"description": "全局的获取信息间隔说明"
+	},
+	"sett_des_g_refresh_time_hits": {
+		"message": "(当前设置的刷新间隔每小时产生的请求次数为：<span id=\"gRefreshTimeHits\"></span>请求/每小时)",
+		"description": "全局设置的刷新间隔每小时产生的请求次数"
+	},
+	"sett_refresh_interval": {
+		"message": "刷新间隔",
+		"description": "刷新间隔"
+	},
+
+	"sett_itemName_set_badge": {
+		"message": "未读提示：",
+		"description": "未读微博是否提示选项"
+	},
+	"sett_jTip_set_badge": {
+		"message": "<b>FaWave(发微)的按钮上未读信息数的提示:　</b><br/><img src=\"/images/setting/unread.gif\" />",
+		"description": "未读微博是否提示选项的说明"
+	},
+
+	"sett_itemName_show_in_page": {
+		"message": "在浏览的网页提示：",
+		"description": "在浏览的网页提示"
+	},
+	"sett_jTip_show_in_page": {
+		"message": "<b>在你正在看的网页上提示新信息，5秒钟后自动隐藏:　</b><br/><img src=\"/images/setting/show_in_page.png\" />",
+		"description": "在浏览的网页提示的说明问题"
+	},
+
+	"sett_itemName_sound_alert": {
+		"message": "声音提示：",
+		"description": "未读微博是否播放声音提示的选项名称"
+	},
+	"sett_itemName_sound_file": {
+		"message": "声音文件：",
+		"description": "未读微博是播放的声音文件的选项名称"
+	},
+	"sett_jTip_sound_alert": {
+		"message": "有新微博的时候播放声音提醒.<br/>声音文件可以是网络上的文件(http://***等等)，但是为了插件的稳定性，请选择速度快速稳定的链接。默认值为：/sound/d.mp3",
+		"description": "未读微博是否播放声音提示的说明"
+	},
+
+	"sett_itemName_destop_alert": {
+		"message": "桌面提示：",
+		"description": "未读微博是否桌面弹出窗提示的选项名"
+	},
+	"sett_itemName_destop_alert_timeout": {
+		"message": "自动关闭延时：",
+		"description": "未读微博桌面弹出窗多少秒后自动关闭的选项名称"
+	},
+	"sett_jTip_destop_alert": {
+		"message": "有新微博的时候在桌面提示未读信息数",
+		"description": "未读微博是否桌面弹出窗提示的说明"
+	},
+
+	"sett_itemName_sync_to_page": {
+		"message": "同步设置：",
+		"description": "已读数是否同步到相应的微博"
+	},
+	"sett_itemDes_sync_to_page": {
+		"message": "同时将新浪微博页面的未读提示置零",
+		"description": "同时将新浪微博页面的未读提示置零"
+	},
+	"sett_jTip_sync_to_page": {
+		"message": "<span class=\"note\">暂时只支持新浪微博</span>。如果已经通过FaWave(发微)看过的信息，<br/>则同时将新浪微博的页面提示数置零<br/><br/><img src=\"/images/setting/page_unread_tip.png\" />",
+		"description": "同时将新浪微博页面的未读提示置零的说明"
+	},
+
+	"sett_itemName_send_select": {
+		"message": "多账号发送默认选择",
+		"description": "多账号发送试默认选择以何种方式选项帐号(全部、当前、记住上次)"
+	},
+	"sett_send_select_remember": {
+		"message": "记住上次选择",
+		"description": "多账号发送试默认选择 记住上次选择"
+	},
+	"sett_send_select_current": {
+		"message": "当前账号",
+		"description": "多账号发送试默认选择 当前账号"
+	},
+	"sett_send_select_all": {
+		"message": "全部账号",
+		"description": "多账号发送试默认选择 全部账号"
+	},
+	"sett_jTip_send_select": {
+		"message": "当你设置了多个账号，在发送微博的时候可以根据需要选择默认选中的发送账号。",
+		"description": "多账号发送试默认选择以何种方式选项帐号(全部、当前、记住上次)的说明"
+	},
+
+	"sett_itemName_context_menu": {
+		"message": "启用右键菜单分享：",
+		"description": "启用右键菜单分享"
+	},
+	"sett_jTip_context_menu": {
+		"message": "在你浏览的当前网页的右键菜单中加入“通过FaWave分享”的选项。：",
+		"description": "启用右键菜单分享的说明"
+	},
+
+	"sett_itemName_quick_send_key": {
+		"message": "快捷发微博快捷键：",
+		"description": "唤出快速发送微博界面的快捷键"
+	},
+	"sett_jTip_quick_send_key": {
+		"message": "在所有的页面上，你可以使用你设置的快捷键，把发送微博的界面调用出来，快捷、轻便。<span class=\"note\">更改快捷键后请记得保存。更改后快捷键会在页面刷新后生效。</span><br/>小提示:<span class=\"note\">选择页面上的文字，再按快捷键调出快捷发送界面，会自动填充选择文字到输入框。</span><br/><img src=\"/images/setting/quick_send.png\" />",
+		"description": "唤出快速发送微博界面的快捷键的说明"
+	},
+	"sett_des_quick_send_key": {
+		"message": "请直接按键",
+		"description": "唤出快速发送微博界面的快捷键的提示"
+	},
+
+	"sett_itemName_translate_target": {
+		"message": "翻译目标语言：",
+		"description": "翻译目标语言"
+	},
+	"sett_btn_clean_cache": {
+		"message": "清空本地缓存数据",
+		"description": "清空本地缓存数据"
+	},
+
+	//帐号设置
+	"sett_title_account_manage": {
+		"message": "用户管理",
+		"description": "用户管理"
+	},
+	"sett_tip_add_account": {
+		"message": "<li>* 新浪微博的API，由于cookie信息会干扰认证，而我至今未找到解决办法，所以在添加或者编辑用户信息的时候，为了确保你可以正确设置你的账号信息，设置新浪微博的账号时，请你先<b><a href=\"http://t.sina.com.cn/logout.php?backurl=/\" target=\"_blank\">退出新浪微博</a></b></li><li>* 网易微博的API同样受到cookie信息干扰，设置网易微博的账号时，或者你已经在web版登录了，请你先<b><a href=\"http://reg.163.com/Logout.jsp?username=&url=http://t.163.com\" target=\"_blank\">退出网易微博</a></b></li>",
+		"description": "添加账号的时候提示用户的一些信息"
+	},
+    "sett_jTip_update_accounts": {
+		"message": "为了快速启动，用户信息会缓存在本地，如果你修改了用户头像或者其他用户信息，需要手动更新一下。",
+		"description": "更新用户信息的说明"
+	},
+	"sett_des_account_appkey": {
+	    "message": "应用 Key：",
+        "description": "添加用户的时候选择新浪微博的appkey"
+	},
+	"sett_jTip_account_appkey": {
+        "message": "我们曾经很傻很天真地以为新浪微博开放平台是真的开放的。由于新浪将FaWave的应用Key屏蔽了，目前只能无奈地让用户选择使用其他应用的Key来继续让FaWave兼容新浪微博。望谅解。",
+        "description": "添加用户的时候选择新浪微博的appkey时的提示说明"
+    },
+	"sett_des_account_blog_type": {
+		"message": "微　　博：",
+		"description": "添加用户的时候选择微博类型"
+	},
+	"sett_des_account_proxy_api": {
+		"message": "API 代理：",
+		"description": "添加用户的时候填写API代理"
+	},
+	"sett_jTip_account_proxy_api": {
+		"message": "oAuth方式请将api留空。gtap或者twip(O模式)请配合Basic Auth方式。",
+		"description": "添加用户的时候填写API代理时的提示说明"
+	},
+	"sett_des_account_auth_type": {
+		"message": "验证类型：",
+		"description": "添加用户的时候选择验证类型"
+	},
+	"sett_des_account_pin": {
+		"message": "　授权码：",
+		"description": "添加用户的时候填写授权码"
+	},
+	"sett_btn_get_account_pin": {
+		"message": "点此获取授权码",
+		"description": "点此获取授权码"
+	},
+	"sett_des_account_name": {
+		"message": "　用户名：",
+		"description": "添加用户的时候填写用户名"
+	},
+	"sett_des_account_password": {
+		"message": "密　　码：",
+		"description": "添加用户的时候填写密码"
+	},
+	"sett_btn_get_account_save": {
+		"message": "添加",
+		"description": "保存用户信息"
+	},
+	"sett_btn_get_account_cancel": {
+		"message": "取消",
+		"description": "取消"
+	},
+	"sett_jTip_account_auth_type": {
+	    /*
+	        <b>验证类型说明:　</b><br/>
+			</b><span class="note">Basic Auth</span>:便捷，不过用户和密码保存在本地。<br/>
+			<span class="note">oAuth</span>:到授权网站上登陆，更安全，推荐。(本地只保存获取到的授权码) <br/>
+			<span class="note">xAuth</span>:oAuth的简化方式，直接输入用户密码验证，不过用户密码不保存在本地。
+	     */
+		"message": "<b>验证类型说明:　</b><br/></b><span class=\"note\">Basic Auth</span>:便捷，不过用户和密码保存在本地。<br/><span class=\"note\">oAuth</span>:到授权网站上登陆，更安全，推荐。(本地只保存获取到的授权码) <br/><span class=\"note\">xAuth</span>:oAuth的简化方式，直接输入用户密码验证，不过用户密码不保存在本地。",
+		"description": "添加用户的时候选择验证类型时的提示说明"
+	},
+	"sett_jTip_manage_accounts": {
+	    /*
+	        <span class="note">帐号状态：</span>“启用”的帐号可以查看微博和发送微博。
+			“仅发送”的帐号不可以查看，仅在发送微博的时候可以选择同步发送。
+			“停用”的帐号既不能查看也不可以同步发送，请仅在你暂时不想管理这个帐号的时候将它设为“停用”。<br/>
+			<span class="note">刷新间隔：</span>这里的刷新频率设置会覆盖“<span class="note">基本设置</span>”里面的“获取信息间隔时间”的设置，
+			你可以在这里为特定的账户设置特定的刷新时间间隔，而不影响其他账号使用全局设置。最低可以设置的值为<span class="note">30秒</span>。
+			括号内数字为当前全局设置值，填“0”表示使用全局设置。<br/>
+			<span class="note">帐号排序：</span>直接拖动帐号的头像可以进行拖动排序。<br/>
+			<span class="note">保存：</span>所有操作会在你操作完成后自动保存。
+	     */
+		"message": "<span class=\"note\">帐号状态：</span>“启用”的帐号可以查看微博和发送微博。“仅发送”的帐号不可以查看，仅在发送微博的时候可以选择同步发送。“停用”的帐号既不能查看也不可以同步发送，请仅在你暂时不想管理这个帐号的时候将它设为“停用”。<br/><span class=\"note\">刷新间隔：</span>这里的刷新频率设置会覆盖“<span class=\"note\">基本设置</span>”里面的“获取信息间隔时间”的设置，你可以在这里为特定的账户设置特定的刷新时间间隔，而不影响其他账号使用全局设置。最低可以设置的值为<span class=\"note\">30秒</span>。括号内数字为当前全局设置值，填“0”表示使用全局设置。<br/><span class=\"note\">帐号排序：</span>直接拖动帐号的头像可以进行拖动排序。<br/><span class=\"note\">保存：</span>所有操作会在你操作完成后自动保存。",
+		"description": "更新用户信息的说明"
+	},
+
+	//外观设置
+	"sett_itemName_font": {
+		"message": "字体设置：",
+		"description": "字体设置"
+	},
+
+	"sett_itemName_WH": {
+		"message": "高宽设置：",
+		"description": "高宽设置"
+	},
+	"sett_jTip_WH_width_limit": {
+		"message": "<b>宽度限制:</b>宽度极限是800，再大也不会改变大小。",
+		"description": "宽度限制说明"
+	},
+	"sett_itemName_WH_height_limit": {
+		"message": "<b>高度限制:</b>高度超过差不多570-580，会导致滚动条失效。",
+		"description": "高度设置"
+	},
+
+	"sett_itemName_theme": {
+		"message": "主题选择：",
+		"description": "主题选择"
+	},
+	"sett_themeName_bubble": {
+		"message": "气泡",
+		"description": "气泡主题的名称"
+	},
+	"sett_themeName_simple": {
+		"message": "简洁",
+		"description": "简洁主题的名称"
+	},
+
+	//高级设置
+	"sett_itemName_geo": {
+		"message": "开启我的地理位置：",
+		"description": "开启我的地理位置"
+	},
+	"sett_itemName_use_browser_geo": {
+        "message": "使用浏览器判断地理位置",
+        "description": "使用浏览器判断地理位置"
+    },
+    "sett_itemName_use_ip_geo": {
+        "message": "使用IP判断地理位置",
+        "description": "使用IP判断地理位置"
+    },
+	"sett_show_my_geo": {
+		"message": "查看我的位置",
+		"description": "查看我的位置"
+	},
+	"sett_jTip_geo": {
+		"message": "这里获取到的位置不一定准确，所以在启用后最好看下自己的当前位置是否正确。",
+		"description": "上报地理位置的说明"
+	},
+
+	"sett_itemName_smooth_scroller": {
+		"message": "是否启用平滑滚动：",
+		"description": "是否启用平滑滚动"
+	},
+	"sett_smooth_scroller_tween": {
+		"message": "动画类型",
+		"description": "动画类型"
+	},
+	"sett_smooth_scroller_ease": {
+		"message": "缓动类型",
+		"description": "是否启用平滑滚动"
+	},
+
+	"sett_itemName_shared_template": {
+		"message": "　分享网页的模板：",
+		"description": "分享网页的模板"
+	},
+	"sett_shared_template": {
+		"message": "{{title}} {{url}} ",
+		"description": "分享正在看的网页时的模板"
+	},
+	"sett_jTip_shared_template": {
+	    /*
+	        <b>可用参数与说明:　</b><br/>
+			当你使用“我正在看”的功能的时候，会根据该模板生成最终内容。<br/>
+			模板参数必须由"{{}}"包裹起来，可用的参数有：<br/>
+			<p><b>{{url}}</b>: 你当前正在浏览的网页的url</p>
+			<p><b>{{title}}</b>: 你当前正在浏览的网页的标题</p>
+			<img src="/images/setting/looking.png" />
+	     */
+		"message": "<b>可用参数与说明:　</b><br/>当你使用“我正在看”的功能的时候，会根据该模板生成最终内容。<br/>模板参数必须由\"{{}}\"包裹起来，可用的参数有：<br/><p><b>{{url}}</b>: 你当前正在浏览的网页的url</p><p><b>{{title}}</b>: 你当前正在浏览的网页的标题</p><img src=\"/images/setting/looking.png\" />",
+		"description": "分享网页的模板的设置说明"
+	},
+	
+	"sett_jTip_instapaper": {
+        "message": "启动Instapaper，将会在功能按键栏中出现 RL(Read Later) 按钮<br /><img src=\"/images/setting/rl.jpg\" />",
+        "description": "启动 Instapaper 设置说明"
+    },
+    "sett_jTip_readitlater": {
+        "message": "启动Read It Later，将会在功能按键栏中出现 RIL(Read It Later) 按钮<br /><img src=\"/images/setting/ril.jpg\" />",
+        "description": "启动 Read It Later 设置说明"
+    },
+
+	"sett_itemName_auto_short_url": {
+		"message": "是否自动缩短URL：",
+		"description": "是否自动缩短URL"
+	},
+	"sett_des_auto_short_url": {
+		"message": "自动缩短",
+		"description": "自动缩短"
+	},
+	"sett_des_auto_short_url_words": {
+		"message": "URL超过多少个字符自动缩短",
+		"description": "URL超过多少个字符自动缩短"
+	},
+	"sett_des_shorten_url_service": {
+		"message": "缩址服务",
+		"description": "缩址服务"
+	},
+	
+	// instapaper
+	"sett_itemName_instapaper": {
+        "message": "Instapaper 帐号：",
+        "description": "Instapaper 帐号"
+    },
+    
+    "sett_itemName_readitlater": {
+        "message": "Read It Later 帐号：",
+        "description": "Read It Later 帐号"
+    },
+	
+	"sett_export": {
+		"message": "导出设置",
+		"description": "导出设置"
+	},
+	"sett_import": {
+		"message": "导入设置",
+		"description": "导入设置"
+	},
+
+	//关于
+	"sett_title_author": {
+		"message": "作者",
+		"description": "作者"
+	},
+	"sett_title_official": {
+		"message": "官方微博",
+		"description": "官方微博"
+	},
+
+	//message
+	"msg_interval_update_success": {
+		"message": "刷新间隔已更新",
+		"description": "刷新间隔已更新"
+	},
+	"msg_word_count": {
+		"message": "(你还可以输入{{len}}字)",
+		"description": "(你还可以输入{{len}}字)"
+	},
+	"msg_word_overstep": {
+		"message": "已超出{{len}}字",
+		"description": "已超出{{len}}字"
+	},
+	"msg_file_too_large": {
+		"message": "文件太大，请选择小于2M的文件。",
+		"description": "文件太大，请选择小于2M的文件。"
+	},
+	"msg_pic_type_error": {
+		"message": "文件类型不正确，仅支持JPEG,GIF,PNG图片。",
+		"description": "文件类型不正确，仅支持JPEG,GIF,PNG图片。"
+	},
+	"msg_f_create_success": {
+		"message": "跟随 '{{name}}' 成功",
+		"description": "跟随 '{{name}}' 成功"
+	},
+	"msg_f_create_fail": {
+        "message": "跟随 '{{name}}' 失败",
+        "description": "跟随 '{{name}}' 失败"
+    },
+	"msg_f_destroy_success": {
+		"message": "你已取消跟随 '{{name}}'",
+		"description": "你已取消跟随 '{{name}}'"
+	},
+	"msg_has_new_tweet": {
+		"message": "有新微博",
+		"description": "有新微博"
+	},
+	"msg_no_geo_info": {
+		"message": "没有可用的地理位置信息",
+		"description": "没有可用的地理位置信息"
+	},
+	"msg_enabled_geo_false": {
+		"message": "启用地理位置定位失败。",
+		"description": "启用地理位置定位失败。"
+	},
+	"msg_not_support_geo": {
+		"message": "浏览器不支持地理位置定位",
+		"description": "浏览器不支持地理位置定位"
+	},
+	"msg_wrong_name_or_pwd": {
+		"message": "用户名或者密码不正确，请修改",
+		"description": "用户名或者密码不正确，请修改"
+	},
+	"msg_user_save_error": {
+		"message": "出现错误，保存失败。",
+		"description": "出现错误，保存失败。"
+	},
+	"msg_edit_user_success": {
+		"message": "{{edit}}用户'{{username}}'成功！",
+		"description": "{{edit}}用户'{{username}}'成功！"
+	},
+	"msg_need_username_and_pwd": {
+		"message": "请输入用户名和密码！",
+		"description": "请输入用户名和密码！"
+	},
+	"msg_need_content": {
+		"message": "请输入要发送的内容！",
+		"description": "请输入要发送的内容！"
+	},
+	"msg_need_select_account": {
+		"message": "请选择要发送的帐号！",
+		"description": "请选择要发送的帐号！"
+	},
+	"msg_need_add_account": {
+		"message": "用户未指定，请在选项里面添加！",
+		"description": "用户未指定，请在选项里面添加！"
+	},
+	"msg_need_pic": {
+		"message": "请选择要上传的图片。",
+		"description": "请选择要上传的图片。"
+	},
+	"msg_send_error": {
+		"message": "{{username}} 发送出错.",
+		"description": "{{username}} 发送出错."
+	},
+	"msg_send_success": {
+		"message": "发送成功！",
+		"description": "发送成功"
+	},
+	"msg_repost_success": {
+		"message": "转发成功！",
+		"description": "转发成功"
+	},
+	"msg_comment_success": {
+		"message": "发送评论成功！",
+		"description": "发送评论成功"
+	},
+	"msg_send_complete": {
+		"message": "{{successCount}}发送成功，{{errorCount}}失败。",
+		"description": "{{successCount}}发送成功，{{errorCount}}失败。"
+	},
+	"msg_stat_change_success": {
+		"message": "{{username}} 的状态修改为: {{stat}}",
+		"description": "{{username}} 的状态修改为: {{stat}}"
+	},
+	"msg_del_account_success": {
+		"message": "成功删除账号({{blogname}}) {{username}}",
+		"description": "成功删除账号({{blogname}}) {{username}}"
+	},
+	"msg_save_success": {
+		"message": "保存成功",
+		"description": "保存成功"
+	},
+	"msg_update_accounts_info_false": {
+		"message": "刷新({{blogname}}) {{username}} 的信息失败，原因：用户名或者密码不正确，请修改。",
+		"description": "刷新({{blogname}}) {{username}} 的信息失败，原因：用户名或者密码不正确，请修改。"
+	},
+	"msg_update_accounts_info_unknow_error": {
+		"message": "刷新({{blogname}}) {{username}} 的信息失败，原因：出现未知错误。errorCode: {{errorcode}}",
+		"description": "刷新({{blogname}}) {{username}} 的信息失败，原因：出现未知错误。errorCode: {{errorcode}}"
+	},
+	"msg_update_account_info_success": {
+		"message": "成功刷新({{blogname}}) {{username}} 的信息",
+		"description": "成功刷新({{blogname}}) {{username}} 的信息"
+	},
+	"msg_update_accounts_info_complete": {
+		"message": "刷新用户信息完成。成功{{successCount}}个，失败{{errorCount}}个。",
+		"description": "刷新用户信息完成。成功{{successCount}}个，失败{{errorCount}}个。"
+	},
+	"msg_shorting_and_wait": {
+		"message": "正在努力缩短中，请稍后",
+		"description": "正在努力缩短中，请稍后"
+	},
+	"msg_shorting": {
+		"message": "正在缩短...",
+		"description": "正在缩短..."
+	},
+	"msg_shorten_fail": {
+		"message": "缩短网址失败",
+		"description": "缩短网址失败"
+	},
+	"msg_wrong_page_url": {
+		"message": "当前页面的URL不正确。",
+		"description": "当前页面的URL不正确。"
+	},
+	"msg_repost_who": {
+		"message": "转发@{{username}} 的信息",
+		"description": "转发@{{username}} 的信息"
+	},
+	"msg_direct_message_who": {
+		"message": "给@{{username}} 发送私信",
+		"description": "给@{{username}} 发送私信"
+	},
+	"msg_comment_who": {
+		"message": "评论@{{username}} 的信息",
+		"description": "评论@{{username}} 的信息"
+	},
+	"msg_comment_reply_default": {
+		"message": "回复 @{{username}}:",
+		"description": "回复评论的时候，输入框默认的文字"
+	},
+	"msg_comment_too": {
+		"message": "同时给 @{{username}} 评论",
+		"description": "同时给 @{{username}} 评论"
+	},
+	"msg_comment_original_too": {
+		"message": "同时给原文作者 @{{username}} 评论",
+		"description": "同时给原文作者 @{{username}} 评论"
+	},
+	"msg_repost_too": {
+		"message": "同时转发一条微博",
+		"description": "同时转发一条微博"
+	},
+	"msg_delete_success": {
+		"message": "删除成功",
+		"description": "删除成功"
+	},
+	"msg_delete_fail": {
+		"message": "删除失败",
+		"description": "删除失败"
+	},
+	"msg_add_favorites_success": {
+		"message": "收藏成功",
+		"description": "收藏成功"
+	},
+	"msg_add_favorites_fail": {
+		"message": "收藏失败",
+		"description": "收藏失败"
+	},
+	"msg_del_favorites_success": {
+		"message": "成功取消收藏",
+		"description": "成功取消收藏"
+	},
+	"msg_del_favorites_fail": {
+		"message": "取消收藏失败",
+		"description": "取消收藏失败"
+	},
+	"msg_loading_map": {
+		"message": "地图API正在载入中，请稍后再试",
+		"description": "地图API正在载入中，请稍后再试"
+	},
+	"confirm_clean_local_storage": {
+		"message": "你确定要清空本地缓存数据吗？",
+		"description": "你确定要清空本地缓存数据吗？"
+	},
+	"confirm_del_account": {
+		"message": "你确定要删除该账号吗？",
+		"description": "你确定要删除该账号吗？"
+	},
+
+	"sett_itemName": {
+		"message": "",
+		"description": ""
+	}
+
+
+}
