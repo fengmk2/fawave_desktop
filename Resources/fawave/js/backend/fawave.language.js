@@ -71,7 +71,12 @@ FaWave.i18n.load = function(code){
  *
  */
 FaWave.i18n.getString = function(key, defaultVal){
-    return FaWave.i18n.translation[key] || FaWave.i18n.default || defaultVal || '';
+    var kv = FaWave.i18n.translation[key] || FaWave.i18n.default[key];
+    if(kv){
+        return kv.message;
+    }else{
+        return defaultVal || '';
+    }
 }
 
 /**

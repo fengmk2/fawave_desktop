@@ -45,20 +45,10 @@ FaWave.Setting = {
 
         lookingTemplate: FaWave.i18n.getString('sett_shared_template')
     },
-    init: function(){ //只在background载入的时候调用一次并给 _settings 赋值就可以
-        var path = Titanium.Filesystem.getResourcesDirectory();
-        var file = Titanium.Filesystem.getFile(path, FaWave.Config.dataDir, FaWave.Setting.pathName);
-        var _sets;
-        if(file.exists()){
-            try{
-                _sets = JSON.parse(file.read());
-            }catch(e){
-                FaWave.Log.error(e);
-            }
-        }
-        _sets = _sets || {};
+    //只在background载入的时候调用一次并给 _settings 赋值就可以
+    init: function(){ 
+        var _sets = FaWave.Store.File.readAsJson(FaWave.Setting.pathName);
         _sets = $.extend({}, this.defaults, _sets);
-
         return _sets;
     },
     get: function(){
@@ -73,14 +63,7 @@ FaWave.Setting = {
      */
     save: function(){
         var _sets = this.get();
-        var path = Titanium.Filesystem.getResourcesDirectory();
-        var dir = Titanium.Filesystem.getFile(path, FaWave.Config.dataDir);
-        if(!dir.exists()){
-            dir.createDirectory();
-        }
-        var file = Titanium.Filesystem.getFile(path, FaWave.Config.dataDir, FaWave.Setting.pathName);
-        // file.write这个API好像在Titanium的1.1.0以上版本修改了？
-        file.write(JSON.stringify(_sets));
+        FaWave.Store.File.saveAsJson(FaWave.Setting.pathName, _sets);
     },
     /*
     * 获取刷新间隔时间
