@@ -1,12 +1,12 @@
 window.FaWave = window.FaWave || {};
 
 /****
- * ³Ö¾Ã»¯´æ´¢
+ * æŒä¹…åŒ–å­˜å‚¨
  */
 FaWave.Store = {
     /****
-     * ÎÄ¼ş´æ´¢
-     * ´æ´¢µ½ Resources Ä¿Â¼µÄÊı¾İÄ¿Â¼ÖĞ
+     * æ–‡ä»¶å­˜å‚¨
+     * å­˜å‚¨åˆ° Resources ç›®å½•çš„æ•°æ®ç›®å½•ä¸­
      */
     File: {
         read: function(fileName){
@@ -25,7 +25,7 @@ FaWave.Store = {
                 dir.createDirectory();
             }
             var file = Titanium.Filesystem.getFile(path, FaWave.Config.dataDir, fileName);
-            // file.writeÕâ¸öAPIºÃÏñÔÚTitaniumµÄ1.1.0ÒÔÉÏ°æ±¾ĞŞ¸ÄÁË£¿
+            // file.writeè¿™ä¸ªAPIå¥½åƒåœ¨Titaniumçš„1.1.0ä»¥ä¸Šç‰ˆæœ¬ä¿®æ”¹äº†ï¼Ÿ
             file.write(value);
         },
         readAsJson: function(fileName){
@@ -42,13 +42,13 @@ FaWave.Store = {
         }
     },
     /******
-     * Êı¾İ¿â´æ´¢
+     * æ•°æ®åº“å­˜å‚¨
      */
     DB: {}
 };
 
 
-// HTML5 localStorage ´æ´¢
+// HTML5 localStorage å­˜å‚¨
 // e.g. localStorage.setObject
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));

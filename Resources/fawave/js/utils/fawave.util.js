@@ -4,7 +4,6 @@
 
 (function(){
 
-var Base64 = weibo.base64.Base64;
 window.FaWave = window.FaWave || {};
 FaWave.Util = {
 	secret_key: '523f2d0d134bfd5aa138f9e5af828bf9',

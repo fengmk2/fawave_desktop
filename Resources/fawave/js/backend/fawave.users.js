@@ -1,15 +1,15 @@
 window.FaWave = window.FaWave || {};
 
 /****
- * Î¢²©ÕËºÅ
+ * å¾®åšè´¦å·
  */
 FaWave.Users = {
     pathName: 'users_%s.db'
   , _current: null
   , _users: []
     /********
-     * ÔØÈëÎ¢²©ÕËºÅÁĞ±í
-     * @forceReload: Ç¿ÖÆÖØĞÂ´ÓÎÄ¼şÖĞ¼ÓÔØ
+     * è½½å…¥å¾®åšè´¦å·åˆ—è¡¨
+     * @forceReload: å¼ºåˆ¶é‡æ–°ä»æ–‡ä»¶ä¸­åŠ è½½
      */
   , load: function(forceReload){
         if(!FaWave.Users._users || !FaWave.Users._users.length){
@@ -28,7 +28,7 @@ FaWave.Users = {
         FaWave.Store.File.save(FaWave.Users.pathName, data);
     }
 };
-// ÊôĞÔ
+// å±æ€§
 FaWave.Users.__defineGetter__('current', function(){
     if(!FaWave.Users._current){
         if(FaWave.Users._users || FaWave.Users._users.length){
@@ -40,19 +40,19 @@ FaWave.Users.__defineGetter__('current', function(){
 
 
 /****
- * FaWaveµÄÕËºÅ
+ * FaWaveçš„è´¦å·
  */
 FaWave.Accounts = {
     pathName: 'accounts.db'
   , _current: null
-  , _accounts: [] //ÕËºÅÁĞ±í»º´æ
+  , _accounts: [] //è´¦å·åˆ—è¡¨ç¼“å­˜
     /********
-     * ÔØÈëFaWaveÕËºÅÁĞ±í
-     * @forceReload: Ç¿ÖÆÖØĞÂ´ÓÎÄ¼şÖĞ¼ÓÔØ
+     * è½½å…¥FaWaveè´¦å·åˆ—è¡¨
+     * @forceReload: å¼ºåˆ¶é‡æ–°ä»æ–‡ä»¶ä¸­åŠ è½½
      */
   , load: function(forceReload){
         if(!FaWave.Accounts._accounts || !FaWave.Accounts._accounts.length){
-            var data = FaWave.Store.File.read(FaWave.Accounts.pathName); //TODO: ĞŞ¸ÄÎª¸ù¾İAccountÃüÃû
+            var data = FaWave.Store.File.read(FaWave.Accounts.pathName); //TODO: ä¿®æ”¹ä¸ºæ ¹æ®Accountå‘½å
             if(data){
                 data = FaWave.Util.decrypt(data);
                 FaWave.Accounts._accounts = JSON.parse(data);
@@ -78,8 +78,8 @@ FaWave.Accounts = {
         return a;
     }
     /********
-     * Ìí¼ÓÕËºÅ
-     * ³É¹¦·µ»Ø true , Ê§°Ü·µ»Ø false
+     * æ·»åŠ è´¦å·
+     * æˆåŠŸè¿”å› true , å¤±è´¥è¿”å› false
      */
   , add: function(account){
         var success = false;
@@ -92,8 +92,8 @@ FaWave.Accounts = {
         return success;
     }
     /*******
-     * µÇÂ½
-     * ³É¹¦·µ»Ø true , Ê§°Ü·µ»Ø false
+     * ç™»é™†
+     * æˆåŠŸè¿”å› true , å¤±è´¥è¿”å› false
      */
   , login: function(name, pwd){
         var isLogin = false,
@@ -104,7 +104,7 @@ FaWave.Accounts = {
         return isLogin;
     }
 };
-// ÊôĞÔ
+// å±æ€§
 FaWave.Accounts.__defineGetter__('current', function(){
     return FaWave.Accounts._current;
 });

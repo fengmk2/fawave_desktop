@@ -14,7 +14,7 @@ FaWave.i18n = FaWave.i18n || {};
 FaWave.i18n.defaultLanCode = 'zh-cn';
 
 /**
- * ÓïÑÔÎÄ¼şÄ¿Â¼
+ * è¯­è¨€æ–‡ä»¶ç›®å½•
  */
 FaWave.i18n.__defineGetter__('languageDir', function(){
     return Titanium.Filesystem.getResourcesDirectory() + "/_locales";
@@ -22,7 +22,7 @@ FaWave.i18n.__defineGetter__('languageDir', function(){
 
 /**
  * Load language
- * ÏµÍ³ÓïÑÔÅĞ¶ÏÇëÔÚµ÷ÓÃµÄÊ±ºòÅĞ¶Ï£¬ÕâÀï¼õÉÙÒÀÀµ
+ * ç³»ç»Ÿè¯­è¨€åˆ¤æ–­è¯·åœ¨è°ƒç”¨çš„æ—¶å€™åˆ¤æ–­ï¼Œè¿™é‡Œå‡å°‘ä¾èµ–
  * @code: language code
  */
 FaWave.i18n.load = function(code){
@@ -34,9 +34,9 @@ FaWave.i18n.load = function(code){
     code = code.toLowerCase();
     try{
         // Load the default language file
-        if(!FaWave.i18n.default){
-            var file                = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.defaultLanCode + '.json');
-            FaWave.i18n.default    = JSON.parse(file.read());
+        if(!FaWave.i18n._default){
+            var file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.defaultLanCode + '.json');
+            FaWave.i18n._default  = JSON.parse(file.read());
         }
         
         if (FaWave.i18n.code != FaWave.i18n.defaultLanCode)
@@ -51,7 +51,7 @@ FaWave.i18n.load = function(code){
                     if(file.exists()){
                         FaWave.i18n.translation = JSON.parse(file.read());
                     }else{
-                        // Ö±½ÓÉèÎªÄ¬ÈÏ
+                        // ç›´æ¥è®¾ä¸ºé»˜è®¤
                         FaWave.i18n.code = FaWave.i18n.defaultLanCode;
                     }
                 }
@@ -67,11 +67,11 @@ FaWave.i18n.load = function(code){
 };
 
 /**
- * »ñÈ¡·­ÒëºóµÄÖµ
+ * è·å–ç¿»è¯‘åçš„å€¼
  *
  */
 FaWave.i18n.getString = function(key, defaultVal){
-    var kv = FaWave.i18n.translation[key] || FaWave.i18n.default[key];
+    var kv = (FaWave.i18n.translation && FaWave.i18n.translation[key]) || (FaWave.i18n._default && FaWave.i18n._default[key]);
     if(kv){
         return kv.message;
     }else{
@@ -80,8 +80,8 @@ FaWave.i18n.getString = function(key, defaultVal){
 }
 
 /**
- * Ö§³ÖµÄÓïÑÔÁĞ±í
- * @result: e.g. [ ['en', 'English'], ['zh_cn', '¼òÌåÖĞÎÄ'] ]
+ * æ”¯æŒçš„è¯­è¨€åˆ—è¡¨
+ * @result: e.g. [ ['en', 'English'], ['zh_cn', 'ç®€ä½“ä¸­æ–‡'] ]
  */
 FaWave.i18n.languageList = function(){
     var result = [],

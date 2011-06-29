@@ -1,72 +1,72 @@
 window.FaWave = window.FaWave || {};
 FaWave.Setting = {
-    pathName: 'setting.json'
+    pathName: 'setting.json',
     defaults: {
-        globalRefreshTime:{ //È«¾ÖµÄË¢ĞÂ¼ä¸ôÊ±¼ä
+        globalRefreshTime:{ //å…¨å±€çš„åˆ·æ–°é—´éš”æ—¶é—´
             friends_timeline: 90,
             mentions: 120,
             comments_timeline: 120,
             direct_messages: 120
         },
-        isEnabledSound:{ //ÊÇ·ñ¿ªÆô²¥·ÅÉùÒôÌáÊ¾ĞÂĞÅÏ¢
+        isEnabledSound:{ //æ˜¯å¦å¼€å¯æ’­æ”¾å£°éŸ³æç¤ºæ–°ä¿¡æ¯
             friends_timeline: false,
             mentions: false,
             comments_timeline: false,
             direct_messages: false
         },
         soundSrc: '/sound/d.mp3',
-        isDesktopNotifications:{ //ÊÇ·ñÔÚ×ÀÃæÌáÊ¾ĞÂĞÅÏ¢
+        isDesktopNotifications:{ //æ˜¯å¦åœ¨æ¡Œé¢æç¤ºæ–°ä¿¡æ¯
             friends_timeline: false,
             mentions: false,
             comments_timeline: false,
             direct_messages: false
         },
-        desktopNotificationsTimeout: 5, //×ÀÃæÌáÊ¾µÄÑÓ³Ù¹Ø±ÕÊ±¼ä
-        isSyncReadedToSina: false, //ÒÑ¶ÁÏûÏ¢ÊÇ·ñºÍĞÂÀËÎ¢²©Ò³ÃæÍ¬²½
-        isSharedUrlAutoShort: true, //·ÖÏíÕıÔÚ¿´µÄÍøÖ·Ê±ÊÇ·ñ×Ô¶¯Ëõ¶Ì
-        sharedUrlAutoShortWordCount: 15, //³¬¹ı¶àÉÙ¸ö×ÖÔò×Ô¶¯Ëõ¶ÌURL
-        quickSendHotKey: '113', //¿ìËÙ·¢ËÍÎ¢²©µÄ¿ì½İ¼ü¡£Ä¬ÈÏ F2¡£±£´æµÄ¸ñÊ½Îª£º 33,34,35 ÓÃ¶ººÅ·Ö¸ôµÄkeycode
-        isSmoothScroller: false, //ÊÇ·ñÆôÓÃÆ½»¬¹ö¶¯
-        smoothTweenType: 'Quad', //Æ½»¬¹ö¶¯µÄ¶¯»­ÀàĞÍ
-        smoothSeaeType: 'easeOut', //Æ½»¬¹ö¶¯µÄeaseÀàĞÍ
-        sendAccountsDefaultSelected: 'current', //¶àÕËºÅ·¢ËÍµÄÊ±ºòÄ¬ÈÏÑ¡ÔñµÄ·¢ËÍÕËºÅ
-        enableContextmenu: true, //ÆôÓÃÓÒ¼ü²Ëµ¥
+        desktopNotificationsTimeout: 5, //æ¡Œé¢æç¤ºçš„å»¶è¿Ÿå…³é—­æ—¶é—´
+        isSyncReadedToSina: false, //å·²è¯»æ¶ˆæ¯æ˜¯å¦å’Œæ–°æµªå¾®åšé¡µé¢åŒæ­¥
+        isSharedUrlAutoShort: true, //åˆ†äº«æ­£åœ¨çœ‹çš„ç½‘å€æ—¶æ˜¯å¦è‡ªåŠ¨ç¼©çŸ­
+        sharedUrlAutoShortWordCount: 15, //è¶…è¿‡å¤šå°‘ä¸ªå­—åˆ™è‡ªåŠ¨ç¼©çŸ­URL
+        quickSendHotKey: '113', //å¿«é€Ÿå‘é€å¾®åšçš„å¿«æ·é”®ã€‚é»˜è®¤ F2ã€‚ä¿å­˜çš„æ ¼å¼ä¸ºï¼š 33,34,35 ç”¨é€—å·åˆ†éš”çš„keycode
+        isSmoothScroller: false, //æ˜¯å¦å¯ç”¨å¹³æ»‘æ»šåŠ¨
+        smoothTweenType: 'Quad', //å¹³æ»‘æ»šåŠ¨çš„åŠ¨ç”»ç±»å‹
+        smoothSeaeType: 'easeOut', //å¹³æ»‘æ»šåŠ¨çš„easeç±»å‹
+        sendAccountsDefaultSelected: 'current', //å¤šè´¦å·å‘é€çš„æ—¶å€™é»˜è®¤é€‰æ‹©çš„å‘é€è´¦å·
+        enableContextmenu: true, //å¯ç”¨å³é”®èœå•
 
-        font: 'Arial', //×ÖÌå
-        fontSite: 12, //×ÖÌå´óĞ¡
-        theme: 'pip_io', //Ö÷ÌâÑùÊ½
-        translate_target: 'zh', // Ä¬ÈÏ·­ÒëÓïÑÔ
-        shorten_url_service: 't.cn', // Ä¬ÈÏËõÖ··şÎñ
-        image_service: 'Imgur', // Ä¬ÈÏµÄÍ¼Æ¬·şÎñ
-        enable_image_service: true, // Ä¬ÈÏ¿ªÆôÍ¼Æ¬·şÎñ
-        isGeoEnabled: false, //Ä¬ÈÏ²»¿ªÆôÉÏ±¨µØÀíÎ»ÖÃĞÅÏ¢
-        isGeoEnabledUseIP: false, //true Ê¹ÓÃipÅĞ¶Ï£¬ false Ê¹ÓÃä¯ÀÀÆ÷À´ÅĞ¶Ï
-        geoPosition: null, //»ñÈ¡µ½µÄµØÀíÎ»ÖÃĞÅÏ¢£¬Ä¬ÈÏÎª¿Õ
+        font: 'Arial', //å­—ä½“
+        fontSite: 12, //å­—ä½“å¤§å°
+        theme: 'pip_io', //ä¸»é¢˜æ ·å¼
+        translate_target: 'zh', // é»˜è®¤ç¿»è¯‘è¯­è¨€
+        shorten_url_service: 't.cn', // é»˜è®¤ç¼©å€æœåŠ¡
+        image_service: 'Imgur', // é»˜è®¤çš„å›¾ç‰‡æœåŠ¡
+        enable_image_service: true, // é»˜è®¤å¼€å¯å›¾ç‰‡æœåŠ¡
+        isGeoEnabled: false, //é»˜è®¤ä¸å¼€å¯ä¸ŠæŠ¥åœ°ç†ä½ç½®ä¿¡æ¯
+        isGeoEnabledUseIP: false, //true ä½¿ç”¨ipåˆ¤æ–­ï¼Œ false ä½¿ç”¨æµè§ˆå™¨æ¥åˆ¤æ–­
+        geoPosition: null, //è·å–åˆ°çš„åœ°ç†ä½ç½®ä¿¡æ¯ï¼Œé»˜è®¤ä¸ºç©º
 
         lookingTemplate: FaWave.i18n.getString('sett_shared_template')
     },
-    //Ö»ÔÚbackgroundÔØÈëµÄÊ±ºòµ÷ÓÃÒ»´Î²¢¸ø _settings ¸³Öµ¾Í¿ÉÒÔ
+    //åªåœ¨backgroundè½½å…¥çš„æ—¶å€™è°ƒç”¨ä¸€æ¬¡å¹¶ç»™ _settings èµ‹å€¼å°±å¯ä»¥
     init: function(){ 
         var _sets = FaWave.Store.File.readAsJson(FaWave.Setting.pathName);
         _sets = $.extend({}, this.defaults, _sets);
         return _sets;
     },
     get: function(){
-        //²»ÓÃÅĞ¶Ï£¬ÒÑÈ·±£init»áÔÚbackgroundÔØÈëµÄÊ±ºòµ÷ÓÃ
+        //ä¸ç”¨åˆ¤æ–­ï¼Œå·²ç¡®ä¿initä¼šåœ¨backgroundè½½å…¥çš„æ—¶å€™è°ƒç”¨
         //if(!bg._settings){
         //    bg._settings = this.init();
         //}
         return FaWave.BG._settings;
     },
     /****
-     * »áÓĞÎÄ¼şÏµÍ³Òì³£
+     * ä¼šæœ‰æ–‡ä»¶ç³»ç»Ÿå¼‚å¸¸
      */
     save: function(){
         var _sets = this.get();
         FaWave.Store.File.saveAsJson(FaWave.Setting.pathName, _sets);
     },
     /*
-    * »ñÈ¡Ë¢ĞÂ¼ä¸ôÊ±¼ä
+    * è·å–åˆ·æ–°é—´éš”æ—¶é—´
     */
     getRefreshTime: function(user, t){
         var r = 60;
