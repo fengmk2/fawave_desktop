@@ -16,10 +16,10 @@
 <url>app://fawave/login.html</url>
 <width>300</width>
 <max-width>300</max-width>
-<min-width>0</min-width>
-<height>180</height>
-<max-height>180</max-height>
-<min-height>0</min-height>
+<min-width>300</min-width>
+<height>190</height>
+<max-height>190</max-height>
+<min-height>190</min-height>
 <fullscreen>false</fullscreen>
 <resizable>false</resizable>
 <chrome scrollbars="true">false</chrome>

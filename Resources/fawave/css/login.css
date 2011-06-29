@@ -22,23 +22,25 @@ body{
 	-webkit-box-align: stretch;
 }
 #header { 
-	height:20px; 
+	height:25px; 
 	/*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cfd2d7), to(#a3a8af));*/
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cecece), to(#a0a0a0));
 	text-shadow: 0 1px 0 rgba(255,255,255,.5);
-	border-top: 1px solid #dcdfe3;
+	border-top: 1px solid #c4c4c4;
 	border-bottom: 1px solid #848d96;
 	-webkit-border-top-left-radius:  8px;
 	-webkit-border-top-right-radius: 8px;
 	-webkit-box-shadow: 0 1px 0 rgba(0,0,0,.1);
 }
 #footer { 
-	height:5px;
+	height:30px;
 	border: 1px solid #c4c4c4;
-	border-top:none;
+	border-top:1px solid #ccc;
+	padding:5px 5px 2px;
+	background:#E3E6ED;
 	-webkit-border-bottom-left-radius:  8px;
 	-webkit-border-bottom-right-radius: 8px;
-	-webkit-box-shadow: 0 1px 0 rgba(0,0,0,.1);
+	-webkit-box-shadow: 0 -1px 0 rgba(0,0,0,.1);
 }
 #content {
 	padding:8px;
@@ -57,11 +59,19 @@ body{
 #header .fBtns{
 	float:right;
 	margin: 0 10px;
+	margin-top:-1px;
+}
+#header .title{
+	font-size:15px;
+	font-weight:bold;
+	line-height: 25px;
+	margin-left: 10px;
 }
 
 #main li{
 	margin:8px 0;
 	padding:3px 0;
+	text-align: center;
 }
 #main li select{
 	width:190px;
@@ -76,6 +86,8 @@ body{
 label{
 	font-weight:bold;
 	padding-right: 5px;
+	color:#666;
+	font-size: 13px;
 }
 #btnLogin{
 	float:right;

@@ -34,6 +34,7 @@
 
 <div id="app">
 	<div id="header">
+		<span class="title">Login</span>
 		<span class="fBtns">
 		<a href="javascript:" class="frameBtn" onclick="Titanium.UI.currentWindow.minimize()">─</a>
 		<a href="javascript:" class="frameBtn red" onclick="Titanium.UI.currentWindow.close()">X</a>
@@ -52,32 +53,32 @@
 					<label for="loginPwd">密码:</label>
 					<input type="password" id="loginPwd" />
 				</li>
-				<li>
-					<button id="btnShowNewAccount" class="minibutton">新建用户</button>
-					<button id="btnLogin" class="minibutton green" style="float:right;">登陆</button>
-				</li>
 			</ul>
 			</form>
 			<form id="regForm" onsubmit="return false;" style="display:none;">
 			<ul>
 				<li>
-					<label for="accountList">用户:</label>
-					<select id="accountList">
-					</select>
+					<label for="regName">用户名称:</label>
+					<input type="text" id="regName" />
 				</li>
 				<li>
-					<label for="loginPwd">密码:</label>
-					<input type="password" id="loginPwd" />
+					<label for="regPwd">密　　码:</label>
+					<input type="password" id="regPwd" />
 				</li>
 				<li>
-					<button id="btnShowLogin" class="minibutton">直接登陆</button>
-					<button id="btnNewAccount" class="minibutton green" style="float:right;">确定创建</button>
+					<label for="regPwd2">确认密码:</label>
+					<input type="password" id="regPwd2" />
 				</li>
 			</ul>
 			</form>
 	    </div>
     </div>
     <div id="footer">
+		<button id="btnShowLogin" class="left hide minibutton blue">直接登陆</button>
+		<button id="btnNewAccount" class="right hide minibutton green" >确定创建</button>
+
+		<button id="btnShowNewAccount" class="left minibutton blue">新建用户</button>
+		<button id="btnLogin" class="right minibutton green">登陆</button>
     </div>
 
 </div>

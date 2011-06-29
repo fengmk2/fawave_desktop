@@ -1,13 +1,15 @@
 (function(){
 
 function showLogin(){
-    $("#regForm").hide();
-    $("#loginForm").show();
+    $("#regForm, #btnShowLogin, #btnNewAccount").hide();
+    $("#loginForm, #btnShowNewAccount, #btnLogin").show();
+	$("#header .title").html('Login');
 };
 
 function showNewAccount(){
-    $("#loginForm").hide();
-    $("#regForm").show();
+    $("#loginForm, #btnShowNewAccount, #btnLogin").hide();
+    $("#regForm, #btnShowLogin, #btnNewAccount").show();
+	$("#header .title").html('New Account');
 };
 
 $(function(){

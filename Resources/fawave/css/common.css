@@ -1,3 +1,6 @@
+.left{ float:left; }
+.right{ float:right; }
+.hide{ display:none; }
 /* mini button */
 .minibutton{padding:3px 5px;font-size:13px;font-weight:bold;color:#333;text-shadow:1px 1px 0 #fff;white-space:nowrap;border:none;overflow:visible;cursor:pointer;border:1px solid #d4d4d4;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;background:#f4f4f4;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');background:-webkit-gradient(linear,left top,left bottom,from(#f4f4f4),to(#ececec));background:-moz-linear-gradient(top,#f4f4f4,#ececec);}
 .minibutton.green{color:#fff;text-shadow:-1px -1px 0 rgba(0,0,0,0.3);background:#36b825;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#36b825',endColorstr='#28881b');background:-webkit-gradient(linear,left top,left bottom,from(#36b825),to(#28881b));background:-moz-linear-gradient(top,#36b825,#28881b);border-color:#4a993e;}
@@ -15,24 +18,26 @@
 /* frameBtn */
 .frameBtn{
 	font-weight:bold;
+	font-size: 14px;
 	display: inline-block;
 	zoom: 1;
 	vertical-align: baseline;
-	margin: 0 1px;
+	margin: 0;
 	outline: none;
 	cursor: pointer;
 	text-align: center;
 	text-decoration: none;
-	padding: 0px 5px;
-	-webkit-border-radius: 3px;
-	-webkit-box-shadow: 0 0 2px rgba(0, 0, 0, .3);
-	color: #606060;
-    border: solid 1px #b7b7b7;
-    line-height: 13px;
-	height: 13px;
-    background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+	padding: 0px 10px;
+	-webkit-border-bottom-right-radius: 2px;
+	-webkit-border-bottom-left-radius: 2px;
+	-webkit-box-shadow: 0 0 1px rgba(0, 0, 0, .4);
+	
+    line-height: 16px;
+	height: 16px;
+    /*background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));*/
 }
 .frameBtn:hover {
+	color: #606060;
     background: #ededed;
     background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
 }
@@ -41,16 +46,13 @@
     background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#fff));
 }
 .frameBtn.red {
-    color: #faddde;
-    border: solid 1px #BE171D;
-    background: #d81b21;
-    background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
+    color: #d81b21;
 }
 .frameBtn.red:hover {
+	color: #faddde;
     background: #b61318;
     background: -webkit-gradient(linear, left top, left bottom, from(#c9151b), to(#a11115));
 }
 .frameBtn.red:active {
-    color: #de898c;
     background: -webkit-gradient(linear, left top, left bottom, from(#aa1317), to(#ed1c24));
 }
