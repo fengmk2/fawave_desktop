@@ -1,0 +1,83 @@
+html, body{
+	width:100%;
+	height:100%;
+}
+html *{ font-size:12px; }
+body{
+	background:none;
+}
+#all{
+	background:none;
+	height: 100%;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-align: stretch;
+}
+#app { 
+	background:none;
+	height:100%;
+	-webkit-box-flex: 1;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-align: stretch;
+}
+#header { 
+	height:20px; 
+	/*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cfd2d7), to(#a3a8af));*/
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cecece), to(#a0a0a0));
+	text-shadow: 0 1px 0 rgba(255,255,255,.5);
+	border-top: 1px solid #dcdfe3;
+	border-bottom: 1px solid #848d96;
+	-webkit-border-top-left-radius:  8px;
+	-webkit-border-top-right-radius: 8px;
+	-webkit-box-shadow: 0 1px 0 rgba(0,0,0,.1);
+}
+#footer { 
+	height:5px;
+	border: 1px solid #c4c4c4;
+	border-top:none;
+	-webkit-border-bottom-left-radius:  8px;
+	-webkit-border-bottom-right-radius: 8px;
+	-webkit-box-shadow: 0 1px 0 rgba(0,0,0,.1);
+}
+#content {
+	padding:8px;
+	background:#fff;
+	-webkit-box-flex:1;
+	display: -webkit-box;
+    -webkit-box-orient: horizontal;
+	-webkit-box-align:stretch;
+	border-left: 1px solid #c4c4c4;
+	border-right: 1px solid #c4c4c4;
+}
+#main {
+	-webkit-box-flex:1;
+}
+
+#header .fBtns{
+	float:right;
+	margin: 0 10px;
+}
+
+#main li{
+	margin:8px 0;
+	padding:3px 0;
+}
+#main li select{
+	width:190px;
+	padding:3px;
+	height:23px;
+	line-height:23px;
+}
+#main li input{
+	width:180px;
+	padding:3px;
+}
+label{
+	font-weight:bold;
+	padding-right: 5px;
+}
+#btnLogin{
+	float:right;
+	padding:5px 20px;
+}

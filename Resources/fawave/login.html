@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>FaWave Desktop Login</title>
+	<meta name="author" content="Net4 Team">
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/common.css">
+	<link rel="stylesheet" href="css/login.css">
+	<script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
+	<script type="text/javascript" src="/fawave/js/fawave.js"></script>
+	<script type="text/javascript" src="/fawave/js/utils/fawave.util.js"></script>
+	<script type="text/javascript">
+	   FaWave.loadJS([
+	       
+	   ]);
+	</script>
+</head>
+
+<body>
+<div id="all">
+
+<div id="app">
+	<div id="header">
+		<span class="fBtns">
+		<a href="javascript:" class="frameBtn" onclick="Titanium.UI.currentWindow.minimize()">─</a>
+		<a href="javascript:" class="frameBtn red" onclick="Titanium.UI.currentWindow.close()">X</a>
+		</span>
+	</div>
+    <div id="content">
+	    <div id="main">
+			<form id="loginForm" onsubmit="return false;">
+	        <ul>
+				<li>
+					<label for="accountList">用户:</label>
+					<select id="accountList">
+					</select>
+				</li>
+				<li>
+					<label for="loginPwd">密码:</label>
+					<input type="password" id="loginPwd" />
+				</li>
+				<li>
+					<button id="btnShowNewAccount" class="minibutton">新建用户</button>
+					<button id="btnLogin" class="minibutton green" style="float:right;">登陆</button>
+				</li>
+			</ul>
+			</form>
+			<form id="regForm" onsubmit="return false;" style="display:none;">
+			<ul>
+				<li>
+					<label for="accountList">用户:</label>
+					<select id="accountList">
+					</select>
+				</li>
+				<li>
+					<label for="loginPwd">密码:</label>
+					<input type="password" id="loginPwd" />
+				</li>
+				<li>
+					<button id="btnShowLogin" class="minibutton">直接登陆</button>
+					<button id="btnNewAccount" class="minibutton green" style="float:right;">确定创建</button>
+				</li>
+			</ul>
+			</form>
+	    </div>
+    </div>
+    <div id="footer">
+    </div>
+
+</div>
+
+</div>
+</body>
+</html>
