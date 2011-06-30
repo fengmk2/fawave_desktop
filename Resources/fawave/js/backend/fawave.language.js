@@ -70,7 +70,7 @@ FaWave.i18n.load = function(code){
  * 获取翻译后的值
  *
  */
-FaWave.i18n.getString = function(key, defaultVal){
+FaWave.i18n.getMessage = function(key, defaultVal){
     var kv = (FaWave.i18n.translation && FaWave.i18n.translation[key]) || (FaWave.i18n._default && FaWave.i18n._default[key]);
     if(kv){
         return kv.message;
@@ -78,6 +78,7 @@ FaWave.i18n.getString = function(key, defaultVal){
         return defaultVal || '';
     }
 }
+FaWave.i18n._ = FaWave.i18n.getMessage;
 
 /**
  * 支持的语言列表
@@ -109,4 +110,4 @@ FaWave.i18n.languageList = function(){
         }
     }
     return result;
-}
+};

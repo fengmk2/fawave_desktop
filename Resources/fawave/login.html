@@ -4,9 +4,11 @@
 	<meta charset="utf-8">
 	<title>FaWave Desktop Login</title>
 	<meta name="author" content="Net4 Team">
+
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/common.css">
 	<link rel="stylesheet" href="css/login.css">
+
 	<script type="text/javascript" src="/lib/base64.js"></script>
 	<script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
 	<script type="text/javascript" src="/fawave/js/fawave.js"></script>
@@ -34,7 +36,7 @@
 
 <div id="app">
 	<div id="header">
-		<span class="title">Login</span>
+		<span class="title" i18n="login">Login</span>
 		<span class="fBtns">
 		<a href="javascript:" class="frameBtn" onclick="Titanium.UI.currentWindow.minimize()">─</a>
 		<a href="javascript:" class="frameBtn red" onclick="Titanium.UI.currentWindow.close()">X</a>
@@ -45,12 +47,12 @@
 			<form id="loginForm" onsubmit="return false;">
 	        <ul>
 				<li>
-					<label for="accountList">用户:</label>
+					<label for="accountList" i18n="user">用户:</label>
 					<select id="accountList">
 					</select>
 				</li>
 				<li>
-					<label for="loginPwd">密码:</label>
+					<label for="loginPwd" i18n="password">密码:</label>
 					<input type="password" id="loginPwd" />
 				</li>
 			</ul>
@@ -58,15 +60,15 @@
 			<form id="regForm" onsubmit="return false;" style="display:none;">
 			<ul>
 				<li>
-					<label for="regName">用户名称:</label>
+					<label for="regName" i18n="user">用户:</label>
 					<input type="text" id="regName" />
 				</li>
 				<li>
-					<label for="regPwd">密　　码:</label>
+					<label for="regPwd" i18n="password">密码:</label>
 					<input type="password" id="regPwd" />
 				</li>
 				<li>
-					<label for="regPwd2">确认密码:</label>
+					<label for="regPwd2" i18n="confirmed_password">确认密码:</label>
 					<input type="password" id="regPwd2" />
 				</li>
 			</ul>

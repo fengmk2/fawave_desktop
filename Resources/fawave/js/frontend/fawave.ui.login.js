@@ -14,6 +14,9 @@ function showNewAccount(){
 
 $(function(){
 
+    // ∂‡”Ô—‘
+    FaWave.UI.i18nInit();
+
     $("#btnShowNewAccount").click(function(){
         showNewAccount();
     });

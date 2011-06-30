@@ -17,388 +17,404 @@
 	},
 
 	//通用的
-	"comm_add": {
+	"add": {
 		"message": "添加",
 		"description": "添加"
 	},
-	"comm_repost": {
+	"repost": {
         "message": "转发",
         "description": "转发"
     },
-	"comm_blog": {
+	"blog": {
 		"message": "博客",
 		"description": "博客"
 	},
-    "comm_counts_info": {
+    "counts_info": {
 		"message": "粉{{friends_count}}, {{followers_count}}粉, {{statuses_count}}微博",
 		"description": "粉{{friends_count}}, {{followers_count}}粉, {{statuses_count}}微博"
 	},
-	"comm_mblog_type": {
+	"mblog_type": {
 		"message": "微博类型",
 		"description": "微博类型"
 	},
-	"comm_cancel": {
+	"cancel": {
 		"message": "取消",
 		"description": "取消"
 	},
-	"comm_clear": {
+	"clear": {
 		"message": "清空",
 		"description": "清空"
 	},
-	"comm_close": {
+	"close": {
 		"message": "关闭",
 		"description": "关闭"
 	},
-    "comm_de": {
+	"confirmed_password": {
+		"message": "确认密码",
+		"description": "确认密码"
+	},
+	"de": {
 		"message": "的",
 		"description": "的"
 	},
-	"comm_del_user": {
+	"del_user": {
 		"message": "删除用户",
 		"description": "删除用户"
 	},
-	"comm_description": {
+	"description": {
 		"message": "简介",
 		"description": "简介"
 	},
-	"comm_tags": {
+	"tags": {
         "message": "标签",
         "description": "标签"
     },
-	"comm_disabled": {
+	"disabled": {
 		"message": "停用",
 		"description": "停用"
 	},
-	"comm_emotional": {
+	"emotional": {
 		"message": "表情",
 		"description": "表情"
 	},
-	"comm_enabled": {
+	"enabled": {
 		"message": "启用",
 		"description": "启用"
 	},
-	"comm_error_return": {
+	"error_return": {
 		"message": "服务器返回结果错误，本地解析错误。",
 		"description": "服务器返回结果错误，本地解析错误。"
 	},
-	"comm_fail": {
+	"fail": {
 		"message": "失败",
 		"description": "失败"
 	},
-	"comm_fans": {
+	"fans": {
 		"message": "粉丝",
 		"description": "粉丝"
 	},
-	"comm_follow": {
+	"follow": {
 		"message": "关注",
 		"description": "关注"
 	},
-	"comm_female": {
+	"female": {
 		"message": "女",
 		"description": "女"
 	},
-	"comm_f_create": {
+	"f_create": {
 		"message": "加关注",
 		"description": "加关注"
 	},
-	"comm_f_destroy": {
+	"f_destroy": {
 		"message": "取消关注",
 		"description": "取消关注"
 	},
-	"comm_gender_unknow": {
+	"gender_unknow": {
 		"message": "性别未知",
 		"description": "性别未知"
 	},
-	"comm_go_to_top": {
+	"go_to_top": {
 		"message": "返回顶部",
 		"description": "返回顶部"
 	},
-	"comm_has": {
+	"has": {
 		"message": "已",
 		"description": "已经"
 	},
-	"comm_height": {
+	"height": {
 		"message": "高度",
 		"description": "高度"
 	},
-	"comm_man": {
+	"login": {
+		"message": "登录",
+		"description": "登录"
+	},
+	"register": {
+		"message": "注册",
+		"description": "注册"
+	},
+	"man": {
 		"message": "男",
 		"description": "男"
 	},
-	"comm_mbright_to_open": {
+	"mbright_to_open": {
 		"message": "右键直接打开",
 		"description": "右键直接打开"
 	},
-	"comm_mbright_to_open_pic": {
+	"mbright_to_open_pic": {
 		"message": "右键打开原图",
 		"description": "右键打开原图"
 	},
-	"comm_mbleft_to_preview": {
+	"mbleft_to_preview": {
 		"message": "左键点击预览",
 		"description": "左键点击预览"
 	},
-	"comm_me": {
+	"me": {
 		"message": "我",
 		"description": "我"
 	},
-	"comm_my": {
+	"my": {
 		"message": "我的",
 		"description": "我的"
 	},
-	"comm_no_api": {
+	"no_api": {
 		"message": "没有提供接口",
 		"description": "没有提供接口"
 	},
-	"comm_not_alert_this_page": {
+	"not_alert_this_page": {
 		"message": "本页不再提示",
 		"description": "本页不再提示"
 	},
-	"comm_not_need_tran": {
+	"not_need_tran": {
 		"message": "无需翻译",
 		"description": "无需翻译"
 	},
-	"comm_could_not_tran": {
+	"could_not_tran": {
 		"message": "暂时无法翻译, ",
 		"description": "暂时无法翻译"
 	},
-	"comm_new_tweet": {
+	"new_tweet": {
 		"message": "写微博",
 		"description": "写微博"
 	},
-	"comm_oauth_name": {
+	"oauth_name": {
 		"message": "oAuth(更安全)",
 		"description": "oAuth(更安全)"
 	},
-	"comm_xauth_name": {
+	"xauth_name": {
 		"message": "xAuth(oAuth的简化)",
 		"description": "xAuth(oAuth的简化)"
 	},
-	"comm_per_hour": {
+	"password": {
+		"message": "密码",
+		"description": "密码"
+	},
+	"per_hour": {
 		"message": "每小时",
 		"description": "每小时"
 	},
-	"comm_pic": {
+	"pic": {
 		"message": "发图",
 		"description": "发图"
 	},
-	"comm_player": {
+	"player": {
 		"message": "播放器",
 		"description": "播放器"
 	},
-	"comm_post_by": {
+	"post_by": {
 		"message": "通过",
 		"description": "通过"
 	},
-	"comm_popup_play": {
+	"popup_play": {
 		"message": "弹出独立窗口播放",
 		"description": "弹出独立窗口播放"
 	},
-	"comm_quick_send": {
+	"quick_send": {
 		"message": "快捷发送微博",
 		"description": "快捷发送微博"
 	},
-	"comm_rate_limit": {
+	"rate_limit": {
 		"message": "API访问频率限制",
 		"description": "API访问频率限制"
 	},
-	"comm_rate_limit_per_hour": {
+	"rate_limit_per_hour": {
 		"message": "每小时请求限制",
 		"description": "每小时请求限制"
 	},
-	"comm_refresh": {
+	"refresh": {
 		"message": "刷新",
 		"description": "刷新"
 	},
-	"comm_request": {
+	"request": {
 		"message": "请求",
 		"description": "请求"
 	},
-	"comm_reply": {
+	"reply": {
 		"message": "回复",
 		"description": "回复"
 	},
-	"comm_repost_default": {
+	"repost_default": {
 		"message": "转发微博.",
 		"description": "转发微博的时候在输入框的默认文字"
 	},
-	"comm_reset_time": {
+	"reset_time": {
 		"message": "重置时间",
 		"description": "重置时间"
 	},
-	"comm_remainder": {
+	"remainder": {
 		"message": "剩余数",
 		"description": "剩余数"
 	},
-	"comm_save": {
+	"save": {
 		"message": "保存",
 		"description": "保存"
 	},
-	"comm_search": {
+	"search": {
 		"message": "搜索",
 		"description": "搜索"
 	},
-	"comm_search_user": {
+	"search_user": {
         "message": "搜人",
         "description": "搜人"
     },
-	"comm_setting": {
+	"setting": {
 		"message": "设置",
 		"description": "设置"
 	},
-	"comm_send": {
+	"send": {
 		"message": "发微！",
 		"description": "发送"
 	},
-	"comm_send_tip": {
+	"send_tip": {
 		"message": "ctrl + enter 发送",
 		"description": "ctrl + enter 发送"
 	},
-	"comm_send_only": {
+	"send_only": {
 		"message": "仅发送",
 		"description": "仅发送：帐号的启用状态"
 	},
-	"comm_second": {
+	"second": {
 		"message": "秒",
 		"description": "秒"
 	},
-	"comm_share_whit_fawave": {
+	"share_whit_fawave": {
 		"message": "通过FaWave分享",
 		"description": "通过FaWave分享"
 	},
-	"comm_share_this_page": {
+	"share_this_page": {
 		"message": "分享当前网页",
 		"description": "分享当前网页"
 	},
-	"comm_share_this_page_and_capture": {
+	"share_this_page_and_capture": {
         "message": "分享当前网页并截图",
         "description": "分享当前网页并截图"
     },
-	"comm_show_related_dialogue": {
+	"show_related_dialogue": {
 		"message": "查看相关对话",
 		"description": "查看相关对话"
 	},
-	"comm_show_original": {
+	"show_original": {
 		"message": "查看原文",
 		"description": "查看原文"
 	},
-	"comm_show_comments": {
+	"show_comments": {
 		"message": "查看评论",
 		"description": "查看评论"
 	},
-	"comm_show_repost_timeline": {
+	"show_repost_timeline": {
         "message": "查看转发",
         "description": "查看转发"
     },
-	"comm_show_original_status": {
+	"show_original_status": {
 		"message": "查看原信息",
 		"description": "查看原信息"
 	},
-	"comm_show_original_pic": {
+	"show_original_pic": {
 		"message": "查看原图",
 		"description": "查看原图"
 	},
-	"comm_show_original_vedio": {
+	"show_original_vedio": {
 		"message": "查看原视频",
 		"description": "查看原视频"
 	},
-	"comm_success": {
+	"success": {
 		"message": "成功",
 		"description": "成功"
 	},
-	"comm_total": {
+	"total": {
 		"message": "总数",
 		"description": "总数"
 	},
-	"comm_tweet": {
+	"tweet": {
 		"message": "微博",
 		"description": "微博"
 	},
-	"comm_url_shorten": {
+	"url_shorten": {
 		"message": "缩短网址",
 		"description": "缩短网址"
 	},
-	"comm_user": {
+	"user": {
 		"message": "用户",
 		"description": "用户"
 	},
-	"comm_verified": {
+	"verified": {
 		"message": "认证用户",
 		"description": "认证用户"
 	},
-	"comm_view": {
+	"view": {
 		"message": "查看",
 		"description": "查看"
 	},
-	"comm_web_site": {
+	"web_site": {
 		"message": "网站",
 		"description": "网站"
 	},
-	"comm_width": {
+	"width": {
 		"message": "宽度",
 		"description": "宽度"
 	},
 
-	"comm_TabName_friends_timeline": {
+	"TabName_friends_timeline": {
 		"message": "首页",
 		"description": "首页时间线（跟随的人）的tab标签上显示的名称"
 	},
-	"comm_TabName_mentions": {
+	"TabName_mentions": {
 		"message": "@我",
 		"description": "@我的时间线的tab标签上显示的名称"
 	},
-	"comm_TabName_comments_timeline": {
+	"TabName_comments_timeline": {
 		"message": "评论",
 		"description": "评论时间线的tab标签上显示的名称"
 	},
-	"comm_TabName_direct_messages": {
+	"TabName_direct_messages": {
 		"message": "私信",
 		"description": "私信时间线的tab标签上显示的名称"
 	},
-	"comm_TabName_favorites": {
+	"TabName_favorites": {
 		"message": "收藏",
 		"description": "收藏时间线的tab标签上显示的名称"
 	},
-	"comm_TabName_followers": {
+	"TabName_followers": {
 		"message": "粉丝",
 		"description": "粉丝时间线的tab标签上显示的名称"
 	},
-	"comm_TabName_user_timeline": {
+	"TabName_user_timeline": {
 		"message": "微博",
 		"description": "用户自己的微博的时间线的tab标签上显示的名称"
 	},
-	"comm_show_rate_limit_stat": {
+	"show_rate_limit_stat": {
 		"message": "查看API请求数限制状态",
 		"description": "查看API请求数限制状态"
 	},
-	"comm_retweet_by_before": {
+	"retweet_by_before": {
 		"message": "由",
 		"description": "由 *** 转发的前半部分"
 	},
-	"comm_retweet_by_after": {
+	"retweet_by_after": {
 		"message": "等转发",
 		"description": "由 *** 转发的后半部分"
 	},
-	"comm_repost_to_before": {
+	"repost_to_before": {
 		"message": "转",
 		"description": "转 *** 的微博 的前半部分"
 	},
-	"comm_repost_to_after": {
+	"repost_to_after": {
 		"message": "的微博",
 		"description": "转 *** 的微博 的后半部分"
 	},
-	"comm_comment_to_before": {
+	"comment_to_before": {
 		"message": "评",
 		"description": "评 *** 的微博 的前半部分，后半部分同comm_repost_to_after"
 	},
-	"comm_dnd_tooltip": {
+	"dnd_tooltip": {
 		"message": "FaWave(发微): 免打扰模式",
 		"description": "开启免打扰模式后显示的提示语"
 	},
-	"comm_tqq_repost_pre": {
+	"tqq_repost_pre": {
         "message": "转播",
         "description": "腾讯微博转发正文前缀"
     },
-    "comm_tqq_comment_pre": {
+    "tqq_comment_pre": {
         "message": "点评",
         "description": "腾讯微博点评正文前缀"
     },

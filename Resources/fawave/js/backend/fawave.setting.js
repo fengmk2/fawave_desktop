@@ -2,6 +2,7 @@ window.FaWave = window.FaWave || {};
 FaWave.Setting = {
     pathName: 'setting.json',
     defaults: {
+        language: '',
         globalRefreshTime:{ //全局的刷新间隔时间
             friends_timeline: 90,
             mentions: 120,
@@ -51,12 +52,21 @@ FaWave.Setting = {
         _sets = $.extend({}, this.defaults, _sets);
         return _sets;
     },
+    /*********
+     * 获取所有设置信息
+     */
     get: function(){
         //不用判断，已确保init会在background载入的时候调用
         //if(!bg._settings){
         //    bg._settings = this.init();
         //}
         return FaWave.BG._settings;
+    },
+    /********
+     * 获取设置的某一个值
+     */
+    getValue: function(k, _default){
+        return FaWave.Setting.get()[k] || _default;
     },
     /****
      * 会有文件系统异常
