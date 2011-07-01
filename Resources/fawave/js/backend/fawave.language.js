@@ -11,7 +11,7 @@ FaWave.i18n = FaWave.i18n || {};
 /**
  * Default language code
  */
-FaWave.i18n.defaultLanCode = 'zh-cn';
+FaWave.i18n.defaultLanCode = 'zh_cn';
 
 /**
  * 语言文件目录
@@ -19,6 +19,13 @@ FaWave.i18n.defaultLanCode = 'zh-cn';
 FaWave.i18n.__defineGetter__('languageDir', function(){
     return Titanium.Filesystem.getResourcesDirectory() + "/_locales";
 });
+
+/****
+ * 将文件内容转换为Javascript Object对象
+ */
+FaWave.i18n.parseFile = function(file){
+    return eval('(' + file.read().toString() + ')');
+};
 
 /**
  * Load language
@@ -35,21 +42,21 @@ FaWave.i18n.load = function(code){
     try{
         // Load the default language file
         if(!FaWave.i18n._default){
-            var file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.defaultLanCode + '.json');
-            FaWave.i18n._default  = JSON.parse(file.read());
+            var file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.defaultLanCode, 'messages.json');
+            FaWave.i18n._default  = FaWave.i18n.parseFile(file);
         }
         
         if (FaWave.i18n.code != FaWave.i18n.defaultLanCode)
         {
-            file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.code + '.json');
+            file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.code, 'messages.json');
             if(file.exists()){
-                FaWave.i18n.translation = JSON.parse(file.read());
+                FaWave.i18n.translation = FaWave.i18n.parseFile(file);
             }else{
                 code = code[0] + code[1]; // e.g. zh-cn => zh
                 if(FaWave.i18n.code != code){
-                    file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.code + '.json');
+                    file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.code, 'messages.json');
                     if(file.exists()){
-                        FaWave.i18n.translation = JSON.parse(file.read());
+                        FaWave.i18n.translation = FaWave.i18n.parseFile(file);
                     }else{
                         // 直接设为默认
                         FaWave.i18n.code = FaWave.i18n.defaultLanCode;
@@ -97,10 +104,10 @@ FaWave.i18n.languageList = function(){
     for(var i=0; i < subDirs.length; i++){
         subDir = subDirs[i];
         if(subDir.isDirectory()){
-            file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.code + '.json');
+            file = Titanium.Filesystem.getFile(FaWave.i18n.languageDir, FaWave.i18n.code, 'messages.json');
             if(file.exists()){
                 try{
-                    data = JSON.parse(file.read());
+                    data = FaWave.i18n.parseFile(file);
                     if(data.language && data.language.message){
                         result.push([subDir.name(), data.language.message]);
                     }

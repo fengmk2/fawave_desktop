@@ -44,7 +44,7 @@ FaWave.Setting = {
         isGeoEnabledUseIP: false, //true 使用ip判断， false 使用浏览器来判断
         geoPosition: null, //获取到的地理位置信息，默认为空
 
-        lookingTemplate: FaWave.i18n.getString('sett_shared_template')
+        lookingTemplate: FaWave.i18n.getMessage('sett_shared_template')
     },
     //只在background载入的时候调用一次并给 _settings 赋值就可以
     init: function(){ 
@@ -60,7 +60,7 @@ FaWave.Setting = {
         //if(!bg._settings){
         //    bg._settings = this.init();
         //}
-        return FaWave.BG._settings;
+        return FaWave.BG._settings || {};
     },
     /********
      * 获取设置的某一个值

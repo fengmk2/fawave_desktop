@@ -84,10 +84,13 @@ body{
 	padding:3px;
 }
 label{
+	display: inline-block;
 	font-weight:bold;
 	padding-right: 5px;
 	color:#666;
 	font-size: 13px;
+	text-align: right;
+	width: 60px;
 }
 #btnLogin{
 	float:right;

@@ -41,6 +41,10 @@ FaWave.Users.__defineGetter__('current', function(){
 
 /****
  * FaWave的账号
+ * {
+ *    name: 'account name',
+ *    password: 'password'
+ * }
  */
 FaWave.Accounts = {
     pathName: 'accounts.db'
@@ -52,7 +56,7 @@ FaWave.Accounts = {
      */
   , load: function(forceReload){
         if(!FaWave.Accounts._accounts || !FaWave.Accounts._accounts.length){
-            var data = FaWave.Store.File.read(FaWave.Accounts.pathName); //TODO: 修改为根据Account命名
+            var data = FaWave.Store.File.read(FaWave.Accounts.pathName).toString();
             if(data){
                 data = FaWave.Util.decrypt(data);
                 FaWave.Accounts._accounts = JSON.parse(data);
@@ -69,7 +73,7 @@ FaWave.Accounts = {
         var a = null;
         if(FaWave.Accounts._accounts){
             for(var i=0; i < FaWave.Accounts._accounts.length; i++){
-                if(FaWave.Accounts._accounts[i].name == name){
+                if(FaWave.Accounts._accounts[i].name.toLowerCase() == name.toLowerCase()){
                     a = FaWave.Accounts._accounts[i];
                     break;
                 }
