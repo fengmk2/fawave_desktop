@@ -13,7 +13,8 @@ FaWave.Util = {
 	decrypt: function(s) {
 		return Base64.strcode(s, this.secret_key, true);
 	}
-};	
+};
+
 // URL相关的函数
 FaWave.Util.Url = {
     queryStrings: function(url){

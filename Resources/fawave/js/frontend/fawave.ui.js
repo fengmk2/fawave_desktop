@@ -48,7 +48,7 @@ FaWave.UI.i18nInit = function(){
         _t = $(this);
         _v = FaWave.i18n.getMessage(_t.attr('i18n'));
         if(_v){
-            _t.text(_v);
+            _t.html(_v);
         }
     });
 };

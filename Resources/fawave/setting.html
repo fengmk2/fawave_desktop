@@ -44,11 +44,96 @@
             </ul>
 	    </div>
 	    <div id="main">
+			<!-- 基本设置 -->
 	        <div id="common_set" class="item">common_set</div>
-	        <div id="user_set" class="item">user_set</div>
+
+			<!-- 用户设置 -->
+	        <div id="user_set" class="item">
+				<div>
+					<button id="show-new-account"><img src="images/add.png" /><span i18n="sett_btn_add_new_account">添加新用户</span></button>
+					<button id="refresh-account"><img src="images/refresh.png" /><span i18n="sett_btn_update_accounts">刷新用户信息</span></button>
+					<span class="jTip" jTitle="" jWidth="320">?<span class="c"><script>_u.wi('sett_jTip_update_accounts')</script>
+						</span></span>
+				</div>
+
+				<div id="edit-account-info" style="display:none;">
+					<h3></h3>
+					<label class="title">当前编辑用户：</label><span class="ainfo"></span>
+				</div>
+				<div id="new-account" style="display:none;">
+					<ul>
+						<script>_u.wi('sett_tip_add_account')</script>
+						<li>
+							<label for="account-blogType"><script>_u.wi('sett_des_account_blog_type')</script></label>
+							<select id="account-blogType" onchange="onSelBlogTypeChange()">
+							</select>
+							<img id="account-blogType-img" src="images/blogs/tsina_16.png" />
+						</li>
+						<li class="account-appkey" style="display:none;">
+							<label for="account-appkey"><script>_u.wi('sett_des_account_appkey')</script></label>
+							<select id="account-appkey"></select>
+							<span class="jTip" jTitle="" jWidth="310">?
+								<span class="c"><script>_u.wi('sett_jTip_account_appkey')</script></span>
+							</span>
+						</li>
+						<li class="account-proxy">
+							<label for="account-proxy-api"><script>_u.wi('sett_des_account_proxy_api')</script></label>
+							<input type="text" id="account-proxy-api" style="width: 400px" />
+							<span class="jTip" jTitle="" jWidth="310">?
+								<span class="c"><script>_u.wi('sett_jTip_account_proxy_api')</script></span>
+							</span>
+						</li>
+						<!--  
+						<li class="account-proxy">
+							<label for="account-proxy-search">Search代理：</label>
+							<input type="text" id="account-proxy-search" />
+						</li>
+						-->
+						<li>
+							<label for="account-authType"><script>_u.wi('sett_des_account_auth_type')</script></label>
+							<select id="account-authType">
+							</select>
+							<span class="jTip" jTitle="" jWidth="310">?
+								<span class="c"><script>_u.wi('sett_jTip_account_auth_type')</script></span>
+							</span>
+						</li>
+						<li class="account-oauth">
+							<label for="account-pin"><script>_u.wi('sett_des_account_pin')</script></label>
+							<input type="text" id="account-pin" />
+							<input type="hidden" id="account-request-token-key" />
+							<input type="hidden" id="account-request-token-secret" />
+							<button id="get-account-pin" ><script>_u.wi('sett_btn_get_account_pin')</script></button>
+						</li>
+						<li class="account-baseauth">
+							<label for="account-name"><script>_u.wi('sett_des_account_name')</script></label>
+							<input type="text" id="account-name" />
+							<input type="hidden" id="edit-account-key" />
+						</li>
+						<li class="account-baseauth">
+							<label for="account-pwd"><script>_u.wi('sett_des_account_password')</script></label>
+							<input type="password" id="account-pwd" />
+						</li>
+						<li>
+							<button id="save-account" ><script>_u.wi('sett_btn_get_account_save')</script></button>   
+							<button id="cancel-save-account"><script>_u.wi('sett_btn_get_account_cancel')</script></button>
+						</li>
+					<ul>
+				</div>
+				<h3><script>_u.wi('sett_title_account_manage')</script>
+					<span class="jTip" jTitle="" jWidth="320">?<span class="c"><script>_u.wi('sett_jTip_manage_accounts')</script>
+					</span></span>
+				</h3>
+				<ul id="dnd-account-list"></ul>
+			</div>
+			
+			<!-- 外观设置 -->
 	        <div id="appearance_set" class="item">appearance_set</div>
-	        <div id="advanced_set" class="item">advanced_set</div>
-	        <div id="about_our" class="item">about_our</div>
+
+	        <!-- 高级设置 -->
+			<div id="advanced_set" class="item">advanced_set</div>
+
+	        <!-- 关于 -->
+			<div id="about_our" class="item">about_our</div>
 	    </div>
     </div>
     <div id="footer">

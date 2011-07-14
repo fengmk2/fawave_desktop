@@ -84,7 +84,7 @@ FaWave.i18n.getMessage = function(key, defaultVal){
     }else{
         return defaultVal || '';
     }
-}
+};
 FaWave.i18n._ = FaWave.i18n.getMessage;
 
 /**
