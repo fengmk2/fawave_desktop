@@ -96,6 +96,8 @@ $(function(){
         return false;
     });
 
+    FaWave.UI.regWinMove("#header");
+
     //$("#").click(function(){});
 });
 

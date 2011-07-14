@@ -1,9 +1,38 @@
+(function(){
+/*******
+ * å’ŒUIç›¸å…³çš„
+ */
+
 window.FaWave = window.FaWave || {};
 FaWave.UI = {
 };
 
 /********
- * ¶àÓïÑÔ³õÊ¼»¯
+ * æ‹–åŠ¨çª—å£
+ * @target: è¦ç»‘å®šæ‹–åŠ¨äº‹ä»¶çš„å…ƒç´ (CSSé€‰æ‹©å™¨)
+ */
+FaWave.UI.regWinMove = function(target){
+    target = $(target);
+    target.bind('mousedown', function(e){
+        target.addClass('moveable');
+        target.bind('mousemove', {cX: e.clientX, cY: e.clientY}, __handleWinMove);
+    });
+    target.bind('mouseup', function(){
+        target.removeClass('moveable');
+        target.unbind('mousemove', __handleWinMove);
+    });
+};
+function __handleWinMove(e){
+    var win = Titanium.UI.currentWindow,
+        x = (e.screenX - e.clientX) + (e.clientX - e.data.cX),
+        y = (e.screenY - e.clientY) + (e.clientY - e.data.cY);
+    win.setX(x);
+    win.setY(y);
+    e.stopPropagation();
+};
+
+/********
+ * å¤šè¯­è¨€åˆå§‹åŒ–
  */
 FaWave.UI.i18nInit = function(){
 	// Load the language code
@@ -25,8 +54,8 @@ FaWave.UI.i18nInit = function(){
 
 
 /*******
- * ĞÅÏ¢ÌáÊ¾
- * TODO: ÔİÊ±ÓÃalert£¬ºóÃæÔÙÊµÏÖ
+ * ä¿¡æ¯æç¤º
+ * TODO: æš‚æ—¶ç”¨alertï¼Œåé¢å†å®ç°
  */
 FaWave.UI.Msg = {
     alert: function(msg){
@@ -39,3 +68,6 @@ FaWave.UI.Msg = {
         window.alert(msg);
     }
 };
+
+
+})();

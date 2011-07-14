@@ -1,6 +1,7 @@
 .left{ float:left; }
 .right{ float:right; }
 .hide{ display:none; }
+.moveable{ cursor: move; }
 /* mini button */
 .minibutton{padding:3px 5px;font-size:13px;font-weight:bold;color:#333;text-shadow:1px 1px 0 #fff;white-space:nowrap;border:none;overflow:visible;cursor:pointer;border:1px solid #d4d4d4;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;background:#f4f4f4;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#f4f4f4',endColorstr='#ececec');background:-webkit-gradient(linear,left top,left bottom,from(#f4f4f4),to(#ececec));background:-moz-linear-gradient(top,#f4f4f4,#ececec);}
 .minibutton.green{color:#fff;text-shadow:-1px -1px 0 rgba(0,0,0,0.3);background:#36b825;filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#36b825',endColorstr='#28881b');background:-webkit-gradient(linear,left top,left bottom,from(#36b825),to(#28881b));background:-moz-linear-gradient(top,#36b825,#28881b);border-color:#4a993e;}
