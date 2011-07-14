@@ -21,10 +21,31 @@ var MemoryCache = {
 };
 
 /*******
+ * win窗口缓存
+ * 缓存到当前的window窗口中
+ */
+var WinCache = {
+    set: function(k, v){
+        WinCache._data[k] = v;
+    },
+    get: function(k, _default){
+        return WinCache._data[k] || _default;
+    },
+    remove: function(k){
+        delete WinCache._data[k];
+    }
+};
+WinCache.__defineGetter__('_data', function(){
+    Titanium.UI.currentWindow.winCache = Titanium.UI.currentWindow.winCache || {};
+    return Titanium.UI.currentWindow.winCache;
+});
+
+/*******
  * 缓存总入口
  */
 FaWave.Cache = {
-    Memory: MemoryCache
+    Memory: MemoryCache,
+    Win: WinCache
 };
 
 })();

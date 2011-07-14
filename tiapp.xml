@@ -15,11 +15,9 @@
 <title>FaWave Desktop</title>
 <url>app://fawave/login.html</url>
 <width>300</width>
-<max-width>300</max-width>
-<min-width>300</min-width>
+<max-width>1024</max-width>
 <height>190</height>
-<max-height>190</max-height>
-<min-height>190</min-height>
+<max-height>2048</max-height>
 <fullscreen>false</fullscreen>
 <resizable>false</resizable>
 <chrome scrollbars="true">false</chrome>

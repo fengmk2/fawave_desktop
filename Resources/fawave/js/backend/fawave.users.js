@@ -6,7 +6,7 @@ window.FaWave = window.FaWave || {};
 FaWave.Users = {
     pathName: 'users_%s.db'
   , _current: null
-  , _users: []
+  , _users: null
     /********
      * 载入微博账号列表
      * @forceReload: 强制重新从文件中加载
@@ -41,6 +41,7 @@ FaWave.Users.__defineGetter__('current', function(){
 
 /****
  * FaWave的账号
+ * 一个FaWave账号下可以有很多个微博账号
  * {
  *    name: 'account name',
  *    password: 'password'
@@ -48,7 +49,6 @@ FaWave.Users.__defineGetter__('current', function(){
  */
 FaWave.Accounts = {
     pathName: 'accounts.db'
-  , _current: null
   , _accounts: [] //账号列表缓存
     /********
      * 载入FaWave账号列表
@@ -104,11 +104,13 @@ FaWave.Accounts = {
             a = FaWave.Accounts.getByName(name);
         if(a && a.password == Titanium.Codec.digestToHex(Titanium.Codec.MD5, pwd) ){
             isLogin = true;
+            // 保存到win缓存中，作为全局变量
+            FaWave.Cache.Win.set('currentAccount', {name:name});
         }
         return isLogin;
     }
 };
 // 属性
 FaWave.Accounts.__defineGetter__('current', function(){
-    return FaWave.Accounts._current;
+    return FaWave.Cache.Win.get('currentAccount');
 });

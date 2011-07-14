@@ -5,6 +5,7 @@
 
 window.FaWave = window.FaWave || {};
 FaWave.UI = {
+    currentWindow: Titanium.UI.currentWindow
 };
 
 /********

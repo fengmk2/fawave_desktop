@@ -7,11 +7,26 @@
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/common.css">
 	<link rel="stylesheet" href="css/setting.css">
+
+	<script type="text/javascript" src="/lib/base64.js"></script>
 	<script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
 	<script type="text/javascript" src="/fawave/js/fawave.js"></script>
+	<script type="text/javascript" src="/fawave/js/utils/fawave.util.js"></script>
+	<!-- backend -->
+	<script type="text/javascript" src="/fawave/js/backend/fawave.log.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.cache.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.language.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.store.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.setting.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.users.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.bg.js"></script>
+	<!-- frontend -->
+	<script type="text/javascript" src="/fawave/js/frontend/fawave.ui.js"></script>
+	<script type="text/javascript" src="/fawave/js/frontend/fawave.ui.setting.js"></script>
+
 	<script type="text/javascript">
 	   FaWave.loadJS([
-	       '/fawave/js/frontend/fawave.ui.setting.js'
+	       
 	   ]);
 	</script>
 </head>
@@ -22,7 +37,7 @@
 	    <div id="menu">
             <ul> 
                 <li target="common_set" class="">基本设置</li> 
-                <li target="user_set">帐号设置</li> 
+                <li target="user_set" class="user">帐号设置</li> 
                 <li target="appearance_set">外观设置</li>
                 <li target="advanced_set">高级设置</li>
                 <li target="about_our">关于</li> 

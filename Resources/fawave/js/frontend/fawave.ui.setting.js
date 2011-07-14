@@ -13,4 +13,9 @@ function initTab(){
 $(function(){
     initTab();
     $("#menu li").eq(0).click();
+
+    var qs = FaWave.Util.Url.queryStrings(document.location.href);
+    if(qs.tab){
+        $("#menu li." + qs.tab).eq(0).click();
+    }
 });

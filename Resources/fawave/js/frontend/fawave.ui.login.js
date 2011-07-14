@@ -36,8 +36,42 @@ function login(){
         return;
     }
     if(FaWave.Accounts.login(name, pwd)){
-        alert('登陆成功');
-        // TODO: 怎样跳转？
+        var users = FaWave.Users.load();
+        if(users && users.length){
+            document.write('登陆成功，正在跳转...');
+            FaWave.UI.currentWindow.setWidth(600);
+            FaWave.UI.currentWindow.setHeight(600);
+            document.location.href = "app://fawave/main.html";
+        }else{
+            var sWin = FaWave.UI.currentWindow.createWindow({
+                id: "settingWindow",
+                url: "app://fawave/setting.html?tab=user",
+                title: "FaWave Setting",
+                //contents: "",
+                //baseURL: "",
+                //x: 300,
+                //y: 400,
+                width: 700,
+                minWidth: 500,
+                maxWidth: 700,
+                height: 500,
+                minHeight: 300,
+                maxHeight: 500,
+                maximizable: true,
+                minimizable: true,
+                closeable: true,
+                resizable: true,
+                fullscreen: false,
+                maximized: false,
+                minimized: false,
+                usingChrome: true,
+                topMost: false,
+                visible: true,
+                transparentBackground: false,
+                transparency: false
+            });
+            sWin.open();
+        }
     }else{
         FaWave.UI.Msg.alert('密码错误');
     }

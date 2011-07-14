@@ -94,6 +94,12 @@ body{
 	font-size:12px;
 }
 
+#header .fBtns {
+	float: right;
+	margin: 0 10px;
+	margin-top: -1px;
+}
+
 /* toolbar_menu */
 ul.toolbar_menu{
 	float:left;

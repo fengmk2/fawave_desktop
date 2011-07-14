@@ -2,13 +2,29 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>FaWave Desktop Setting</title>
+	<title>FaWave Desktop</title>
 	<meta name="author" content="Net4 Team">
+	
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/common.css">
 	<link rel="stylesheet" href="css/main.css">
+
+	<script type="text/javascript" src="/lib/base64.js"></script>
 	<script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
 	<script type="text/javascript" src="/fawave/js/fawave.js"></script>
+	<script type="text/javascript" src="/fawave/js/utils/fawave.util.js"></script>
+	<!-- backend -->
+	<script type="text/javascript" src="/fawave/js/backend/fawave.log.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.cache.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.language.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.store.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.setting.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.users.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.bg.js"></script>
+	<!-- frontend -->
+	<script type="text/javascript" src="/fawave/js/frontend/fawave.ui.js"></script>
+	<script type="text/javascript" src="/fawave/js/frontend/fawave.ui.main.js"></script>
+
 	<script type="text/javascript">
 	   FaWave.loadJS([
 	       
@@ -24,6 +40,10 @@
 <div id="app">
 	<img src="http://tp4.sinaimg.cn/1644902943/50/1279883084/1" style="position: absolute;top:0px;left:20px;" />
 	<div id="header">
+		<span class="fBtns">
+			<a href="javascript:" class="frameBtn" onclick="Titanium.UI.currentWindow.minimize()">─</a>
+			<a href="javascript:" class="frameBtn red" onclick="Titanium.UI.currentWindow.close()">X</a>
+		</span>
 	</div>
     <div id="content">
 		<div id="userlist"></div>
