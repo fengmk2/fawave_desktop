@@ -9,6 +9,41 @@ FaWave.UI = {
 };
 
 /********
+ * 多语言初始化
+ */
+FaWave.UI.i18nInit = function(){
+	// Load the language code
+    var code = FaWave.Setting.getValue('language');
+    if(!code){
+	    code = navigator.language.toLowerCase().replace('-', '_'); // e.g. zh-cn or en
+    }
+    FaWave.i18n.load(code);
+
+    var _t, _v;
+    $('[i18n]').each(function(){
+        _t = $(this);
+        _v = FaWave.i18n.getMessage(_t.attr('i18n'));
+        if(_v){
+            _t.html(_v);
+        }
+    });
+};
+FaWave.UI.i18nInit();
+/********
+ * 多语言翻译
+ */
+FaWave.UI.i18nTran = function(){
+    var _t, _v;
+    $('[i18n]').each(function(){
+        _t = $(this);
+        _v = FaWave.i18n.getMessage(_t.attr('i18n'));
+        if(_v){
+            _t.html(_v);
+        }
+    });
+};
+
+/********
  * 拖动窗口
  * @target: 要绑定拖动事件的元素(CSS选择器)
  */
@@ -30,27 +65,6 @@ function __handleWinMove(e){
     win.setX(x);
     win.setY(y);
     e.stopPropagation();
-};
-
-/********
- * 多语言初始化
- */
-FaWave.UI.i18nInit = function(){
-	// Load the language code
-    var code = FaWave.Setting.getValue('language');
-    if(!code){
-	    code = navigator.language.toLowerCase().replace('-', '_'); // e.g. zh-cn or en
-    }
-    FaWave.i18n.load(code);
-
-    var _t, _v;
-    $('[i18n]').each(function(){
-        _t = $(this);
-        _v = FaWave.i18n.getMessage(_t.attr('i18n'));
-        if(_v){
-            _t.html(_v);
-        }
-    });
 };
 
 

@@ -1,42 +1,7 @@
+(function(){
+
 window.FaWave = window.FaWave || {};
 
-/****
- * 微博账号
- */
-FaWave.Users = {
-    pathName: 'users_%s.db'
-  , _current: null
-  , _users: null
-    /********
-     * 载入微博账号列表
-     * @forceReload: 强制重新从文件中加载
-     */
-  , load: function(forceReload){
-        if(!FaWave.Users._users || !FaWave.Users._users.length){
-            var pathName = FaWave.Users.pathName.replace('%s', FaWave.Accounts.current.name);
-            var data = FaWave.Store.File.read(pathName);
-            if(data){
-                data = FaWave.Util.decrypt(data);
-                FaWave.Users._users = JSON.parse(data);
-            }
-        }
-        return FaWave.Users._users;
-    }
-  , save: function(){
-        var data = JSON.stringify(FaWave.Users._users);
-        data = FaWave.Util.encrypt(data);
-        FaWave.Store.File.save(FaWave.Users.pathName, data);
-    }
-};
-// 属性
-FaWave.Users.__defineGetter__('current', function(){
-    if(!FaWave.Users._current){
-        if(FaWave.Users._users || FaWave.Users._users.length){
-            FaWave.Users._current = FaWave.Users._users[0];
-        }
-    }
-    return FaWave.Users._current;
-});
 
 
 /****
@@ -105,12 +70,74 @@ FaWave.Accounts = {
         if(a && a.password == Titanium.Codec.digestToHex(Titanium.Codec.MD5, pwd) ){
             isLogin = true;
             // 保存到win缓存中，作为全局变量
-            FaWave.Cache.Win.set('currentAccount', {name:name});
+            FaWave.Cache.Properties.set('currentAccount', {name:name});
         }
         return isLogin;
     }
 };
 // 属性
 FaWave.Accounts.__defineGetter__('current', function(){
-    return FaWave.Cache.Win.get('currentAccount');
+    return FaWave.Cache.Properties.get('currentAccount');
 });
+
+
+
+/****
+ * 微博账号
+ */
+FaWave.Users = {
+    pathName: 'users_%s.db'
+  , _current: null
+  , _users: null
+    /********
+     * 载入微博账号列表
+     * @forceReload: 强制重新从文件中加载
+     */
+  , load: function(forceReload){
+        if(!FaWave.Users._users || !FaWave.Users._users.length){
+            var pathName = FaWave.Users.pathName.replace('%s', FaWave.Accounts.current.name);
+            var data = FaWave.Store.File.read(pathName);
+            if(data){
+                data = FaWave.Util.decrypt(data);
+                FaWave.Users._users = JSON.parse(data);
+            }
+        }
+        return FaWave.Users._users;
+    }
+  , save: function(){
+        var data = JSON.stringify(FaWave.Users._users);
+        data = FaWave.Util.encrypt(data);
+        FaWave.Store.File.save(FaWave.Users.pathName, data);
+    }
+    //获取所有用户列表
+    // @t: all: 全部， send:用于发送的用户列表， show:正常显示的用户。默认为show
+    // @forceReload: 强制重新从文件中加载
+  , getUserList: function(t, forceReload){
+        t = t || 'show'; //默认，获取用于显示的列表
+        var userList = FaWave.Users.load(forceReload) || [];
+        if(t==='all'){
+            return userList;
+        }
+        var items = [], user = null;
+        for(var i=0; i < userList.length; i++){
+            user = userList[i];
+            if(!user.disabled){
+                if(t==='show' && user.only_for_send){ continue; }
+                items.push(userList[i]);
+            }
+        }
+        return items;
+    }
+};
+// 属性
+FaWave.Users.__defineGetter__('current', function(){
+    if(!FaWave.Users._current){
+        if(FaWave.Users._users || FaWave.Users._users.length){
+            FaWave.Users._current = FaWave.Users._users[0];
+        }
+    }
+    return FaWave.Users._current;
+});
+
+
+})();

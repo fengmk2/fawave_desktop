@@ -111,7 +111,7 @@ $(function(){
     initAccounts();
 
     // 多语言
-    FaWave.UI.i18nInit();
+    FaWave.UI.i18nTran();
 
     $("#btnShowNewAccount").click(function(){
         showNewAccount();

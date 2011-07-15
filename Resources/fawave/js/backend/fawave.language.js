@@ -1,3 +1,5 @@
+// require FaWave.Log
+
 /*****
 * FaWave
 */

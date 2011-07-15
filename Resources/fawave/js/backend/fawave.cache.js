@@ -23,6 +23,7 @@ var MemoryCache = {
 /*******
  * win窗口缓存
  * 缓存到当前的window窗口中
+ * 注意只是缓存到当前win窗口，如果新开的窗口，则两个窗口的缓存不一样的
  */
 var WinCache = {
     set: function(k, v){
@@ -41,11 +42,40 @@ WinCache.__defineGetter__('_data', function(){
 });
 
 /*******
+ * Titanium Properties缓存
+ */
+var PropertiesCache = {
+    set: function(k, v){
+        Titanium.App.Properties.setString(k, JSON.stringify(v));
+    },
+    get: function(k, _default){
+        var v;
+        if(Titanium.App.Properties.hasProperty(k)){
+            v = Titanium.App.Properties.getString(k);
+        }
+        if(v)
+        {
+            try{
+                v = JSON.parse(v);
+            }
+            catch(err){
+                v = null;
+            }
+        }
+        return v || _default;
+    },
+    remove: function(k){
+        Titanium.App.Properties.setString(k, '');
+    }
+};
+
+/*******
  * 缓存总入口
  */
 FaWave.Cache = {
     Memory: MemoryCache,
-    Win: WinCache
+    Win: WinCache,
+    Properties: PropertiesCache
 };
 
 })();

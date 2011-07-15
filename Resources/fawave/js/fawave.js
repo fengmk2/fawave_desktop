@@ -1,3 +1,5 @@
+(function(){
+
 var FaWave = window.FaWave = {};
 
 /*******
@@ -23,8 +25,15 @@ FaWave.require = FaWave.loadJS;
 
 /****
  * Config
+ * Config和Setting是不同的，
+ *   - Setting是用户的设置，
+ *   - Config是这个项目的配置
  */
 FaWave.Config = {
     //数据文件存放目录
     dataDir: 'data'
 };
+
+
+
+})();

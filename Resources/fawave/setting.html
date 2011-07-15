@@ -8,15 +8,24 @@
 	<link rel="stylesheet" href="css/common.css">
 	<link rel="stylesheet" href="css/setting.css">
 
+	<script type="text/javascript" src="/lib/weibo/weibo.js"></script>
+	<script type="text/javascript">
+		// load all the lib scripts with urlprefix where the `weibo` directory you put into 
+		weibo.load('/lib/weibo');
+	</script>
+
 	<script type="text/javascript" src="/lib/base64.js"></script>
 	<script type="text/javascript" src="/lib/jquery-1.6.1.min.js"></script>
+
 	<script type="text/javascript" src="/fawave/js/fawave.js"></script>
 	<script type="text/javascript" src="/fawave/js/utils/fawave.util.js"></script>
 	<!-- backend -->
 	<script type="text/javascript" src="/fawave/js/backend/fawave.log.js"></script>
 	<script type="text/javascript" src="/fawave/js/backend/fawave.cache.js"></script>
 	<script type="text/javascript" src="/fawave/js/backend/fawave.language.js"></script>
+	<script type="text/javascript" src="/fawave/js/fawave.const.js"></script>
 	<script type="text/javascript" src="/fawave/js/backend/fawave.store.js"></script>
+	<script type="text/javascript" src="/fawave/js/backend/fawave.tapi.js"></script>
 	<script type="text/javascript" src="/fawave/js/backend/fawave.setting.js"></script>
 	<script type="text/javascript" src="/fawave/js/backend/fawave.users.js"></script>
 	<script type="text/javascript" src="/fawave/js/backend/fawave.bg.js"></script>
@@ -50,38 +59,29 @@
 			<!-- 用户设置 -->
 	        <div id="user_set" class="item">
 				<div>
-					<button id="show-new-account"><img src="images/add.png" /><span i18n="sett_btn_add_new_account">添加新用户</span></button>
-					<button id="refresh-account"><img src="images/refresh.png" /><span i18n="sett_btn_update_accounts">刷新用户信息</span></button>
-					<span class="jTip" jTitle="" jWidth="320">?<span class="c"><script>_u.wi('sett_jTip_update_accounts')</script>
-						</span></span>
+					<button id="show-new-account"><img src="/fawave/images/add.png" /><span i18n="sett_btn_add_new_account">添加新用户</span></button>
+					<button id="refresh-account"><img src="/fawave/images/refresh.png" /><span i18n="sett_btn_update_accounts">刷新用户信息</span></button>
+					<span class="jTip" jTitle="" jWidth="320">?<span class="c" i18n="sett_jTip_update_accounts"></span></span>
 				</div>
 
-				<div id="edit-account-info" style="display:none;">
-					<h3></h3>
-					<label class="title">当前编辑用户：</label><span class="ainfo"></span>
-				</div>
 				<div id="new-account" style="display:none;">
 					<ul>
-						<script>_u.wi('sett_tip_add_account')</script>
+						<div i18n="sett_tip_add_account"></div>
 						<li>
-							<label for="account-blogType"><script>_u.wi('sett_des_account_blog_type')</script></label>
-							<select id="account-blogType" onchange="onSelBlogTypeChange()">
+							<label for="account-blogType" i18n="sett_des_account_blog_type">微博类型</label>
+							<select id="account-blogType">
 							</select>
 							<img id="account-blogType-img" src="images/blogs/tsina_16.png" />
 						</li>
 						<li class="account-appkey" style="display:none;">
-							<label for="account-appkey"><script>_u.wi('sett_des_account_appkey')</script></label>
+							<label for="account-appkey" i18n="sett_des_account_appkey">切换APP KEY</label>
 							<select id="account-appkey"></select>
-							<span class="jTip" jTitle="" jWidth="310">?
-								<span class="c"><script>_u.wi('sett_jTip_account_appkey')</script></span>
-							</span>
+							<span class="jTip" jTitle="" jWidth="310">?<span class="c" i18n="sett_jTip_account_appkey"></span></span>
 						</li>
 						<li class="account-proxy">
-							<label for="account-proxy-api"><script>_u.wi('sett_des_account_proxy_api')</script></label>
+							<label for="account-proxy-api" i18n="sett_des_account_proxy_api">代理API</label>
 							<input type="text" id="account-proxy-api" style="width: 400px" />
-							<span class="jTip" jTitle="" jWidth="310">?
-								<span class="c"><script>_u.wi('sett_jTip_account_proxy_api')</script></span>
-							</span>
+							<span class="jTip" jTitle="" jWidth="310">?<span class="c" i18n="sett_jTip_account_proxy_api"></span></span>
 						</li>
 						<!--  
 						<li class="account-proxy">
@@ -90,37 +90,35 @@
 						</li>
 						-->
 						<li>
-							<label for="account-authType"><script>_u.wi('sett_des_account_auth_type')</script></label>
+							<label for="account-authType" i18n="sett_des_account_auth_type">验证类型</label>
 							<select id="account-authType">
 							</select>
-							<span class="jTip" jTitle="" jWidth="310">?
-								<span class="c"><script>_u.wi('sett_jTip_account_auth_type')</script></span>
-							</span>
+							<span class="jTip" jTitle="" jWidth="310">?<span class="c" i18n="sett_jTip_account_auth_type"></span></span>
 						</li>
 						<li class="account-oauth">
-							<label for="account-pin"><script>_u.wi('sett_des_account_pin')</script></label>
+							<label for="account-pin" i18n="sett_des_account_pin">oAuth授权码</label>
 							<input type="text" id="account-pin" />
 							<input type="hidden" id="account-request-token-key" />
 							<input type="hidden" id="account-request-token-secret" />
-							<button id="get-account-pin" ><script>_u.wi('sett_btn_get_account_pin')</script></button>
+							<button id="get-account-pin"  i18n="sett_btn_get_account_pin">获取授权码</button>
 						</li>
 						<li class="account-baseauth">
-							<label for="account-name"><script>_u.wi('sett_des_account_name')</script></label>
+							<label for="account-name" i18n="sett_des_account_name">用户名</label>
 							<input type="text" id="account-name" />
 							<input type="hidden" id="edit-account-key" />
 						</li>
 						<li class="account-baseauth">
-							<label for="account-pwd"><script>_u.wi('sett_des_account_password')</script></label>
+							<label for="account-pwd" i18n="sett_des_account_password">密码</label>
 							<input type="password" id="account-pwd" />
 						</li>
 						<li>
-							<button id="save-account" ><script>_u.wi('sett_btn_get_account_save')</script></button>   
-							<button id="cancel-save-account"><script>_u.wi('sett_btn_get_account_cancel')</script></button>
+							<button id="save-account" i18n="sett_btn_get_account_save">保存用户</button>   
+							<button id="cancel-save-account" i18n="sett_btn_get_account_cancel">取消</button>
 						</li>
 					<ul>
 				</div>
-				<h3><script>_u.wi('sett_title_account_manage')</script>
-					<span class="jTip" jTitle="" jWidth="320">?<span class="c"><script>_u.wi('sett_jTip_manage_accounts')</script>
+				<h3 i18n="sett_title_account_manage">
+					<span class="jTip" jTitle="" jWidth="320">?<span class="c" i18n="sett_jTip_manage_accounts">
 					</span></span>
 				</h3>
 				<ul id="dnd-account-list"></ul>
@@ -135,8 +133,15 @@
 	        <!-- 关于 -->
 			<div id="about_our" class="item">about_our</div>
 	    </div>
+
+		<div id="JT" style="visibility:hidden;">
+			<div id="JT_arrow_left"></div>
+			<div id="JT_close_left"></div>
+			<div id="JT_copy"></div>
+		</div>
     </div>
     <div id="footer">
+		<button class="minibutton danger" onclick="window.location.reload()">刷新</button>
         <button class="minibutton green">确定</button>
         <button class="minibutton danger" onclick="Titanium.UI.currentWindow.close()">取消</button>
     </div>
