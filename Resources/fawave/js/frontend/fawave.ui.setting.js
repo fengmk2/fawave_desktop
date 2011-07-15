@@ -320,13 +320,11 @@ function saveAccount(){
     		user.oauth_token_key = request_token_key;
     		user.oauth_token_secret = request_token_secret;
     		$('#save-account').attr('disabled', true);
-    		FaWave.Tapi.tapi.get_access_token(user, function(auth_user) {
-    			_verify_credentials(auth_user);
-    		});
+    		FaWave.Tapi.tapi.get_access_token(user, _verify_credentials);
     	} else { // 跳到登录页面
-    		FaWave.Tapi.tapi.get_authorization_url(user, function(login_url, text_status, error_code) {
-    			if(!login_url) {
-    				FaWave.UI.Msg.info('get_authorization_url error: ' + text_status + ' code: ' + error_code);
+    		FaWave.Tapi.tapi.get_authorization_url(user, function(error, login_url, res) {
+    			if(error) {
+    				FaWave.UI.Msg.info('get_authorization_url error: ' + error.message);
     			} else {
     				// 在当前页保存 request token
         			$('#account-request-token-key').val(user.oauth_token_key);
@@ -343,34 +341,23 @@ function saveAccount(){
 };
 
 
-function _verify_credentials(user) {
-	if(!user) {
-		FaWave.UI.Msg.info(FaWave.i18n._("msg_wrong_name_or_pwd"));
+function _verify_credentials(error, user) {
+	if(error) {
+		FaWave.UI.Msg.info(error.message || FaWave.i18n._("msg_wrong_name_or_pwd"));
 		$('#save-account').removeAttr('disabled');
 		return;
 	}
-	FaWave.Tapi.tapi.verify_credentials(user, function(data, textStatus, errorCode){
+	FaWave.Tapi.tapi.verify_credentials(user, function(error, data){
 		$('#save-account').removeAttr('disabled');
-        if(!data || !data.id || errorCode || textStatus=='error'){
-            if(errorCode==400||errorCode==401||errorCode==403){
-                FaWave.UI.Msg.info(FaWave.i18n._("msg_wrong_name_or_pwd"));
-            }else{
-                var err_msg = '';
-                if(data.error){
-                    err_msg = 'error: ' + data.error;
-                }
-                FaWave.UI.Msg.info(FaWave.i18n._("msg_user_save_error") + err_msg);
-            }
+        if(error) {
+            var error_message = error.message ? 
+                (FaWave.i18n._("msg_user_save_error") + err_msg) : FaWave.i18n._("msg_user_save_error");
+            FaWave.UI.Msg.info(error_message);
             var params = {blogtype: user.blogType, authtype: user.authType};
-            if(errorCode) {
-            	params.error_code = errorCode;
-            }
-            if(data && data.error) {
-            	params.error = data.error;
-            }
+            params.error = error;
             chrome.extension.sendRequest({method:'activelog', active: 'save_account_error', params: params});
         } else {
-        	var userList = getUserList('all');
+        	var userList = FaWave.Users.getUserList('all');
             $.extend(user, data);
             user.uniqueKey = user.blogType + '_' + user.id;
             user.screen_name = user.screen_name || user.name;
@@ -385,13 +372,13 @@ function _verify_credentials(user) {
             	}
             });
             if(!found) {
-            	userList.push(user);
+            	FaWave.Users.add(user);
             }
-            saveUserList(userList);
-            var c_user = getUser();
-            if(!c_user || c_user.uniqueKey == temp_uniqueKey){
-                setUser(user);
-            }
+            FaWave.Users.save();
+//            var c_user = getUser();
+//            if(!c_user || c_user.uniqueKey == temp_uniqueKey){
+//                setUser(user);
+//            }
             var btnVal = $("#save-account").val();
             showDndAccountList();
 

@@ -94,27 +94,34 @@ FaWave.Users = {
      * @forceReload: 强制重新从文件中加载
      */
   , load: function(forceReload){
-        if(!FaWave.Users._users || !FaWave.Users._users.length){
-            var pathName = FaWave.Users.pathName.replace('%s', FaWave.Accounts.current.name);
+        if(!this._users || this._users.length === 0){
+            var pathName = this.pathName.replace('%s', FaWave.Accounts.current.name);
             var data = FaWave.Store.File.read(pathName);
             if(data){
                 data = FaWave.Util.decrypt(data);
-                FaWave.Users._users = JSON.parse(data);
+                this._users = JSON.parse(data);
+            } else {
+                this._users = [];
             }
         }
-        return FaWave.Users._users;
+        return this._users;
     }
   , save: function(){
-        var data = JSON.stringify(FaWave.Users._users);
+        var data = JSON.stringify(this._users);
         data = FaWave.Util.encrypt(data);
-        FaWave.Store.File.save(FaWave.Users.pathName, data);
+        FaWave.Store.File.save(this.pathName, data);
+    },
+    // 添加账号
+    add: function(user){
+        this._users.push(user);
+        this.save();
     }
     //获取所有用户列表
     // @t: all: 全部， send:用于发送的用户列表， show:正常显示的用户。默认为show
     // @forceReload: 强制重新从文件中加载
   , getUserList: function(t, forceReload){
         t = t || 'show'; //默认，获取用于显示的列表
-        var userList = FaWave.Users.load(forceReload) || [];
+        var userList = this.load(forceReload) || [];
         if(t==='all'){
             return userList;
         }
