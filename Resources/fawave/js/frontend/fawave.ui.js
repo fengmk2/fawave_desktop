@@ -84,5 +84,39 @@ FaWave.UI.Msg = {
     }
 };
 
+/************
+ * 打开设置窗口
+ */
+FaWave.UI.openSetting = function(){
+    var sWin = FaWave.UI.currentWindow.createWindow({
+                id: "settingWindow",
+                url: "app://fawave/setting.html?tab=user",
+                title: "FaWave Setting",
+                //contents: "",
+                //baseURL: "",
+                //x: 300,
+                //y: 400,
+                width: 700,
+                minWidth: 500,
+                maxWidth: 700,
+                height: 500,
+                minHeight: 300,
+                maxHeight: 500,
+                maximizable: true,
+                minimizable: true,
+                closeable: true,
+                resizable: true,
+                fullscreen: false,
+                maximized: false,
+                minimized: false,
+                usingChrome: true,
+                topMost: false,
+                visible: true,
+                transparentBackground: false,
+                transparency: false
+            });
+    sWin.open();
+};
+
 
 })();

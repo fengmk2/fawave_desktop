@@ -1,5 +1,6 @@
 html, body{ height:100%; }
 body {
+	background:#fff;
 	color:#111;
 	font-size:14px;
 }

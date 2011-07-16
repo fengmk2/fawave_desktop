@@ -355,7 +355,7 @@ function _verify_credentials(error, user) {
             FaWave.UI.Msg.info(error_message);
             var params = {blogtype: user.blogType, authtype: user.authType};
             params.error = error;
-            chrome.extension.sendRequest({method:'activelog', active: 'save_account_error', params: params});
+            // chrome.extension.sendRequest({method:'activelog', active: 'save_account_error', params: params});
         } else {
         	var userList = FaWave.Users.getUserList('all');
             $.extend(user, data);
@@ -388,13 +388,14 @@ function _verify_credentials(error, user) {
             $("#account-pin").val('');
             FaWave.UI.Msg.info(FaWave.i18n._("msg_edit_user_success").format({edit:btnVal, username:data.screen_name}));
             
-            var b_view = getBackgroundView();
-            if(b_view){
-                b_view.RefreshManager.restart(true);
-            }
+            //var b_view = getBackgroundView();
+            //if(b_view){
+            //    b_view.RefreshManager.restart(true);
+            //}
+
             // logging
             var params = {blogtype: user.blogType, authtype: user.authType, tid: user.uniqueKey};
-            chrome.extension.sendRequest({method:'activelog', active: 'save_account_success', params: params});
+            //chrome.extension.sendRequest({method:'activelog', active: 'save_account_success', params: params});
         }
     });
 };

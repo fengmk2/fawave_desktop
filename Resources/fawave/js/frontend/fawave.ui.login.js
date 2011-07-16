@@ -43,34 +43,7 @@ function login(){
             FaWave.UI.currentWindow.setHeight(600);
             document.location.href = "app://fawave/main.html";
         }else{
-            var sWin = FaWave.UI.currentWindow.createWindow({
-                id: "settingWindow",
-                url: "app://fawave/setting.html?tab=user",
-                title: "FaWave Setting",
-                //contents: "",
-                //baseURL: "",
-                //x: 300,
-                //y: 400,
-                width: 700,
-                minWidth: 500,
-                maxWidth: 700,
-                height: 500,
-                minHeight: 300,
-                maxHeight: 500,
-                maximizable: true,
-                minimizable: true,
-                closeable: true,
-                resizable: true,
-                fullscreen: false,
-                maximized: false,
-                minimized: false,
-                usingChrome: true,
-                topMost: false,
-                visible: true,
-                transparentBackground: false,
-                transparency: false
-            });
-            sWin.open();
+            FaWave.UI.openSetting();
         }
     }else{
         FaWave.UI.Msg.alert('密码错误');
@@ -100,6 +73,7 @@ function register(){
         initAccounts();
         showLogin();
         $("#regForm")[0].reset();
+        $("#loginPwd").focus();
     }else{
         FaWave.UI.Msg.error('注册失败');
     }

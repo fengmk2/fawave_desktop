@@ -96,7 +96,7 @@ FaWave.Users = {
   , load: function(forceReload){
         if(!this._users || this._users.length === 0){
             var pathName = this.pathName.replace('%s', FaWave.Accounts.current.name);
-            var data = FaWave.Store.File.read(pathName);
+            var data = FaWave.Store.File.read(pathName).toString();
             if(data){
                 data = FaWave.Util.decrypt(data);
                 this._users = JSON.parse(data);
@@ -109,7 +109,7 @@ FaWave.Users = {
   , save: function(){
         var data = JSON.stringify(this._users);
         data = FaWave.Util.encrypt(data);
-        FaWave.Store.File.save(this.pathName, data);
+        FaWave.Store.File.save(this.pathName.replace('%s', FaWave.Accounts.current.name), data);
     },
     // 添加账号
     add: function(user){
