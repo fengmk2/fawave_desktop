@@ -4,5 +4,19 @@
   "main": "views/index.html",
   "dependencies": {
     "weibo": ">=0.6.2"
+  },
+  "window": {
+    "icon": "images/icon128.png",
+    "toolbar": true,
+    "width": 600,
+    "height": 600,
+    "position": "center",
+    "min_width": 600,
+    "min_height": 600,
+    "max_width": 600,
+    "max_height": 600
+  },
+  "webkit": {
+    "webgl-disabled": true
   }
 }
