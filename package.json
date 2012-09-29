@@ -1,0 +1,8 @@
+{
+  "version": "0.0.1",
+  "name": "fawave",
+  "main": "views/index.html",
+  "dependencies": {
+    "weibo": ">=0.6.2"
+  }
+}
