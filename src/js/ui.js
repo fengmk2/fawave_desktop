@@ -17,10 +17,6 @@ var tapi = require('weibo');
 var getUser = User.getUser;
 var Settings = setting.Settings;
 
-tapi.processMsg = tapi.processMsg || function (user, s) {
-  return s.text || s;
-};
-
 //格式化时间输出。示例：new Date().format("yyyy-MM-dd hh:mm:ss");
 Date.prototype.format = function (format) {
   var o = {
@@ -211,10 +207,10 @@ function buildStatusHtml(statuses, t, c_user) {
       default:
           break;
     }
-    if (c_user.blogType !== 'twitter' && c_user.blogType !== 'identi_ca') {
+    if (c_user.blogtype !== 'twitter' && c_user.blogtype !== 'identi_ca') {
       BUTTON_TPLS.rtOretweetBtn = BUTTON_TPLS.oretweetBtn = '';
     }
-    switch (c_user.blogType) {
+    switch (c_user.blogtype) {
       case 'digu':
         if (t === 'mentions') {
           BUTTON_TPLS.replyBtn = BUTTON_TPLS.replyBtn.replace('>@<', '>' + i18n.get("abb_reply") +'<');
@@ -242,17 +238,17 @@ function buildStatusHtml(statuses, t, c_user) {
     var comments_count_tpl = '<a href="javascript:void(0);" timeline_type="comment" title="' +
       i18n.get("btn_show_comments_title") +
       '" onclick="showComments(this, \'{{id}}\');">{{comments_count}}</a>';
-    var support_follow = c_user.blogType !== 'douban' && c_user.blogType !== 'renren';
+    var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
     var isFavorited = t === 'favorites';
     for (var i = 0, len = statuses.length; i < len; i++) {
       var status = statuses[i];
-      exports.TWEETS[String(status.id)] = status;
+      exports.TWEETS[status.id] = status;
       status.repost_count = status.repost_count === undefined ? '-' : status.repost_count;
       status.user = status.user || status.sender;
       /*
-         * status.retweeted_status 转发
-         * status.status 评论
-         */
+       * status.retweeted_status 转发
+       * status.status 评论
+       */
       var rt_status = status.retweeted_status = status.retweeted_status || status.status;
       if (status.comments_count === undefined) {
         status.comments_count = '0';
@@ -270,11 +266,11 @@ function buildStatusHtml(statuses, t, c_user) {
         }
         status.retweeted_status_screen_name = rt_status.user.screen_name;
         status.retweeted_status_id = rt_status.id;
-        exports.TWEETS[String(rt_status.id)] = rt_status;
+        exports.TWEETS[rt_status.id] = rt_status;
         status.rt_comments_count = comments_count_tpl.format(rt_status);
         rtrt_status = rt_status.retweeted_status = rt_status.retweeted_status || rt_status.status;
         if (rtrt_status && rtrt_status.user) {
-          exports.TWEETS[String(rtrt_status.id)] = rtrt_status;
+          exports.TWEETS[rtrt_status.id] = rtrt_status;
           if (rtrt_status.repost_count === undefined) {
             rtrt_status.repost_count = '0';
           }
@@ -303,7 +299,7 @@ function buildStatusHtml(statuses, t, c_user) {
         }
 
         if (tpl && endswith(key, 'MapBtn') &&
-            (!map_status.geo || !map_status.geo.coordinates || map_status.geo.coordinates[0] === '0.0')) {
+          (!map_status.geo || !map_status.geo.coordinates || map_status.geo.coordinates[0] === '0.0')) {
           tpl = '';
         }
         if (tpl) {
@@ -345,7 +341,7 @@ function buildStatusHtml(statuses, t, c_user) {
         tType: status_type,
         getUserCountsInfo: getUserCountsInfo,
         buildTipboxUserInfo: buildTipboxUserInfo,
-        processMsg: tapi.processMsg,
+        processMsg: tapi.process_text.bind(tapi),
         user: status.user,
         account: c_user,
         tweet: status,
@@ -356,29 +352,30 @@ function buildStatusHtml(statuses, t, c_user) {
         support_readitlater: support_readitlater,
         btn: buttons
       };
-      if (messageReplyToBtn && status.recipient && 
-        String(status.recipient.id) !== String(c_user.id)) {
+      if (messageReplyToBtn && status.recipient && status.recipient.id !== c_user.id) {
         buttons.messageReplyToBtn = messageReplyToBtn.format(status);
       }
       try {
         var html = Shotenjin.render(window.TEMPLATE, context);
         if (rt_status) {
-          html = html.replace(rt_replace_pre, Shotenjin.render(TEMPLATE_RT, context));
+          rt_status.user = rt_status.user || {};
+          // console.log(window.TEMPLATE_RT)
+          html = html.replace(rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT, context));
           if (rtrt_status) {
             if (!TEMPLATE_RT_RT) {
-              TEMPLATE_RT_RT = TEMPLATE_RT
+              TEMPLATE_RT_RT = window.TEMPLATE_RT
                 .replace(/tweet\.retweeted_status/g, 'tweet.retweeted_status.retweeted_status')
                 .replace(/btn\.rt/g, 'btn.rtrt');
             }
             context.is_rt_rt = true;
-            context.retweeted_status_user = rt_status.user;
-            html = html.replace(rt_rt_replace_pre, Shotenjin.render(TEMPLATE_RT_RT, context));
+            context.retweeted_status_user = rt_status.user || {};
+            html = html.replace(rt_rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT_RT, context));
           }
         }
         htmls.push(html);
       } catch (err) {
         throw err;
-        log(err);
+        console.log(err);
       }
       status.readed = true;
     }
@@ -402,11 +399,11 @@ function buildUsersHtml(users, t, c_user) {
             tType: t,
             getUserCountsInfo: getUserCountsInfo,
             buildTipboxUserInfo: buildTipboxUserInfo,
-            processMsg: tapi.processMsg,
+            processMsg: tapi.process_text.bind(tapi),
             user: user,
             account: c_user,
             support_blocking: config.support_blocking,
-            support_follow: !user.blocking && c_user.blogType !== 'douban' && c_user.blogType !== 'renren'
+            support_follow: !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren'
         };
         try {
             htmls.push(Shotenjin.render(TEMPLATE_FANS, context));
@@ -419,27 +416,27 @@ function buildUsersHtml(users, t, c_user) {
 
 // 生成Tipbox用户信息(鼠标移到用户头像时显示的用户信息)
 function buildTipboxUserInfo(user, show_fullname) {
-    var context = {
-      provinces: provinces,
-      user: user,
-      show_fullname: show_fullname
+  var context = {
+    provinces: provinces,
+    user: user,
+    show_fullname: show_fullname
   };
-    return Shotenjin.render(window.TEMPLATE_TIPBOX_USER_INFO, context);
+  return Shotenjin.render(window.TEMPLATE_TIPBOX_USER_INFO, context);
 }
 
 // 生成用户信息
 function buildUserInfo(user) {
-    var c_user = getUser();
-    var config = tapi.get_config(c_user);
-    var context = {
-        provinces: provinces,
-        getUserCountsInfo: getUserCountsInfo,
-        user: user,
-        show_fullname: config.show_fullname,
-        support_blocking: config.support_blocking,
-        support_follow: !user.blocking && c_user.blogType !== 'douban' && c_user.blogType !== 'renren'
-    };
-    return Shotenjin.render(TEMPLATE_USER_INFO, context);
+  var c_user = getUser();
+  var config = tapi.get_config(c_user);
+  var context = {
+    provinces: provinces,
+    getUserCountsInfo: getUserCountsInfo,
+    user: user,
+    show_fullname: config.show_fullname,
+    support_blocking: config.support_blocking,
+    support_follow: !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren'
+  };
+  return Shotenjin.render(TEMPLATE_USER_INFO, context);
 }
 exports.buildUserInfo = buildUserInfo;
 
@@ -527,7 +524,7 @@ function buildComment(comment, status_id, status_user_screen_name, status_user_i
     var reply_user = ('<a target="_blank" href="javascript:getUserTimeline(\'{{screen_name}}\', \'{{id}}\');" rhref="{{t_url}}" title="' +
       i18n.get("btn_show_user_title") +'">@{{screen_name}}{{verified}}</a>').format(comment.user);
     return '<li><span class="commentContent">' +
-      reply_user + ': ' + tapi.processMsg(c_user, comment) +
+      reply_user + ': ' + tapi.process_text(c_user, comment) +
       '</span><span class="msgInfo">(' + datetime + ')</span>' +
       comment_btn + '</li>';
 }

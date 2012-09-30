@@ -1067,7 +1067,7 @@ function showSupportAuthTypes(blogType, authType) {
 }
 
 function showEditAccount(uniqueKey) {
-    if(uniqueKey){
+    if (uniqueKey) {
         var userList = User.getUserList('all');
         var user = null;
         $.each(userList, function(index, item) {

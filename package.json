@@ -7,12 +7,12 @@
   },
   "window": {
     "icon": "images/icon128.png",
-    "toolbar": true,
+    "toolbar": false,
     "width": 650,
-    "height": 700,
+    "height": 600,
     "position": "center",
     "min_width": 600,
-    "min_height": 660
+    "min_height": 600
   },
   "webkit": {
     "webgl-disabled": true

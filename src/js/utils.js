@@ -21,44 +21,6 @@ function updateVersion() {
   localStorage.setObject('VERSION', VERSION);
 }
 
-var PAGE_SIZE = 20;
-var COMMENT_PAGE_SIZE = 8;
-// var OAUTH_CALLBACK_URL = chrome.extension.getURL('oauth_cb.html');
-
-var SINA = 'idi_sina';
-
-var SETTINGS_KEY = 'fawave_SETTINGS_KEY';
-
-var UNSEND_TWEET_KEY = 'idi_UNSEND_TWEET_KEY';//未发送的tweet，保存下次显示
-var UNSEND_REPLY_KEY = 'idi_UNSEND_REPLY_KEY';//未发送的回复，评论，转发，保存下次显示
-
-var FRIENDS_TIMELINE_KEY = 'idi_friends_timeline';
-var REPLIES_KEY = 'idi_replies';
-var MESSAGES_KEY = 'idi_messages';
-
-var LAST_MSG_ID = 'idi_last_msg_id';
-var LAST_CURSOR = '_last_cursor';
-
-var LAST_SELECTED_SEND_ACCOUNTS = 'LAST_SELECTED_SEND_ACCOUNTS';
-
-var LOCAL_STORAGE_NEW_TWEET_LIST_KEY = 'idi_LOCAL_STORAGE_NEW_TWEET_LIST_KEY';
-var LOCAL_STORAGE_TWEET_LIST_HTML_KEY = 'idi_LOCAL_STORAGE_TWEET_LIST_HTML_KEY';
-
-var UNREAD_TIMELINE_COUNT_KEY = 'idi_UNREAD_TIMELINE_COUNT_KEY';
-
-var IS_SYNC_TO_PAGE_KEY = 'idi_IS_SYNC_TO_PAGE_KEY'; //已读消息是否和新浪微博页面同步
-
-var THEME_LIST = {
-  'default': 'default', 
-  'simple': 'simple', 
-  'pip_io': 'pip_io', 
-  'work': 'work'
-}; //主题列表
-
-var ALERT_MODE_KEY = 'idi_ALERT_MODE_KEY'; //信息提醒模式key
-var AUTO_INSERT_MODE_KEY = 'idi_AUTO_INSERT_MODE_KEY'; //新信息是否自动插入
-var INCLUDE_ORIGINAL_COMMENT = 'idi_INCLUDE_ORIGINAL_COMMENT'; // 回复评论的时候，是否带上原评论
-
 //需要不停检查更新的timeline的分类列表
 var T_LIST = exports.T_LIST = {
   all: ['friends_timeline', 'mentions', 'comments_timeline', 'direct_messages'],
