@@ -2,7 +2,7 @@
 var i18n = require('./js/i18n');
 var User = require('./js/user');
 var utils = require('./js/utils');
-var Settings = utils.Settings;
+var setting = require('./js/setting');
 var weibo = require('weibo');
 var urlparse = require('url').parse;
 
@@ -163,7 +163,7 @@ $(function () {
         saveAll();
     });
     
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     // 设置是否记录上次浏览状态
     $('#remember_view_status_cb').attr('checked', settings.remember_view_status);
     
@@ -193,7 +193,7 @@ $(function () {
     for (var k in Languages) {
         tanslate_options += '<option value="{{value}}">{{name}}</option>'.format({name: k, value: Languages[k]});
     }
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     $('#translate_target').html(tanslate_options).val(settings.translate_target);
     
     // 缩址服务选择
@@ -202,7 +202,7 @@ $(function () {
     for (var k in ShortenUrl.services) {
         shorturls_options += '<option value="{{value}}">{{name}}</option>'.format({name: k, value: k});
     }
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     $('#shorten_url_service').html(shorturls_options).val(settings.shorten_url_service);
     
     // 图片服务选择
@@ -214,7 +214,7 @@ $(function () {
             image_service_options += '<option value="{{value}}">{{name}}</option>'.format({name: service.host, value: k});
         }
     }
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     $('#image_service').html(image_service_options).val(settings.image_service);
     if (settings.enable_image_service) {
         $('#enableImageService').attr('checked', true);
@@ -229,7 +229,7 @@ $(function () {
     }
     
     // 设在instapaper, read it later, vdisk 帐号
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     var readlater_services = ['instapaper', 'readitlater', 'vdisk'];
     for(var i = 0, len = readlater_services.length; i < len; i++) {
         var service_name = readlater_services[i];
@@ -259,7 +259,7 @@ $(function () {
             };
             var service = services[service_type];
             var save_user = function (st, user) {
-                var settings = Settings.get();
+                var settings = setting.Settings.get();
                 settings[st + '_user'] = user;
                 Settings.save();
                 _showMsg(i18n.get("msg_save_success"));
@@ -288,7 +288,7 @@ $(function () {
         });
         $('#delete_' + service_name + '_account_btn').attr('service', service_name).click(function() {
             var service_type = $(this).attr('service');
-            var settings = Settings.get();
+            var settings = setting.Settings.get();
             settings[service_type + '_user'] = null;
             Settings.save();
             $('#' + service_type + '_username').val('');
@@ -327,7 +327,7 @@ function calculateUserRefreshTimeHits(user) {
       refTime = 0;
     }
     if (refTime === 0) {
-      refTime = Settings.get().globalRefreshTime[type] || 120;
+      refTime = setting.Settings.get().globalRefreshTime[type] || 120;
     }
     total += Math.round(60 * 60 / refTime);
   }
@@ -363,7 +363,7 @@ function checkUserRefreshTimeHitsAndSave(inp) {
         $(this).val(refTime);
         user.refreshTime[$(this).attr('t')] = refTime;
         if (refTime === 0) {
-            refTime = Settings.get().globalRefreshTime[$(this).attr('t')];
+            refTime = setting.Settings.get().globalRefreshTime[$(this).attr('t')];
         }
         total += Math.round(60*60/refTime);
     });
@@ -388,7 +388,7 @@ function showDndAccountList(bindDnd) {
         var tpl = '<li id="dnd_a_{{uniqueKey}}" class="{{uniqueKey}} {{stat}} clearFix" uniqueKey="{{uniqueKey}}" stat="{{stat}}">' +
                 '<div class="face_img drag">' +
                 '   <a class="face" href="javascript:"><img src="{{profile_image_url}}"></a>' +
-                '   <img src="/images/blogs/{{blogType}}_16.png" class="blogType">' +
+                '   <img src="images/blogs/{{blogType}}_16.png" class="blogType">' +
                 '</div>' +
                 '<div class="detail">' +
                 '   <div class="item"><span class="userName">{{screen_name}}</span>({{blogTypeName}})' +
@@ -426,7 +426,8 @@ function showDndAccountList(bindDnd) {
                     c_html += ', ';
                   }
                   c_html += utils.tabDes[timelineType];
-                  c_html += '('+ (Settings.get().globalRefreshTime[timelineType] || 120) +')';
+
+                  c_html += '('+ (setting.Settings.get().globalRefreshTime[timelineType] || 120) +')';
                   if (user.refreshTime && user.refreshTime[timelineType]) {
                     refTime = user.refreshTime[timelineType];
                   } else{ 
@@ -459,7 +460,7 @@ function showDndAccountList(bindDnd) {
     
     // 显示微博选项
     var blogtype_options = '';
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     var k;
     for (k in utils.T_NAMES) {
       blogtype_options += '<option value="{{value}}">{{name}}</option>'.format({ name: utils.T_NAMES[k], value: k });
@@ -559,7 +560,7 @@ function showMyGeo() {
 }
 
 function init() {
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
 
     var T_LIST = utils.T_LIST;
     //初始化全局信息刷新时间
@@ -744,7 +745,7 @@ function initJtip() {
 function initExportImport() {
     //popupBox.showHtmlBox
     $("#showExportSettings").click(function(){
-        var out = {UserList:User.getUserList('all'), Settings:Settings.get()};
+        var out = {UserList:User.getUserList('all'), Settings: setting.Settings.get()};
         popupBox.showHtmlBox(i18n.get('sett_export'), '<textarea style="width:350px;height:350px;" onmouseover="this.select()" readonly>' + JSON.stringify(out) + '</textarea>');
     });
     
@@ -770,7 +771,7 @@ function importSettings(){
             saveUserList(ulNew);
         }
         if(s.Settings){
-            var oldSet = Settings.get();
+            var oldSet = setting.Settings.get();
             oldSet = $.extend(oldSet, s.Settings);
             Settings.save();
         }
@@ -781,7 +782,7 @@ function importSettings(){
 //初始化快速发送热键
 var TEMP_SET_KEYS = [];
 function initQuickSendHotKey(){
-    var keys = Settings.get().quickSendHotKey;
+    var keys = setting.Settings.get().quickSendHotKey;
     keys = keys.split(',');
     var key_maps = '';
     for(var i in keys){
@@ -1007,12 +1008,15 @@ function saveAccount() {
         }
         $('#account-request-token-key').val(user.oauth_token);
         $('#account-request-token-secret').val(user.oauth_token_secret);
+        var callbackURL = weibo.get_config(user).oauth_callback;
         setTimeout(function () {
           var win = window.open(info.auth_url, '_blank');
           $(win).on('load', function () {
+            console.log('load: ' + win.location.href);
             var timer = setInterval(function () {
               var url = win.location.href;
-              if (url.indexOf('https://api.weibo.com/oauth2/default.html') < 0) {
+              console.log(url);
+              if (url.indexOf(callbackURL) < 0) {
                 return;
               }
               clearInterval(timer);
@@ -1129,7 +1133,7 @@ function delAccount(uniqueKey) {
 }
 
 function saveAll() {
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     var bg = getBackgroundView();
 
     //保存全局信息刷新时间间隔

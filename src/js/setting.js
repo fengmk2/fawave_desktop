@@ -11,12 +11,13 @@
  */
 
 var CONST = require('./const');
+var weibo = require('weibo');
 
 exports.apps = {
   weibo: {
-    appkey: '1122960051',
-    secret: 'e678e06f627ffe0e60e2ba48abe3a1e3',
-    oauth_callback: 'http://localhost.nodeweibo.com:8088/oauth/callback'
+    appkey: '1759110853',
+    secret: 'fb2f52866dde46ac7dccda7b1a550324',
+    oauth_callback: 'http://nodeweibo.org/fawave/oauth/callback'
   },
   tqq: {
     appkey: '801196838',
@@ -24,6 +25,12 @@ exports.apps = {
     oauth_callback: 'oob'
   }
 };
+
+for (var blogtype in exports.apps) {
+  // init appkey
+  var app = exports.apps[blogtype];
+  weibo.init(blogtype, app.appkey, app.secret, app.oauth_callback);
+}
 
 // 获取上次选择的发送账号
 exports.getLastSendAccounts = function getLastSendAccounts() {
@@ -110,7 +117,7 @@ var Settings = exports.Settings = {
       comments_timeline: false,
       direct_messages: false
     },
-    soundSrc: '/sound/d.mp3',
+    soundSrc: 'sound/d.mp3',
     isDesktopNotifications: { //是否在桌面提示新信息
       friends_timeline: false,
       mentions: false,
@@ -154,9 +161,9 @@ var Settings = exports.Settings = {
     var _sets = localStorage.getObject(CONST.SETTINGS_KEY);
     _sets = _sets || {};
     // 兼容不支持的缩址
-    if (_sets.shorten_url_service && !ShortenUrl.services[_sets.shorten_url_service]) {
-      delete _sets.shorten_url_service;
-    }
+    // if (_sets.shorten_url_service && !ShortenUrl.services[_sets.shorten_url_service]) {
+    //   delete _sets.shorten_url_service;
+    // }
     _sets = $.extend({}, this.defaults, _sets);
     
     if (!CONST.THEME_LIST[_sets.theme]) {
@@ -166,7 +173,9 @@ var Settings = exports.Settings = {
     return _sets;
   },
   get: function () {
-    return window._settings || {};
+    var settings = localStorage.getObject(CONST.SETTINGS_KEY) || Settings.init();
+    // console.log('settings: ' + JSON.stringify(settings));
+    return settings;
   },
   save: function () {
     var _sets = this.get();
@@ -197,5 +206,3 @@ var Settings = exports.Settings = {
     return r;
   }
 };
-
-

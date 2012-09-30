@@ -28,11 +28,6 @@ var hideLoading = utils.hideLoading;
 var filterDatasByMaxId = utils.filterDatasByMaxId;
 var PAGE_SIZE = CONST.PAGE_SIZE;
 
-window._settings = Settings.init(); //载入设置
-
-Settings.get = function () { 
-  return window._settings; 
-}; // 重写get，直接返回，不用再获取background view
 
 window._i18n_messages = null;
 function reload_i18n_messages(language, callback) {
@@ -52,7 +47,7 @@ function reload_i18n_messages(language, callback) {
 
 // 如果用户设置了默认语言，则加载相应的语言文件
 (function () {
-  var language = window._settings.default_language;
+  var language = Settings.get().default_language;
   if (language) {
     reload_i18n_messages(language);
   }
@@ -103,6 +98,7 @@ function set_view_status(data_type, status, user_uniquekey) {
   VIEW_STATUS[key] = status;
   set_last_data_type(data_type, user_uniquekey);
 }
+exports.set_view_status = set_view_status;
 
 // 获取上次当前用户正在访问的data_type
 function get_last_data_type(user_uniquekey) {
@@ -389,7 +385,6 @@ function checkTimeline(t, user_uniqueKey) {
   }
   showLoading();
   tapi[t](c_user, params, function (err, result) {
-    // console.log(err, result)
     hideLoading();
     if (err) {
       // 有错误，返回
@@ -401,7 +396,7 @@ function checkTimeline(t, user_uniqueKey) {
     }
     var data = result || {};
     var sinaMsgs = data.items || data;
-    console.log('items ' + sinaMsgs.length);
+    console.log(t + ' items ' + sinaMsgs.length);
     var popupView = window;
     // var popupView = getPopupView();
     if (!tweets[_key]) {
@@ -736,11 +731,11 @@ function showNewMsg(msgs, t, user) {
 
 //播放声音提醒
 var AlertaAudioFile = null;
-try {
-  AlertaAudioFile = new Audio(); //因为有一个Chrome的新版本居然没有Audio这个
-} catch (err) {
-  console.log('Not Support Audio: ' + err.message);
-}
+// try {
+//   AlertaAudioFile = new Audio(); //因为有一个Chrome的新版本居然没有Audio这个
+// } catch (err) {
+//   console.log('Not Support Audio: ' + err.message);
+// }
 function playSound(t) {
   if (!AlertaAudioFile) {
     return;
@@ -920,6 +915,7 @@ var RefreshManager = {
     }
   }
 };
+exports.RefreshManager = RefreshManager;
 
 setUnreadTimelineCount(0, 'friends_timeline'); //设置提示信息（上次关闭前未读）
 
@@ -935,14 +931,17 @@ function checkNewMsg(t, uniqueKey) {
   } catch (err) {
   }
 }
+exports.checkNewMsg = checkNewMsg;
 
+exports._currentUser = null;
 function onChangeUser() {
-  window.c_user = null;
+  exports._currentUser = null;
   var c_user = getUser();
   if (c_user) {
-    window.c_user = c_user;
+    exports._currentUser = c_user;
   }
 }
+exports.onChangeUser = onChangeUser;
 
 // emotions
 var Emotions = {
@@ -967,10 +966,10 @@ var Emotions = {
     this.loadWeibo();
   }
 };
-Emotions.loadAll();
-setInterval(function () {
-  Emotions.loadAll();
-}, 3600000 * 6); // 6小时更新一次
+// Emotions.loadAll();
+// setInterval(function () {
+//   Emotions.loadAll();
+// }, 3600000 * 6); // 6小时更新一次
 
 // AD
 var ADs = {
@@ -1078,18 +1077,18 @@ function refreshAccountInfo(callback) {
 
 // 更新用户的地理位置信息（笔记本位置可能会变）
 function updateGeoInfo() {
-  if (_settings.isGeoEnabled) {
-    if (_settings.isGeoEnabledUseIP) {
+  if (Settings.get().isGeoEnabled) {
+    if (Settings.get().isGeoEnabledUseIP) {
       get_location(function (geo, error) {
         if (geo) {
-          _settings.geoPosition = geo;
+          Settings.get().geoPosition = geo;
         }
       });
     } else {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
           var p = { latitude: position.coords.latitude, longitude: position.coords.longitude };
-          _settings.geoPosition = p;
+          Settings.get().geoPosition = p;
         }, function (msg) {});
       }
     }

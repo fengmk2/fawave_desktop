@@ -16,15 +16,14 @@ var utils = require('./js/utils');
 var User = require('./js/user');
 var CONST = require('./js/const');
 var setting = require('./js/setting');
-var Settings = setting.Settings;
 var ui = require('./js/ui');
 
 // TODO: need to remove
 var getUser = User.getUser;
+var setUser = User.setUser;
 var getUserList = User.getUserList;
 var getUnreadTimelineCount = User.getUnreadTimelineCount;
 var getUserByUniqueKey = User.getUserByUniqueKey;
-var bg = require('./js/background');
 var tapi = weibo;
 var PAGE_SIZE = CONST.PAGE_SIZE;
 var T_LIST = CONST.T_LIST;
@@ -33,16 +32,13 @@ var removeUnreadTimelineCount = User.removeUnreadTimelineCount;
 var buildStatusHtml = ui.buildStatusHtml;
 var ShortenUrl = utils.ShortenUrl;
 var showLoading = utils.showLoading;
+var hideLoading = utils.hideLoading;
+var unreadDes = CONST.unreadDes;
+var popupBox = ui.popupBox;
 
 
 function getBackgroundView() {
-  return bg;
-}
-
-for (var blogtype in setting.apps) {
-  // init appkey
-  var app = setting.apps[blogtype];
-  weibo.init(blogtype, app.appkey, app.secret, app.oauth_callback);
+  return require('./js/background');
 }
 
 // weibo.init('twitter', 'i1aAkHo2GkZRWbUOQe8zA', 'MCskw4dW5dhWAYKGl3laRVTLzT8jTonOIOpmzEY', 'oob');
@@ -71,9 +67,9 @@ function initOnLoad() {
 }
 
 $(function () {
-  setTimeout(function () {
-    window.focus();
-  }, 1000);
+  // setTimeout(function () {
+  //   window.focus();
+  // }, 1000);
   initOnLoad();
 });
 
@@ -106,10 +102,7 @@ function openTab(url) {
   if (!url || url.indexOf('javascript') === 0) {
     return false;
   }
-  chrome.tabs.create({ 
-    url: url,
-    selected: isNewTabSelected
-  });
+  window.open(url, '_blank');
   return true;
 }
 
@@ -197,12 +190,10 @@ function init() {
   
   initEvents();
 
-  if (window.is_new_win_popup) {
+  resizeFawave();
+  $(window).resize(function () {
     resizeFawave();
-    $(window).resize(function () {
-      resizeFawave();
-    });
-  }
+  });
 
   changeAlertMode(setting.getAlertMode());
   changeAutoInsertMode(setting.getAutoInsertMode());
@@ -311,9 +302,9 @@ function initTabs() {
       if (currentIsActive) {
         // 连续点击两次，则代表查看自己的
         // 否则查看上次查询的
-        User.getUserTimeline();
+        getUserTimeline();
       } else {
-        var params = User.getUserTimelineParams() || {};
+        var params = getUserTimelineParams() || {};
         var $btn;
         if (params.type === 'search') {
           Search.current_search = '';
@@ -330,7 +321,7 @@ function initTabs() {
         } else {
           $('.searchWrap').hide();
           // user timeline
-          User.getUserTimeline(params.screen_name, params.user_id);
+          getUserTimeline(params.screen_name, params.user_id);
         }
       }
       checkShowGototop();
@@ -372,7 +363,7 @@ function _load_new_data(t, is_current_tab) {
   var view_status = b_view.get_view_status(t);
   view_status.index = view_status.index || 0;
   var load_new = view_status.index !== 0; // 判断是否有新数据
-  var settings = Settings.get();
+  var settings = setting.Settings.get();
   if (settings.remember_view_status) {
     if (load_new && !is_current_tab && setting.isNotAutoInsertMode()) { 
       // 非自动插入模式，如果不是当前tab，则需根据上次的位置来判断是否要获取新的
@@ -408,7 +399,7 @@ function initOnUnload() {
   }
   localStorage.setObject(CONST.UNSEND_TWEET_KEY, c || '');
   localStorage.setObject(CONST.UNSEND_REPLY_KEY, $("#replyTextarea").val() || '');
-  if (Settings.get().sendAccountsDefaultSelected === 'remember') {
+  if (setting.Settings.get().sendAccountsDefaultSelected === 'remember') {
     if ($("#accountsForSend").data('inited')) {
       var keys = '';
       $("#accountsForSend li.sel").each(function () {
@@ -645,7 +636,7 @@ function _shortenUrl(longurl, settings, callback) {
     if (longurl.indexOf('chrome-extension://') === 0) { // 插件地址就不处理了
         return;
     }
-    settings = settings || Settings.get();
+    settings = settings || setting.Settings.get();
     if (settings.isSharedUrlAutoShort && 
         longurl.replace(/^https?:\/\//i, '').length > settings.sharedUrlAutoShortWordCount) {
         ShortenUrl.short(longurl, callback);
@@ -702,7 +693,7 @@ function initIamDoing() {
                     if(value) {
                         value += ' ';
                     }
-                    var settings = Settings.get();
+                    var settings = setting.Settings.get();
                     $txt.val(value + formatText(settings.lookingTemplate, {title: title, url: loc_url}))
                         .data({source_url: '', short_url: ''});
                     showMsgInput();
@@ -731,17 +722,17 @@ function initIamDoing() {
 }
 
 function setUserTimelineParams(params) {
-    var user = User.getUser();
-    var bg = getBackgroundView();
-    var key = '__LastUserTimelineParams_' + user.blogType;
-    bg[key] = params;
+  var user = User.getUser();
+  var bg = getBackgroundView();
+  var key = '__LastUserTimelineParams_' + user.blogType;
+  bg[key] = params;
 }
 
 function getUserTimelineParams() {
-    var user = User.getUser();
-    var bg = getBackgroundView();
-    var key = '__LastUserTimelineParams_' + user.blogType;
-    return bg[key];
+  var user = User.getUser();
+  var bg = getBackgroundView();
+  var key = '__LastUserTimelineParams_' + user.blogType;
+  return bg[key];
 }
 
 // 搜索
@@ -921,12 +912,12 @@ function initChangeUserList() {
   var u_tp = '<li class="{{uniqueKey}} {{current}}"> \
     <span class="username">{{screen_name}}</span> \
     <a href="javascript:" onclick="changeUser(\'{{uniqueKey}}\')"><img src="{{profile_image_url}}" /></a> \
-      <img src="/images/blogs/{{blogType}}_16.png" class="blogType" /> \
+      <img src="images/blogs/{{blogType}}_16.png" class="blogType" /> \
     <span class="unr"></span> \
     </li>';
   var li = [];
-  for (var i in userList) {
-    user = userList[i];
+  for (var i = 0; i < userList.length; i++) {
+    var user = userList[i];
     if (user.uniqueKey === c_user.uniqueKey) {
       user.current = 'current';
     } else {
@@ -1010,7 +1001,7 @@ function changeUser(uniqueKey) {
             hideReadMore(_t);
         });
         // 清空ui缓存数据
-        TWEETS = {};
+        ui.TWEETS = {};
         checkSupportedTabs(to_user);
         
         // TODO: 获取上次正在查看的tab
@@ -1030,7 +1021,7 @@ function changeUser(uniqueKey) {
 
 // 初始化用户选择视图
 function initSelectSendAccounts() {
-    var settings = Settings.get();
+    var settings = setting.Settings.get();
     var afs = $("#accountsForSend");
     var c_user = getUser();
     if (afs.data('inited')) {
@@ -1046,7 +1037,7 @@ function initSelectSendAccounts() {
     var li_tpl = '<li class="{{sel}}" uniqueKey="{{uniqueKey}}" blogType="{{blogType}}" onclick="toggleSelectSendAccount(this)">' +
         '<img src="{{profile_image_url}}" />' +
         '{{screen_name}}' +
-        '<img src="/images/blogs/{{blogType}}_16.png" class="blogType" /></li>';
+        '<img src="images/blogs/{{blogType}}_16.png" class="blogType" /></li>';
     var li = [];
     var has_sina = false, has_other = false;
     for (var i = 0, len = userList.length; i < len; i++) {
@@ -1108,7 +1099,7 @@ function toggleSelectSendAccount(ele){
     if(_t.hasClass('sel')){
         _t.removeClass('sel');
     }else{
-        var settings = Settings.get();
+        var settings = setting.Settings.get();
         if(false && settings.__allow_select_all !== true) {
             if(is_tsina) {
                 _t.siblings().each(function() {
@@ -1457,11 +1448,11 @@ function _getFansList(to_t, read_more) {
 function getUserTimeline(screen_name, user_id, read_more) {
     var c_user = getUser();
     if (!c_user) {
-        return;
+      return;
     }
     var $tab = $("#tl_tabs .tab-user_timeline");
     if ($tab.data('is_loading')) {
-        return;
+      return;
     }
     $tab.data('is_loading', true);
     $tab.attr('statusType', 'user_timeline');
@@ -1471,37 +1462,36 @@ function getUserTimeline(screen_name, user_id, read_more) {
     var page = 1;
     user_id = user_id || '';
     var params = { 
-        count: CONST.PAGE_SIZE, 
-        user: c_user, 
-        need_friendship: true 
+      count: CONST.PAGE_SIZE, 
+      need_friendship: true 
     };
     if (read_more) {
-        // 滚动的话，获取上次的参数
-        max_id = $tab.attr('max_id');
-        page = String($tab.attr('page') || 1);
-        cursor = $tab.attr('cursor');
-        user_id = $tab.attr('user_id');
-        screen_name = $tab.attr('screen_name');
-        params.need_friendship = false;
+      // 滚动的话，获取上次的参数
+      max_id = $tab.attr('max_id');
+      page = String($tab.attr('page') || 1);
+      cursor = $tab.attr('cursor');
+      user_id = $tab.attr('user_id');
+      screen_name = $tab.attr('screen_name');
+      params.need_friendship = false;
     } else if (!screen_name) {
-        // 直接点击tab，获取当前用户的
-        screen_name = c_user.screen_name;
-        user_id = c_user.id;
-        $ul.html('');
-        params.need_friendship = false;
+      // 直接点击tab，获取当前用户的
+      screen_name = c_user.screen_name;
+      user_id = c_user.id;
+      $ul.html('');
+      params.need_friendship = false;
     } else {
-        // 否则就是直接点击查看用户信息了
-        $ul.html('');
+      // 否则就是直接点击查看用户信息了
+      $ul.html('');
     }
     params.screen_name = screen_name;
     if (user_id) {
-        params.id = user_id;
+      params.id = user_id;
     }
     // 保存 screen_name and user_id 
     setUserTimelineParams({
-        type: 'user_timeline',
-        screen_name: screen_name,
-        user_id: user_id
+      type: 'user_timeline',
+      screen_name: screen_name,
+      user_id: user_id
     });
     var config = tapi.get_config(c_user);
     var support_cursor_only = config.support_cursor_only; // 只支持游标方式翻页
@@ -1525,7 +1515,8 @@ function getUserTimeline(screen_name, user_id, read_more) {
     showLoading();
     var m = 'user_timeline';
     hideReadMore(m);
-    tapi[m](params, function (data, textStatus) {
+    tapi[m](c_user, params, function (err, data) {
+      console.log(err);
         $tab.data('is_loading', false);
         // 如果用户已经切换，则不处理
         var now_user = getUser();
@@ -1571,7 +1562,7 @@ function getUserTimeline(screen_name, user_id, read_more) {
                     var user = data.user || sinaMsgs[0].user || sinaMsgs[0].sender;
                     // 是否当前用户
                     user.is_me = String(c_user.id) === String(user.id);
-                    var userinfo_html = buildUserInfo(user);
+                    var userinfo_html = ui.buildUserInfo(user);
                     $ul.prepend(userinfo_html);
                     resetScrollTop(m);
                 }
@@ -1854,7 +1845,7 @@ function showComments(ele, tweetId, page, notHide, page_params){
     var config = tapi.get_config(user);
     if(config.comments_need_status) {
         var sid = $ele.closest('li').attr('did');
-        params.status = TWEETS[sid];
+        params.status = ui.TWEETS[sid];
     }
     var method = timeline_type === 'comment' ? 'comments' : 'repost_timeline';
     tapi[method](params, function(data, textStatus){
@@ -2364,7 +2355,7 @@ function _start_updates(stat) {
 };
 
 function _sendMsgWraper(msg, user, stat, selLi, pic) {
-  function callback(result, textStatus) {
+  function callback(err, result) {
     stat.uploadCount--;
     stat.sendedCount++;
     if (result === true ||
@@ -2385,7 +2376,7 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
     _start_updates(stat);
       
     if (stat.successCount >= stat.userCount) { // 全部发送成功
-      showMsg(i18n.get("msg_send_success"));
+      // showMsg(i18n.get("msg_send_success"));
       var $remember_send_data = $('#remember_send_data');
       if (!$remember_send_data.prop('checked')) {
         // 清除url数据
@@ -2437,8 +2428,7 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
     }
     tapi.upload(user, data, pic, null, onprogress, callback);
   } else {
-    var data = {status: msg, user: user};
-    tapi.update(data, callback);
+    tapi.update(user, msg, callback);
   }
 };
 
@@ -2478,7 +2468,7 @@ function sendRepost(msg, repostTweetId, notSendMord) {
     $btn.attr('disabled','true');
     $txt.attr('disabled','true');
     if (config.repost_need_status) {
-        data.retweeted_status = TWEETS[repostTweetId];
+        data.retweeted_status = ui.TWEETS[repostTweetId];
     }
     // 处理是否评论
     if (!notSendMord) {
@@ -2525,7 +2515,7 @@ function sendComment(msg, comment_id, notSendMord){
         data.user_id = user_id;
     }
     if(config.comments_need_status) {
-        data.status = TWEETS[comment_id];
+        data.status = ui.TWEETS[comment_id];
     }
     data['user'] = user;
     btn.attr('disabled','true');
@@ -2666,7 +2656,7 @@ function doReply(ele, screen_name, tweetId, name) { // @回复
   var $replyText = $('#replyTextarea');
   var text = $replyText.val();
   if (!text) {
-    var tweet = TWEETS[tweetId];
+    var tweet = ui.TWEETS[tweetId];
     var at_users = tapi.find_at_users(user, tweet && tweet.text);
     if (at_users) {
       for (var i = 0, l = at_users.length; i < l; i++) {
@@ -2721,8 +2711,8 @@ function doRepost(ele, userName, tweetId, rtUserName, reTweetId) { // 转发
     var value = $t.val() || '';
     $t.focus().blur();
     if (!value) {
-        if (reTweetId && TWEETS[tweetId]) {
-            var rt = TWEETS[tweetId];
+        if (reTweetId && ui.TWEETS[tweetId]) {
+            var rt = ui.TWEETS[tweetId];
             if (user.blogType === 'tqq') {
                 userName = rt.user.name || userName;
             }
@@ -2836,7 +2826,7 @@ function doNewMessage(ele, userName, toUserId){//悄悄话
 function doRT(ele, is_rt, is_rt_rt) {
     var $li = $(ele).closest('li');
     var did = $li.attr('did');
-    data = TWEETS[did];
+    data = ui.TWEETS[did];
     var t = $("#txtContent");
     t.val('').blur();
     // 如果有链接还原，则记录下来
@@ -3020,7 +3010,7 @@ function addFavorites(ele, screen_name, tweetId) {//添加收藏
     var t = getCurrentTab().replace('#', '').replace(/_timeline$/i, '');
     var params = { id: tweetId, user: user };
     if (config.favorite_need_status) {
-        params.status = TWEETS[tweetId];
+        params.status = ui.TWEETS[tweetId];
     }
     tapi.favorites_create(params, function (data, textStatus) {
         if (textStatus !== 'error' && data && !data.error) {
@@ -3063,7 +3053,7 @@ function delFavorites(ele, screen_name, tweetId) {//删除收藏
     var config = tapi.get_config(user);
     var params = { id: tweetId, user: user };
     if (config.favorite_need_status) {
-        params.status = TWEETS[tweetId];
+        params.status = ui.TWEETS[tweetId];
     }
     var t = getCurrentTab().replace('#','').replace(/_timeline$/i,'');
     tapi.favorites_destroy(params, function (data, textStatus) {
@@ -3217,7 +3207,7 @@ function openLongText() {
 function openPopupInNewWin(windowId) {
     _getWindowId(function(windowId) {
         initOnUnload();
-        var settings = Settings.get();
+        var settings = setting.Settings.get();
         var args_str = _get_open_window_args(settings.popupWidth, settings.popupHeight);
         window.theViewName = 'not_popup';
         var url = 'popup.html?is_new_win=true';
@@ -3381,8 +3371,8 @@ var SmoothScroller = {
         this.c_t = getCurrentTab();
         this.list_warp = $(this.c_t + ' .list_warp');
         this.list_warp_height = this.list_warp.height(); //算好放缓存，免得每次都要算
-        this.ease_type = Settings.get().smoothSeaeType;
-        this.tween_type = Settings.get().smoothTweenType;
+        this.ease_type = setting.Settings.get().smoothSeaeType;
+        this.tween_type = setting.Settings.get().smoothTweenType;
         var hasDo = this.status.t>0 ? (Math.ceil(Tween[this.tween_type][this.ease_type](this.status.t-1, this.status.b, this.status.c, this.status.d)) - this.status.b) : 0;
         this.status.c = -e.wheelDelta + this.status.c - hasDo; 
         this.status.d = (this.status.d/2) - (this.status.t/2) + 13;
@@ -3412,13 +3402,13 @@ var SmoothScroller = {
     }
 };
 
-$(function () {
-  if(Settings.get().isSmoothScroller) {
-    $('.list_warp').bind('mousewheel', function (e) {
-      SmoothScroller.start(e);
-    });
-  }
-});// <<=== 平滑滚动结束
+// $(function () {
+//   if (Settings.get().isSmoothScroller) {
+//     $('.list_warp').bind('mousewheel', function (e) {
+//       SmoothScroller.start(e);
+//     });
+//   }
+// });// <<=== 平滑滚动结束
 
 //强制刷新
 function forceRefresh(ele) {
@@ -3448,7 +3438,7 @@ function translateText(ele) {
     $ele = $ele.find('.tweet_text');
   }
   $(ele).hide();
-  var settings = Settings.get();
+  var settings = setting.Settings.get();
   var target = settings.translate_target;
   tapi.translate(User.getUser(), $ele.text(), target, function (translatedText) {
     if (translatedText) {
@@ -3482,7 +3472,7 @@ function read_later(ele, service_type) {
         if(title) {
             data.title = title;
         }
-        var user = null, service = null, settings = Settings.get();
+        var user = null, service = null, settings = setting.Settings.get();
         if(service_type === 'instapaper') {
             user = settings.instapaper_user;
             service = Instapaper;

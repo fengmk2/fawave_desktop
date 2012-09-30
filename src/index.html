@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="css/main.css" />
 <link rel="stylesheet" href="css/emoji.css" />
 <link rel="stylesheet" href="themes/pip_io/css/theme.css" />
-
+<style id="styleCustomResize"></style>
 <script src="js/lib/jquery-1.8.2.min.js"></script>
 <script src="js/patch.js"></script>
 
@@ -104,8 +104,9 @@ var _u = {
     </div>
     <ul id="tl_tabs" class="tabs">
       <span class="btns">
-          <a id="doingWithCapture" href="javascript:void(0);"><img src="images/capture.png" /></a>
-                  <script>_u.wia('#doingWithCapture','title','btn_share_title_with_capture');</script>
+        <a href="options.html">配置</a>
+        <a id="doingWithCapture" href="javascript:void(0);"><img src="images/capture.png" /></a>
+        <script>_u.wia('#doingWithCapture','title','btn_share_title_with_capture');</script>
         <a id="doing" href="javascript:void(0);"><img src="images/world_link.png" /></a>
         <script>_u.wia('#doing','title','btn_share_title');</script>
         <a id="btnForceRefresh" href="javascript:void(0);" onclick="forceRefresh(this)"><img src="images/refresh.png" /></a>
