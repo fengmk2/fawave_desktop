@@ -39,11 +39,11 @@ function getBackgroundView() {
   return bg;
 }
 
-var oauth_callback = 'https://api.weibo.com/oauth2/default.html';
-
-// init appkey
-weibo.init('tqq', '801196838', '9f1a88caa8709de7dccbe3cae4bdc962', oauth_callback);
-weibo.init('weibo', '3538199806', '18cf587d60e11e3c160114fd92dd1f2b', oauth_callback);
+for (var blogtype in setting.apps) {
+  // init appkey
+  var app = setting.apps[blogtype];
+  weibo.init(blogtype, app.appkey, app.secret, app.oauth_callback);
+}
 
 // weibo.init('twitter', 'i1aAkHo2GkZRWbUOQe8zA', 'MCskw4dW5dhWAYKGl3laRVTLzT8jTonOIOpmzEY', 'oob');
 

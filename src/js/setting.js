@@ -12,6 +12,19 @@
 
 var CONST = require('./const');
 
+exports.apps = {
+  weibo: {
+    appkey: '1122960051',
+    secret: 'e678e06f627ffe0e60e2ba48abe3a1e3',
+    oauth_callback: 'http://localhost.nodeweibo.com:8088/oauth/callback'
+  },
+  tqq: {
+    appkey: '801196838',
+    secret: '9f1a88caa8709de7dccbe3cae4bdc962',
+    oauth_callback: 'oob'
+  }
+};
+
 // 获取上次选择的发送账号
 exports.getLastSendAccounts = function getLastSendAccounts() {
   return localStorage.getObject(CONST.LAST_SELECTED_SEND_ACCOUNTS) || '';
