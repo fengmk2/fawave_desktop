@@ -1,0 +1,29 @@
+div.usericon {float:left; padding:2px 0 0;}
+div.usericon img {border: solid 1px #A0A0A0}
+div.mainContent {margin:0 0 0 60px;} 
+div.userName {font-weight:bold;} 
+div.userName a {color:green;}
+.msgInfo {color:#888;}
+div.msgInfo {padding-top:3px;} 
+.list li div.retweeted{border-left:3px solid #487858;border-top:dashed 1px #ddd;margin:0px 0px 5px 8px;padding:3px 0 0 2px;}
+.list li div.retweeted .userName{color:green;font-weight:normal;}
+.list li div.retweeted .edit a{color:green;font-weight:bold;}
+.list li div.retweeted .commentCounts a, .list li div.retweeted .repostCounts a{color:green;font-weight:normal;}
+.list li div.retweeted.rt_retweeted{border-left:3px solid #ccc;}
+.list_p{margin:0;padding:0;}
+.list_warp { margin:0; height: 470px; overflow:auto;} 
+.list li {border-bottom:1px solid #ddd; padding:5px 0; margin: 0 2px; /*overflow:hidden;*/}
+.list li .msg a, .comments a{color:#F77004;}
+.unread-item{background-color: #FFFFDF;}
+.list li:hover{background-color: #FFFFEF;color:black;}
+.list li .edit{display:none; float:right; line-height:1em;}
+.list li .edit a{margin:0 0 0 5px;}
+.list li .commentCounts, .list li .repostCounts{color:#888;font-weight:normal;}
+.list li .commentCounts a, .list li .repostCounts a{padding:0;margin:0;font-weight:normal;}
+.readMore{display:none;text-align:center;background: #ccc; color:green; margin: 2px 0; padding:3px; border:solid 1px #ccc; font-size:14px;font-weight:bold;}
+.readMore:hover{text-decoration: none;}
+.list .comments{display:none;margin-top:3px;border-top:5px solid gainsboro;border-bottom:5px solid gainsboro;background: #F7FEFF;}
+.list .comments li{border-bottom: 1px dashed #EFAA00; padding:5px 2px;}
+.list .comments .replyComment{float:right;color:green;}
+.list .comments .comment_paging a{color:green;}
+.list .comments .comment_paging .next_page{float:right;}

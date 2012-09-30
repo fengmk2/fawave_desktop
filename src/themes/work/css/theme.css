@@ -1,0 +1,101 @@
+a{ color:#888; border-bottom:1px dashed #ccc;}
+#header .user .face{opacity: 0.03;}
+#header .user .face:hover{-webkit-transition: opacity 0.5s ease; opacity: 1;}
+#header .user .info .name{color:#888;}
+
+#submitwarp {border-bottom: 1px solid #fff;}
+/* .unreadcount{color:yellow;} */
+
+div.usericon {
+	float:left; margin:2px 0 0 5px; opacity: 0.03; 
+}
+div.usericon:hover{opacity: 1; background:none;-webkit-box-shadow:0 0 5px #aaa;}
+div.usericon img {
+	-webkit-border-radius:4px;
+	-webkit-box-shadow:0 0 3px #aaa;
+}
+.arrow_r{
+}
+div.mainContent {
+	margin:0 0 0 60px;
+	color:#475366;
+	position:relative;
+	padding:0 5px;
+	word-wrap:break-word;
+}
+.pic{
+	opacity: 0.03;
+	padding: 3px;
+	margin:2px;
+	-webkit-box-shadow: #AAA 0px 0px 5px;
+	background:#fff;
+}
+.pic:hover{-webkit-transition: opacity 0.5s ease; opacity: 1;}
+div.userName {font-weight:bold;}
+div.userName img{opacity: 0.3;}
+.msgInfo {color:#888;}
+div.msgInfo {padding-top:3px;}
+.list li{
+	margin: 10px 5px 10px 3px;
+}
+.list li .li_wrap{
+	background:#fff;
+	padding: 6px 3px 3px;
+	border-width:1px;
+	border-style:solid;
+	border-color:#bbb #bbb #ddd #bbb;
+	-webkit-border-radius:5px;
+	border-bottom-right-radius:0;
+	-webkit-box-shadow:1px 2px 2px #888;
+}
+.list li div.retweeted{
+	line-height: 1.5em;
+	background:#fff;
+	color:#475366;
+	padding: 6px 6px 3px 8px;
+	margin-left: 20px;
+	margin-top: -1px;
+	border-width:1px;
+	border-style:solid;
+	border-color:#eee #bbb #ddd #bbb;
+	-webkit-box-shadow:1px 2px 2px #888;
+	border-bottom-right-radius:5px;
+	border-bottom-left-radius:5px;
+	word-wrap:break-word;
+}
+.list li div.retweeted .userName{font-weight:normal;}
+.list li div.retweeted .edit a{ color:#676; font-weight:bold;}
+.list li div.retweeted .commentCounts a, .list li div.retweeted .repostCounts a{ color:#333; font-weight:normal;}
+.list li div.retweeted.rt_retweeted{margin-left: 35px;}
+.list_p{ margin:0;padding:0; background: -webkit-gradient(linear,left bottom,left top,from(#CDD2E0),to(#fff), color-stop(02,#fff));}
+.list li .msg a, .comments a{ color:#676; }
+.list li .msg a:hover, .comments a:hover{color:#fff;background-color:#369;text-decoration:none;}
+.list li .edit{display:none; float:right; line-height:1em;}
+.list li .edit a{margin:0 0 0 5px;}
+.list li .edit a:hover{background:none;text-decoration:underline;}
+.list li .commentCounts, .list li .repostCounts{color:#888;font-weight:normal;}
+.list li .commentCounts a, .list li .repostCounts a{padding:0;margin:0;font-weight:normal;}
+.readMore{display:none;text-align:center;background: #ccc; color:green; margin: 2px 0; padding:3px; border:solid 1px #ccc; font-size:14px;font-weight:bold;}
+.readMore:hover{text-decoration: none;}
+.list .comments{display:none;margin-top:3px;border-top:5px solid gainsboro;border-bottom:5px solid gainsboro;background: #F7FEFF;}
+.list .comments li{border-bottom: 1px dashed #EFAA00; padding:5px 2px;}
+.list .comments .replyComment{float:right;color:green;}
+.list .comments .comment_paging a{color:green;}
+.list .comments .comment_paging .next_page{float:right;}
+
+.fans{background:#fff;}
+
+.myTweet div.usericon{}
+.myTweet .arrow_r{}
+.myTweet div.mainContent{}
+.myTweet .usericon .showtip .tipbox{}
+.myTweet .usericon .showtip:hover .tipbox{}
+
+.tweet_text img{opacity:0.2;}
+.tweet_text img:hover{-webkit-transition: opacity 0.5s ease; opacity:0.9;}
+
+.list li.unread-item .li_wrap{border-left: 1px solid green;}
+
+.list li:hover .retweeted, .list li:hover .mainContent{color:#222;}
+.list li:hover .li_wrap{-webkit-transition: background 0.2s linear; background: -webkit-gradient(linear,left bottom,left top,from(#fff), to(#eee), color-stop(0.5, #fff));}
+.list li:hover div.retweeted{}

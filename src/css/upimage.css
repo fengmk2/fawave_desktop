@@ -1,0 +1,139 @@
+html, body{ height:100%; }
+#msginfowarp { position: fixed; }
+#needUpdateChrome{
+	background-color: #FEFEB6;
+	border: 1px solid #D5B163;
+	line-height: 1.6em;
+	margin: 5px 10px;
+	padding: 8px;
+	color:red;
+	font-size:14px;
+}
+#needUpdateChrome a{
+	color:green;
+	font-weight: bold;
+}
+
+#submitWarp{
+	height:auto;
+}
+
+.fileSel{
+	margin-top:5px;
+	border: 1px solid #0E774A;
+	background-color: #E9F4E9;
+	height: 50px;
+	text-align:center;
+	color:#0C7823;
+	font-size: 20px;
+	font-weight: bold;
+	line-height:52px;
+}
+
+.fileSel .selTip{
+	margin-top: -50px;
+	position: absolute;
+	width: 100%;
+}
+
+#imageFile{
+	opacity: 0;
+	position: absolute;
+	margin-top:-66px;
+	height: 56px;
+	width: 120%;
+	cursor: pointer;
+}
+
+#imgPreview{
+}
+
+#imgPreview img{
+	max-width:480px;
+	max-height:480px;
+}
+
+.pic {
+	-webkit-box-shadow: #AAA 0px 0px 5px;
+	padding: 3px;
+}
+
+.bar { 
+    display: block;    
+    position: relative;
+    background: #B1D632; 
+    text-align: center; 
+    color: #fff; 
+}
+.bar span { position: absolute; left: 3px; }
+
+.graph { 
+    position: relative;
+    border: 1px solid #B1D632; 
+    padding: 2px; 
+    margin-bottom: .5em;        
+    border-radius: 5px;          
+}
+.graph .bar{
+	height: 50px; 
+    line-height: 50px;
+}
+
+#uploadinfo{margin:5px 2px;}
+#uploadinfo li{padding:3px 2px;}
+#uploadinfo li:nth-child(odd){ background-color:#eee; }
+#uploadinfo li:nth-child(even){ background-color:#fff; }
+#uploadinfo li img{
+	height: 16px;
+	margin: 0px 1px;
+	vertical-align: top;
+	width: 16px;
+}
+#uploadinfo .barWrap{
+	width:80px;
+	display: inline-block;
+	border:solid 1px green;
+	padding:1px 2px;
+}
+#uploadinfo li.error .barWrap{ border:solid 1px red; }
+#uploadinfo .bar{
+	height:12px;
+	line-height:12px;
+}
+
+#progressInfo {margin-bottom:10px;}
+
+.fawaveUserInfo{position:relative;}
+.fawaveUserInfo img.userImg{
+    width:40px; height:40px; background:#fff; padding:2px; border:solid 1px #ccc; 
+    vertical-align:bottom;
+}
+.fawaveUserInfo img.blogType {
+    opacity: 0.8;
+    right: 0px;
+    bottom:-5px;
+    position: absolute;
+}
+
+#btnAddEmotional img {
+    vertical-align: top;
+}
+
+.drag_on{
+	border:dotted 3px #900;
+}
+
+#success_close * {
+	cursor: pointer;
+}
+
+#imgFilterList canvas{
+    cursor: pointer;
+    margin: 2px;
+    padding: 1px;
+    border: solid 1px #ddd;
+}
+
+#imgFilterList canvas.active{
+    border-color: #8c1c2a;
+}

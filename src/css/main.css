@@ -256,7 +256,9 @@ textarea:focus{outline: none;}
 
 .quickUpImg{margin-left:5px;}
 
-.warp { width:480px; position:relative; /*border:1px solid #ace; padding-bottom:10px;*/} 
+.warp { 
+/*width:480px; */
+position:relative; /*border:1px solid #ace; padding-bottom:10px;*/} 
 .list_warp { margin:0; height: 470px; overflow-x:hidden; overflow-y:auto; -webkit-transition: height .6s ease;} 
 li .pic{max-width:160px; max-height:160px;}
 li .video_image{max-width:320px; max-height:320px;}

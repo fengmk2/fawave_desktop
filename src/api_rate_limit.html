@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+  <title>查看请求频率限制 - FaWave(发微)</title>
+  <style>
+    .table1 thead th {
+      background: -webkit-gradient(linear, 0% 100%, 0% 0%, color-stop(0.02, #7BC043), color-stop(0.51, #8BC642), color-stop(0.87, #9ED929));
+      border-bottom: 1px solid #9ED929;
+      border: solid;
+      border-top-left-radius: 5px 5px;
+      border-top-right-radius: 5px 5px;
+      color: white;
+      padding:5px;
+      text-shadow: #568F23 1px 1px 1px;
+    }
+    .table1 td{ padding:5px; }
+    .table1 tr:nth-child(odd){ background-color:#eee; }
+    .table1 tr:nth-child(even){ background-color:#fff; }
+    .icon{width:20px; height:20px;}
+    .error{color:red;}
+  </style>
+  <script src="js/lib/jquery-1.8.2.min.js"></script>
+  <script >
+this.document.title = _u.i18n('comm_show_rate_limit_stat') + ' -- ' + _u.i18n('defaultTitle');
+
+var tr_tp = '<tr id="user_{{uniqueKey}}"><td><img class="icon" src="{{profile_image_url}}" />{{screen_name}}</td>\
+  <td><img src="images/blogs/{{blogType}}_16.png"/>{{blogType}}</td>\
+  <td><img src="images/loader.gif"/></td>\
+  <td></td><td></td></tr>';
+function getRateLimits() {
+  var userList = getUserList();
+  var tbody = $("#rateLimitTable tbody");
+  tbody.html('');
+  for (var i in userList) {
+    var user = userList[i];
+    tbody.append(tr_tp.format(user));
+    handlerRateCheck(user);
+  }
+}
+//防止闭包变量共享
+function handlerRateCheck(user_in) {
+  var user = user_in;
+  var data = {user: user};
+  tapi.rate_limit_status(data, function (data, textStatus, errorCode) {
+    if (data && data.hourly_limit){
+      $("#user_" + user.uniqueKey + " td:eq(2)").html(data.remaining_hits + ' / ' + data.hourly_limit);
+      if (data.ip_limit) {
+        $("#user_" + user.uniqueKey + " td:eq(3)").html(data.remaining_ip_hits + ' / ' + data.ip_limit);
+      }
+      $("#user_" + user.uniqueKey + " td:eq(4)").html(new Date(data.reset_time).format("yyyy-MM-dd hh:mm:ss"));
+    } else {
+      $("#user_" + user.uniqueKey + " td:eq(2)").html('<span class="error">' + data.error + '</span>');
+    }
+  });
+}
+$(function () {
+  getRateLimits()
+});
+  </script>
+</head>
+
+<body>
+<div>
+  <div class="logo">
+    <h1><img src="icons/icon48.png" /><script>_u.wi('extName')</script></h1>
+  </div>
+</div>
+<div>
+  <h2><script>_u.wi('comm_rate_limit')</script></h2>
+  <a href="javascript:" onclick="getRateLimits()"><script>_u.wi('comm_refresh')</script></a>
+  <div>
+    <table id="rateLimitTable" class="table1">
+      <thead>
+        <th><script>_u.wi('comm_user')</script></th>
+        <th><script>_u.wi('comm_mblog_type')</script></th>
+        <th><script>_u.wi('comm_remainder')</script> / <script>_u.wi('comm_total')</script>(<script>_u.wi('comm_rate_limit_per_hour')</script>)</th>
+        <th>IP <script>_u.wi('comm_remainder')</script> / <script>_u.wi('comm_total')</script>(<script>_u.wi('comm_rate_limit_per_hour')</script>)</th>
+        <th><script>_u.wi('comm_reset_time')</script></th>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

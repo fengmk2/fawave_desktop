@@ -25,10 +25,10 @@ lib-cov:
 	@jscoverage lib $@
 
 build:
-	browserify js/main.js -o js/bundle.js -v
+	browserify src/js/main.js -o src/js/bundle.js -v
 
 watch:
-	browserify js/main.js -o js/bundle.js --watch
+	browserify src/js/main.js -o src/js/bundle.js --watch -v
 
 dev:
 	/Applications/nw.app/Contents/MacOS/node-webkit ./ --developer

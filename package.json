@@ -1,19 +1,19 @@
 {
   "version": "0.0.1",
   "name": "fawave",
-  "main": "views/index.html",
+  "main": "src/index.html",
   "dependencies": {
     "weibo": ">=0.6.2"
   },
   "window": {
     "icon": "images/icon128.png",
     "toolbar": true,
-    "width": 600,
+    "width": 580,
     "height": 600,
     "position": "center",
-    "min_width": 600,
+    "min_width": 580,
     "min_height": 600,
-    "max_width": 600,
+    "max_width": 580,
     "max_height": 600
   },
   "webkit": {

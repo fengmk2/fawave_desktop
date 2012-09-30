@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+ <head>
+	<meta charset="utf-8" />
+	<title>长微博 - FaWave(发微) - 多微博插件 </title>
+	<script> window.theViewName = 'longtext'; </script>
+	<link rel="stylesheet" href="/css/popup.css" />
+	<link rel="stylesheet" href="/css/upimage.css" />
+	<link rel="stylesheet" href="/css/longtext.css" />
+	<script src="/scripts/lib/jquery.min.js" ></script>
+	<script src="scripts/lib/Base64.js" ></script>
+	<script src="scripts/emotional.js" ></script>
+	<script src="/lib/utils.js"></script>
+	<script src="scripts/utili.js" ></script>
+	<script src="scripts/lib/md5.js" ></script>
+	<script src="scripts/lib/jssha256.js" ></script>
+	<script src="scripts/lib/sha1.js" ></script>
+  <script src="scripts/lib/oauth.js" ></script>
+	<script src="scripts/apis.js" ></script>
+	<script src="scripts/ui.js" ></script>
+	<script src="scripts/popup.js" ></script>
+	<script src="scripts/upimage.js" ></script>
+	<script src="scripts/longtext.js" ></script>
+	<style id="styleCustom"></style>
+	<script>
+		this.document.title = _u.i18n('comm_longtext') + ' - ' + _u.i18n('defaultTitle');
+		var settings = Settings.get();
+		var wh_css = 'body{font-family:"'+ settings.font +'";font-size:'+ settings.fontSite +'px;}';
+		$("#styleCustom").html(wh_css);
+	</script>
+ </head>
+
+ <body onload="LongTextPage.init();" style="margin: 0 5px;">
+    
+	<div id="submitWarp">
+	  <div class="w">
+		<ul id="accountsForSend"></ul>
+		<p style="margin-right: 2px;"><textarea id="txtContent"></textarea></p>
+		<div class="ctr">
+			<span id="wordCount_double">140</span>
+			/
+            <span id="wordCount">140</span>
+			&nbsp;
+			<a id="btnAddEmotional" href="javascript:void(0);" onclick="fawave.face.show(this, 'txtContent');"><img src="images/face.gif" /><script>_u.wi('comm_emotional')</script></a>
+			<script>_u.wia('#btnAddEmotional','title','btn_emotional_title');</script>&nbsp;
+			<a id="doing" href="javascript:void(0);"><img src="images/world_link.png" /><script>_u.wi('btn_share_title');</script></a>
+            <script>_u.wia('#doing','title','btn_share_title');</script>&nbsp;
+			<button onclick="cleanTxtContent();" class="btn"><script>_u.wi('comm_clear')</script></button>&nbsp;
+			<button onclick="window.close();" style="display:none;" class="btn"><script>_u.wi('comm_close')</script></button>&nbsp;
+			<span id="success_close"><input id="cb_success_close" checked="checked" type="checkbox" /><label for="cb_success_close"><script>_u.wi('comm_send_success_close_window')</script></label></span>
+			<input id="btnSend" type="button" class="btn send" disabled="disabled" />
+			<script>_u.wia('#btnSend', 'value', 'comm_send'); _u.wia('#btnSend', 'title', 'comm_send_tip');</script>
+		</div>
+	  </div>
+	</div><!-- submitWarp END -->
+    <ul id="uploadinfo"></ul>
+    <form id="uploadForm">
+        <div class="fileSel graph">
+            <strong id="progressBar" class="bar" style="width: 0%;"><span></span></strong>
+            <div class="selTip"><script>_u.wi('btn_select_file_only_title')</script></div>
+        </div>
+        <span id="imageFileWrap" style="display:block;">
+            <input type="file" id="imageFile" onchange="selectFile(this, true);" />
+        </span>
+    </form>
+	<div id="longtextWarp">
+		<p><label for="font_size"><script>_u.wi('comm_font_size')</script>:</label>
+	    <select id="font_size">
+	        <option>11</option>
+	        <option>12</option>
+	        <option>13</option>
+	        <option>14</option>
+	        <option>15</option>
+	        <option>16</option>
+	        <option>17</option>
+	        <option>18</option>
+	        <option>19</option>
+	        <option>20</option>
+	        <option>21</option>
+	        <option>22</option>
+	        <option>23</option>
+	        <option>24</option>
+	        <option>25</option>
+	        <option>26</option>
+	        <option>27</option>
+	        <option>28</option>
+	        <option>29</option>
+	        <option>30</option>
+	        <option>31</option>
+            <option>32</option>
+            <option>33</option>
+            <option>34</option>
+            <option>35</option>
+            <option>36</option>
+            <option>37</option>
+            <option>38</option>
+            <option>39</option>
+            <option>40</option>
+	    </select>px
+	    <label for="font_bold"><script>_u.wi('comm_font_bold')</script>:</label>
+	    <input type="checkbox" id="font_bold" />
+	    <label for="font_family"><script>_u.wi('comm_font_family')</script>:</label>
+	    <select id="font_family">
+	        <option>cursive</option>
+	        <option>monospace</option>
+	        <option>serif</option>
+	        <option>sans-serif</option>
+	        <option>fantasy</option>
+	        <option>default</option>
+	        <option>宋体</option>
+            <option>微软雅黑</option>
+	        <option>Arial</option>
+	        <option>Arial Black</option>
+	        <option>Arial Narrow</option>
+	        <option>Arial Rounded MT Bold</option>
+	        <option>Bookman Old Style</option>
+	        <option>Bradley Hand ITC</option>
+	        <option>Century</option>
+	        <option>Century Gothic</option>
+	        <option>Comic Sans MS</option>
+	        <option>Courier</option>
+	        <option>Courier New</option>
+	        <option>Georgia</option>
+	        <option>Gentium</option>
+	        <option>Impact</option>
+	        <option>King</option>
+	        <option>Lucida Console</option>
+	        <option>Lucida Grande</option>
+	        <option>Lalit</option>
+	        <option>Modena</option>
+	        <option>Monotype Corsiva</option>
+	        <option>Papyrus</option>
+	        <option>Tahoma</option>
+	        <option>TeX</option>
+	        <option>Times</option>
+	        <option>Times New Roman</option>
+	        <option>Trebuchet MS</option>
+	        <option>Verdana</option>
+	        <option>Verona</option>
+	    </select>
+	    <input id="btnPrevLongText" type="button" class="btn" />
+	    <script>_u.wia('#btnPrevLongText', 'value', 'comm_preview_longtext'); _u.wia('#btnPrevLongText', 'prev_text', 'comm_preview_longtext'); _u.wia('#btnPrevLongText', 'edit_text', 'comm_edit_longtext');</script>
+	    </p>
+	    <p><textarea id="longtext"></textarea></p>
+	</div>
+	<div id="longtextPreview"></div>
+	<div id="msgInfoWarp" style=""></div>
+	
+	<!-- 表情选择 -->
+	<div id="face_box" class="layerBox" style="display:none;">
+		<div class="layerBoxCon1">
+			<div class="faceItem clearFix">
+				<div class="layerArrow"></div>
+				<div class="face_tab tab2">
+                    <p>
+                        <a id="btnFaceBoxClose" class="close" href="javascript:void(fawave.face.hide())"></a>
+                        <script>_u.wia('#btnFaceBoxClose','title','comm_close');</script>
+                    </p>
+                </div>
+				<div class="faceItemPicbg">
+				</div>
+			</div>
+		</div>
+	</div>
+	<input id="face_box_target_id" type="hidden" value="" />
+	<!-- 表情选择 End -->
+
+	<div id="needUpdateChrome" style="display:none;">
+		对不起，发微暂时未支持您的Chrome浏览器，您需要升级您的Chrome浏览器到 <b>6.0.472.0 Dev</b> 版本或者以上版本。
+		如果您要升级，可以<a target="_blank" onclick="window.close();" href="http://lulu.sinaapp.com/?p=36">到这里下载</a>。
+	</div>
+	<script>
+	chrome.extension.sendRequest({method:'activelog', active: 'longtext'});
+		var _gaq = _gaq || [];
+		 _gaq.push(['_setAccount', 'UA-19689660-1']);
+		 _gaq.push(['_trackPageview']);
+
+		function initGA(){
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		};
+		setTimeout(initGA, 1500);
+	</script>
+ </body>
+</html>

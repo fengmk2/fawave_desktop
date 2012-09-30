@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+ <head>
+	<meta charset="utf-8" />
+	<title>发送图片 - FaWave(发微) - 多微博插件 </title>
+	<script> window.theViewName = 'upimage'; </script>
+	<link rel="stylesheet" media="screen" type="text/css" href="/css/popup.css" />
+	<link rel="stylesheet" media="screen" type="text/css" href="/css/upimage.css" />
+	<script src="/scripts/lib/jquery.min.js"></script>
+	<script src="scripts/lib/Base64.js" ></script>
+	<script src="scripts/lib/cvi_filter_lib.js"></script>
+	<script src="scripts/lib/cvi_corner_lib.js"></script>
+	<script src="scripts/emotional.js" ></script>
+	<script src="/lib/utils.js"></script>
+	<script src="scripts/utili.js" ></script>
+	<script src="scripts/lib/md5.js" ></script>
+	<script src="scripts/lib/jssha256.js" ></script>
+	<script src="scripts/lib/sha1.js" ></script>
+  <script src="scripts/lib/oauth.js" ></script>
+	<script src="scripts/apis.js" ></script>
+	<script src="scripts/ui.js" ></script>
+	<script src="scripts/popup.js" ></script>
+	<script src="scripts/upimage.js" ></script>
+	<style id="styleCustom"></style>
+	<script>
+		this.document.title = _u.i18n('comm_pic') + ' - ' + _u.i18n('defaultTitle');
+		var settings = Settings.get();
+		var wh_css = 'body{font-family:"'+ settings.font +'";font-size:'+ settings.fontSite +'px;}';
+		$("#styleCustom").html(wh_css);
+	</script>
+ </head>
+
+ <body onload="initOnLoad();" style="margin: 0 5px;">
+	<div id="submitWarp">
+	  <div class="w">
+		<ul id="accountsForSend"></ul>
+		<p style="margin-right: 2px;"><textarea id="txtContent" ></textarea></p>
+		<div class="ctr">
+			<span id="wordCount_double">140</span>
+			/
+			<span id="wordCount">140</span>
+			&nbsp;
+			<a id="btnAddEmotional" href="javascript:void(0);" onclick="fawave.face.show(this, 'txtContent');"><img src="images/face.gif" /><script>_u.wi('comm_emotional')</script></a>
+			<script>_u.wia('#btnAddEmotional','title','btn_emotional_title');</script>&nbsp;
+			<button onclick="cleanTxtContent();" class="btn"><script>_u.wi('comm_clear')</script></button>&nbsp;
+			<button onclick="window.close();" style="display:none;" class="btn"><script>_u.wi('comm_close')</script></button>&nbsp;
+			<span id="success_close"><input id="cb_success_close" checked="checked" type="checkbox" /><label for="cb_success_close"><script>_u.wi('comm_send_success_close_window')</script></label></span>
+			<input id="btnSend" type="button" class="btn send" disabled="disabled" />
+			<script>_u.wia('#btnSend','value','comm_send'); _u.wia('#btnSend','title','comm_send_tip');</script>
+		</div>
+	  </div>
+	</div><!-- submitWarp END -->
+
+	<div>
+		<ul id="uploadinfo">
+		</ul>
+		<form id="uploadForm">
+		<div class="fileSel graph dragFile">
+			<strong id="progressBar" class="bar" style="width: 0%;"><span></span></strong>
+			<div class="selTip"><script>_u.wi('btn_select_pic_title')</script></div>
+		</div>
+		<span id="imageFileWrap" style="display:block;">
+			<input type="file" value="选择图片" id="imageFile" onchange="selectFile(this)" />
+		</span>
+		<div class="fileSel graph">
+        <script>_u.wi('comm_enter_image_url')</script>
+        <input type="text" style="width:50%;" id="imageUrl" onchange="selectUrl(this);" />
+        </div>
+        </form>
+		<!-- <div style="width: 200px; "><span id="progressBar"></span></div> -->
+		<div id="imgFilterList"></div>
+		<input type="range" id="imgFilterRange" min="1" max="10" style="display:none; width:80%;" />
+		<div id="imgPreview"></div>
+	</div>
+	<div id="msgInfoWarp" style=""></div>
+	
+	<!-- 表情选择 -->
+	<div id="face_box" class="layerBox" style="display:none;">
+		<div class="layerBoxCon1">
+			<div class="faceItem clearFix">
+				<div class="layerArrow"></div>
+				<div class="face_tab tab2">
+                    <p>
+                        <a id="btnFaceBoxClose" class="close" href="javascript:void(fawave.face.hide())"></a>
+                        <script>_u.wia('#btnFaceBoxClose','title','comm_close');</script>
+                    </p>
+                </div>
+				<div class="faceItemPicbg">
+				</div>
+			</div>
+		</div>
+	</div>
+	<input id="face_box_target_id" type="hidden" value="" />
+	<!-- 表情选择 End -->
+
+	<div id="needUpdateChrome" style="display:none;">
+		对不起，发微暂时未支持您的Chrome浏览器，您需要升级您的Chrome浏览器到 <b>6.0.472.0 Dev</b> 版本或者以上版本。
+		如果您要升级，可以<a target="_blank" onclick="window.close();" href="http://lulu.sinaapp.com/?p=36">到这里下载</a>。
+	</div>
+	<script>
+	chrome.extension.sendRequest({method:'activelog', active: 'upimage'});
+		var _gaq = _gaq || [];
+		 _gaq.push(['_setAccount', 'UA-19689660-1']);
+		 _gaq.push(['_trackPageview']);
+
+		function initGA(){
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		};
+		setTimeout(initGA, 1500);
+	</script>
+ </body>
+</html>
