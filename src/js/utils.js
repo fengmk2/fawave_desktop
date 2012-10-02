@@ -164,10 +164,10 @@ refreshTimeLimit.leihou =
  * Constant defines end
  */
 
-function getBackgroundView() {
-  return require('./background');
-}
-exports.getBackgroundView = getBackgroundView;
+// function getBackgroundView() {
+//   return require('./background');
+// }
+// exports.getBackgroundView = getBackgroundView;
 
 
 /**
@@ -175,15 +175,8 @@ exports.getBackgroundView = getBackgroundView;
  * @type {Object}
  */
 var ActionCache = exports.ActionCache = {
-  _cache: null,
+  _cache: {},
   _get_cache: function () {
-    if (!this._cache) {
-      var bg = getBackgroundView() || {};
-      if (!bg.__action_cache) {
-        bg.__action_cache = {};
-      }
-      this._cache = bg.__action_cache;
-    }
     return this._cache;
   },
   set: function (key, value) {
@@ -1910,12 +1903,12 @@ exports.hideLoading = hideLoading;
  * @api public
  */
 function filterDatasByMaxId(datas, max_id, append) {
-  var news = datas, olds = [];
+  var news = datas;
+  var olds = [];
   if (max_id && datas && datas.length > 0) {
-    max_id = String(max_id);
     var found_index = null;
     $.each(datas, function (i, item) {
-      if (max_id === String(item.id)) {
+      if (max_id === item.id) {
         found_index = i;
         return false;
       }

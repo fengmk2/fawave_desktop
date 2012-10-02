@@ -16,6 +16,9 @@ var setting = require('./setting');
 var tapi = require('weibo');
 var getUser = User.getUser;
 var Settings = setting.Settings;
+var format = require('weibo/lib/utils').format;
+var moment = require('moment');
+
 
 //格式化时间输出。示例：new Date().format("yyyy-MM-dd hh:mm:ss");
 Date.prototype.format = function (format) {
@@ -42,11 +45,6 @@ Date.prototype.format = function (format) {
 
 var Shotenjin = require('./lib/shotenjin');
 var provinces = require('./provinces');
-var TEMPLATE = window.TEMPLATE;
-var TEMPLATE_RT = window.TEMPLATE_RT;
-var TEMPLATE_USER_INFO = window.TEMPLATE_USER_INFO;
-var TEMPLATE_TIPBOX_USER_INFO = window.TEMPLATE_TIPBOX_USER_INFO;
-var TEMPLATE_FANS = window.TEMPLATE_FANS;
 
 function endswith(s, suffix) {
   return s.indexOf(suffix, s.length - suffix.length) !== -1;
@@ -55,115 +53,140 @@ function endswith(s, suffix) {
 exports.TWEETS = {};
 
 var _BUTTON_TPLS = {
-    showMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{user.profile_image_url}}\', {{geo.coordinates[0]}}, {{geo.coordinates[1]}});" title="'+ i18n.get("btn_geo_title") +'"><img src="images/mapspin2a.png"/></a>',
-    delTweetBtn: '<a class="deltweet" href="javascript:void(0);" onclick="doDelTweet(\'{{id}}\', this);" title="'+ i18n.get("btn_del_tweet_title") +'">'+ i18n.get("abb_delete") +'</a>',
-    replyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{user.screen_name}}\',\'{{id}}\');" title="'+ i18n.get("btn_mention_title") +'">@</a>',
-    oretweetBtn: '<a class="oretweet ort" href="javascript:void(0);" onclick="javascript:sendOretweet(this,\'{{user.screen_name}}\',\'{{id}}\');" title="'+ i18n.get("btn_rt_title") +'"></a>',
-    retweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this);" title="' + i18n.get("btn_old_rt_title") +'">RT</a>',
-    repostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" title="'+ i18n.get("btn_repost_title") +'">'+ i18n.get("abb_repost") +'</a>',
-    repostCounts: '<span class="repostCounts">({{repost_count}})</span>',
-    commentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" title="'+ i18n.get("btn_comment_title") +'">'+ i18n.get("abb_comment") +'</a>',
-    commentCounts: '<span class="commentCounts">({{comments_btn}})</span>',
-    delCommentBtn: '<a class="delcommenttweet" href="javascript:void(0);" onclick="javascript:doDelComment(this,\'{{user.screen_name}}\',\'{{id}}\');" title="'+ i18n.get("btn_del_comment_title") +'">'+ i18n.get("abb_delete") +'</a>',
-    new_msgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="doNewMessage(this,\'{{user.screen_name}}\',\'{{user.id}}\');" title="'+ i18n.get("btn_direct_message_title") +'">'+ i18n.get("abb_send_direct_message") +'</a>',
-    delDirectMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="delDirectMsg(this,\'{{user.screen_name}}\',\'{{id}}\');" title="'+ i18n.get("btn_del_direct_message_title") +'">'+ i18n.get("abb_delete") +'</a>',
-    addFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{user.screen_name}}\',\'{{id}}\');" title="'+ i18n.get("btn_add_favorites_title") +'"><img width="11px" src="images/favorites_2.gif"/></a>',
-    delFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="delFavorites(this,\'{{user.screen_name}}\',\'{{id}}\');" title="'+ i18n.get("btn_del_favorites_title") +'"><img width="11px" src="images/favorites.gif"/></a>',
-    
-    // rt
-    rtShowMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{retweeted_status.user.profile_image_url}}\', {{retweeted_status.geo.coordinates[0]}}, {{retweeted_status.geo.coordinates[1]}});" title="'+ i18n.get("btn_geo_title") +'"><img src="images/mapspin2a.png"/></a>',
-    rtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="'+ i18n.get("btn_repost_title") +'">'+ i18n.get("abb_repost") +'</a>',
-    rtRetweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this, true);" title="' + i18n.get("btn_old_rt_title") +'">RT</a>',
-    rtOretweetBtn: '<a class="oretweet ort" href="javascript:void(0);" onclick="javascript:sendOretweet(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="'+ i18n.get("btn_rt_title") +'"></a>',
-    rtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{retweeted_status.user.screen_name}}\', \'{{retweeted_status.user.id}}\', \'{{retweeted_status.id}}\');" title="'+ i18n.get("btn_comment_title") +'">'+ i18n.get("abb_comment") +'</a>',
-    rtCommentCounts: '<span class="commentCounts">({{rt_comments_count}})</span>',
-    rtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="'+ i18n.get("btn_mention_title") +'">@</a>',
-    rtAddFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="'+ i18n.get("btn_add_favorites_title") +'"><img width="11px" src="images/favorites_2.gif"/></a>',
-    rtRepostCounts: '<span class="repostCounts">({{retweeted_status.repost_count}})</span>',
+  showMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{user.profile_image_url}}\', {{geo.coordinates[0]}}, {{geo.coordinates[1]}});" title="' +
+    i18n.get("btn_geo_title") + '"><img src="images/mapspin2a.png"/></a>',
+  delTweetBtn: '<a class="deltweet" href="javascript:void(0);" onclick="doDelTweet(\'{{id}}\', this);" title="' +
+    i18n.get("btn_del_tweet_title") + '">' + i18n.get("abb_delete") + '</a>',
+  replyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
+    i18n.get("btn_mention_title") + '">@</a>',
+  oretweetBtn: '<a class="oretweet ort" href="javascript:void(0);" onclick="javascript:sendOretweet(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
+    i18n.get("btn_rt_title") + '"></a>',
+  retweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this);" title="' +
+    i18n.get("btn_old_rt_title") + '">RT</a>',
+  repostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" title="' +
+    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
+  repostCounts: '<span class="repostCounts">({{repost_count}})</span>',
+  commentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" title="' +
+    i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
+  commentCounts: '<span class="commentCounts">({{comments_btn}})</span>',
+  delCommentBtn: '<a class="delcommenttweet" href="javascript:void(0);" onclick="javascript:doDelComment(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
+    i18n.get("btn_del_comment_title") + '">' + i18n.get("abb_delete") + '</a>',
+  new_msgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="doNewMessage(this,\'{{user.screen_name}}\',\'{{user.id}}\');" title="' +
+    i18n.get("btn_direct_message_title") + '">' + i18n.get("abb_send_direct_message") + '</a>',
+  delDirectMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="delDirectMsg(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
+    i18n.get("btn_del_direct_message_title") + '">' + i18n.get("abb_delete") + '</a>',
+  addFavoritesMsgBtn: '<a class="add_favorite_btn" data-id="{{id}}" title="' +
+    i18n.get("btn_add_favorites_title") + '" href="javascript:void(0)"><img src="images/favorites_2.gif" /></a>',
+  delFavoritesMsgBtn: '<a class="del_favorite_btn" data-id="{{id}}" title="' +
+    i18n.get("btn_del_favorites_title") + '" href="javascript:void(0)"><img src="images/favorites.gif"/></a>',
+  
+  // rt
+  rtShowMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{retweeted_status.user.profile_image_url}}\', {{retweeted_status.geo.coordinates[0]}}, {{retweeted_status.geo.coordinates[1]}});" title="' +
+    i18n.get("btn_geo_title") + '"><img src="images/mapspin2a.png"/></a>',
+  rtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
+    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
+  rtRetweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this, true);" title="' +
+    i18n.get("btn_old_rt_title") + '">RT</a>',
+  rtOretweetBtn: '<a class="oretweet ort" href="javascript:void(0);" onclick="javascript:sendOretweet(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
+    i18n.get("btn_rt_title") + '"></a>',
+  rtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{retweeted_status.user.screen_name}}\', \'{{retweeted_status.user.id}}\', \'{{retweeted_status.id}}\');" title="' +
+    i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
+  rtCommentCounts: '<span class="commentCounts">({{rt_comments_count}})</span>',
+  rtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
+    i18n.get("btn_mention_title") + '">@</a>',
+  rtAddFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
+    i18n.get("btn_add_favorites_title") + '"><img width="11px" src="images/favorites_2.gif"/></a>',
+  rtRepostCounts: '<span class="repostCounts">({{retweeted_status.repost_count}})</span>',
     
     // rt rt
-    rtrtShowMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{retweeted_status.retweeted_status.user.profile_image_url}}\', {{retweeted_status.retweeted_status.geo.coordinates[0]}}, {{retweeted_status.retweeted_status.geo.coordinates[1]}});" title="'+ i18n.get("btn_geo_title") +'"><img src="images/mapspin2a.png"/></a>',
-    rtrtOretweetBtn: '',
-    rtrtRetweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this, false, true);" title="'+ i18n.get("btn_old_rt_title") +'">RT</a>',
-    rtrtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="'+ i18n.get("btn_repost_title") +'">'+ i18n.get("abb_repost") +'</a>',
-    rtrtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\', \'{{retweeted_status.retweeted_status.user.id}}\', \'{{retweeted_status.retweeted_status.id}}\');" title="'+ i18n.get("btn_comment_title") +'">'+ i18n.get("abb_comment") +'</a>',
-    rtrtCommentCounts: '<span class="commentCounts">({{rtrt_comments_count}})</span>',
-    rtrtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="'+ i18n.get("btn_mention_title") +'">@</a>',
-    rtrtAddFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="'+ i18n.get("btn_add_favorites_title") +'"><img width="11px" src="images/favorites_2.gif"/></a>',
-    rtrtRepostCounts: '<span class="repostCounts">({{retweeted_status.retweeted_status.repost_count}})</span>'
+  rtrtShowMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{retweeted_status.retweeted_status.user.profile_image_url}}\', {{retweeted_status.retweeted_status.geo.coordinates[0]}}, {{retweeted_status.retweeted_status.geo.coordinates[1]}});" title="' +
+    i18n.get("btn_geo_title") + '"><img src="images/mapspin2a.png"/></a>',
+  rtrtOretweetBtn: '',
+  rtrtRetweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this, false, true);" title="' +
+    i18n.get("btn_old_rt_title") + '">RT</a>',
+  rtrtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
+    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
+  rtrtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\', \'{{retweeted_status.retweeted_status.user.id}}\', \'{{retweeted_status.retweeted_status.id}}\');" title="' +
+    i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
+  rtrtCommentCounts: '<span class="commentCounts">({{rtrt_comments_count}})</span>',
+  rtrtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
+    i18n.get("btn_mention_title") + '">@</a>',
+  rtrtAddFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
+    i18n.get("btn_add_favorites_title") + '"><img width="11px" src="images/favorites_2.gif"/></a>',
+  rtrtRepostCounts: '<span class="repostCounts">({{retweeted_status.retweeted_status.repost_count}})</span>'
 };
 
 function buildStatusHtml(statuses, t, c_user) {
   var htmls = [];
-    if (!statuses || statuses.length === 0) { 
-        return htmls; 
-    }
-    if (!c_user) {
-        c_user = getUser();
-    }
-    var TEMPLATE_RT_RT = null;
-    var theme = Settings.get().theme;
-    var rt_replace_pre = null, rt_rt_replace_pre = null;
-    if (theme === 'pip_io' || theme === 'work') {
-        rt_replace_pre = '<!-- {{retweeted_status_out}} -->';
-        rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_out}} -->';
-    } else {
-        rt_replace_pre = '<!-- {{retweeted_status_in}} -->';
-        rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_in}} -->';
-    }
-    
-    var config = tapi.get_config(c_user);
-    var support_do_comment = config.support_do_comment;
-    var support_do_favorite = config.support_do_favorite;
-    var show_fullname = config.show_fullname;
-    var need_set_readed = false; // 必须设置为已读
-    if (t === 'user_timeline' || t === 'favorites') {
-        need_set_readed = true;
-    }
-    var BUTTON_TPLS = $.extend({}, _BUTTON_TPLS);
+  if (!statuses || statuses.length === 0) { 
+    return htmls; 
+  }
+  if (!c_user) {
+    c_user = getUser();
+  }
+  var TEMPLATE_RT_RT = null;
+  var theme = Settings.get().theme;
+  var rt_replace_pre = null, rt_rt_replace_pre = null;
+  if (theme === 'pip_io' || theme === 'work') {
+    rt_replace_pre = '<!-- {{retweeted_status_out}} -->';
+    rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_out}} -->';
+  } else {
+    rt_replace_pre = '<!-- {{retweeted_status_in}} -->';
+    rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_in}} -->';
+  }
+  
+  var config = tapi.get_config(c_user);
+  var support_do_comment = config.support_do_comment;
+  var support_do_favorite = config.support_do_favorite;
+  var show_fullname = config.show_fullname;
+  var need_set_readed = false; // 必须设置为已读
+  if (t === 'user_timeline' || t === 'favorites') {
+      need_set_readed = true;
+  }
+  var BUTTON_TPLS = $.extend({}, _BUTTON_TPLS);
 
-    // 不支持收藏
-    if (!support_do_favorite) {
-        BUTTON_TPLS.addFavoritesMsgBtn = BUTTON_TPLS.delFavoritesMsgBtn = '';
-    }
-    // 不支持repost(转发)
-    if (!config.support_repost) {
-        BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
-            BUTTON_TPLS.rtrtRepostCounts = BUTTON_TPLS.repostBtn = 
-            BUTTON_TPLS.rtRepostBtn = BUTTON_TPLS.rtrtRepostBtn = '';
-    }
-    if (!config.support_counts) {
-        BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
-            BUTTON_TPLS.rtrtRepostCounts = '';
-    }
-    // 不支持删除私信
-    if (!config.support_destroy_msg) {
-        BUTTON_TPLS.delDirectMsgBtn = '';
-    }
-  // 不支持私信
-    if (!config.support_direct_messages) {
-        BUTTON_TPLS.delDirectMsgBtn = '';
-        BUTTON_TPLS.new_msgBtn = '';
-    }
-    // 不支持评论
-    if (!support_do_comment) {
-        BUTTON_TPLS.commentBtn = BUTTON_TPLS.commentCounts = 
-            BUTTON_TPLS.rtCommentCounts = BUTTON_TPLS.rtCommentBtn = '';
-    }
-    
-    // 支持转发列表
-    var tpl;
-    if (config.support_repost && config.support_repost_timeline) {
-      tpl = '<span class="repostCounts">(<a href="javascript:void(0);" title="' + 
-          i18n.get("comm_show_repost_timeline") + 
-          '" timeline_type="repost" onclick="showRepostTimeline(this, \'{{id}}\');">{{repost_count}}</a>)</span>';
-      BUTTON_TPLS.repostCounts = tpl;
-      BUTTON_TPLS.rtRepostCounts = tpl.replace(/\{\{repost_count\}\}/g, '{{retweeted_status.repost_count}}')
-        .replace(/\{\{id\}\}/g, '{{retweeted_status.id}}');
-      BUTTON_TPLS.rtrtRepostCounts = tpl.replace(/\{\{repost_count\}\}/g, 
-        '{{retweeted_status.retweeted_status.repost_count}}')
-        .replace(/\{\{id\}\}/g, '{{retweeted_status.retweeted_status.id}}');
-    }
+  // 不支持收藏
+  if (!support_do_favorite) {
+      BUTTON_TPLS.addFavoritesMsgBtn = BUTTON_TPLS.delFavoritesMsgBtn = '';
+  }
+  // 不支持repost(转发)
+  if (!config.support_repost) {
+      BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
+          BUTTON_TPLS.rtrtRepostCounts = BUTTON_TPLS.repostBtn = 
+          BUTTON_TPLS.rtRepostBtn = BUTTON_TPLS.rtrtRepostBtn = '';
+  }
+  if (!config.support_counts) {
+      BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
+          BUTTON_TPLS.rtrtRepostCounts = '';
+  }
+  // 不支持删除私信
+  if (!config.support_destroy_msg) {
+      BUTTON_TPLS.delDirectMsgBtn = '';
+  }
+// 不支持私信
+  if (!config.support_direct_messages) {
+      BUTTON_TPLS.delDirectMsgBtn = '';
+      BUTTON_TPLS.new_msgBtn = '';
+  }
+  // 不支持评论
+  if (!support_do_comment) {
+      BUTTON_TPLS.commentBtn = BUTTON_TPLS.commentCounts = 
+          BUTTON_TPLS.rtCommentCounts = BUTTON_TPLS.rtCommentBtn = '';
+  }
+  
+  // 支持转发列表
+  var tpl;
+  if (config.support_repost && config.support_repost_timeline) {
+    tpl = '<span class="repostCounts">(<a href="javascript:void(0);" title="' + 
+        i18n.get("comm_show_repost_timeline") + 
+        '" timeline_type="repost" onclick="showRepostTimeline(this, \'{{id}}\');">{{repost_count}}</a>)</span>';
+    BUTTON_TPLS.repostCounts = tpl;
+    BUTTON_TPLS.rtRepostCounts = tpl.replace(/\{\{repost_count\}\}/g, '{{retweeted_status.repost_count}}')
+      .replace(/\{\{id\}\}/g, '{{retweeted_status.id}}');
+    BUTTON_TPLS.rtrtRepostCounts = tpl.replace(/\{\{repost_count\}\}/g, 
+      '{{retweeted_status.retweeted_status.repost_count}}')
+      .replace(/\{\{id\}\}/g, '{{retweeted_status.retweeted_status.id}}');
+  }
     var messageReplyToBtn = '';
     var support_instapaper = !!Settings.get().instapaper_user;
     var support_readitlater = !!Settings.get().readitlater_user;
@@ -253,7 +276,7 @@ function buildStatusHtml(statuses, t, c_user) {
       if (status.comments_count === undefined) {
         status.comments_count = '0';
       }
-      var comments_btn = comments_count_tpl.format(status);
+      var comments_btn = format(comments_count_tpl, status);
       status.comments_btn = comments_btn;
       status.rt_comments_count = status.rtrt_comments_count = '-';
       var rtrt_status = null;
@@ -267,7 +290,7 @@ function buildStatusHtml(statuses, t, c_user) {
         status.retweeted_status_screen_name = rt_status.user.screen_name;
         status.retweeted_status_id = rt_status.id;
         exports.TWEETS[rt_status.id] = rt_status;
-        status.rt_comments_count = comments_count_tpl.format(rt_status);
+        status.rt_comments_count = format(comments_count_tpl, rt_status);
         rtrt_status = rt_status.retweeted_status = rt_status.retweeted_status || rt_status.status;
         if (rtrt_status && rtrt_status.user) {
           exports.TWEETS[rtrt_status.id] = rtrt_status;
@@ -277,7 +300,7 @@ function buildStatusHtml(statuses, t, c_user) {
           if (rtrt_status.comments_count === undefined) {
             rtrt_status.comments_count = '0';
           }
-          status.rtrt_comments_count = comments_count_tpl.format(rtrt_status);
+          status.rtrt_comments_count = format(comments_count_tpl, rtrt_status);
         }
       } else {
         status.retweeted_status_id = status.retweeted_status_screen_name = '';
@@ -303,16 +326,16 @@ function buildStatusHtml(statuses, t, c_user) {
           tpl = '';
         }
         if (tpl) {
-          tpl = tpl.format(status);
+          tpl = format(tpl, status);
         }
         buttons[key] = tpl;
       }
-      if (status.favorited || isFavorited) {
+      if (status.favorited_at) {
         buttons.addFavoritesMsgBtn = '';
       } else {
         buttons.delFavoritesMsgBtn = '';
       }
-      if (String(c_user.id) === String(status.user.id)) {
+      if (c_user && status.user && c_user.id === status.user.id) {
         status.myTweet = true;
         buttons.new_msgBtn = '';
         buttons.rtOretweetBtn = buttons.oretweetBtn = '';
@@ -353,7 +376,7 @@ function buildStatusHtml(statuses, t, c_user) {
         btn: buttons
       };
       if (messageReplyToBtn && status.recipient && status.recipient.id !== c_user.id) {
-        buttons.messageReplyToBtn = messageReplyToBtn.format(status);
+        buttons.messageReplyToBtn = format(messageReplyToBtn, status);
       }
       try {
         var html = Shotenjin.render(window.TEMPLATE, context);
@@ -369,7 +392,7 @@ function buildStatusHtml(statuses, t, c_user) {
             }
             context.is_rt_rt = true;
             context.retweeted_status_user = rt_status.user || {};
-            html = html.replace(rt_rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT_RT, context));
+            html = html.replace(rt_rt_replace_pre, Shotenjin.render(TEMPLATE_RT_RT, context));
           }
         }
         htmls.push(html);
@@ -436,7 +459,7 @@ function buildUserInfo(user) {
     support_blocking: config.support_blocking,
     support_follow: !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren'
   };
-  return Shotenjin.render(TEMPLATE_USER_INFO, context);
+  return Shotenjin.render(window.TEMPLATE_USER_INFO, context);
 }
 exports.buildUserInfo = buildUserInfo;
 
@@ -462,20 +485,21 @@ function buildComment(comment, status_id, status_user_screen_name, status_user_i
     exports.TWEETS[String(comment_id)] = comment;
     var comment_user_screen_name = comment.user.screen_name;
     var comment_user_id = comment.user.id;
-    var datetime = new Date(comment.created_at).format("yyyy-MM-dd hh:mm:ss");
+    var datetime = moment(comment.created_at).format("YYYY-MM-DD HH:mm:ss");
     var comment_btn = '';
     if (timeline_type === 'comment') {
       if (comment.status && comment.status.id) {
-          status_id = comment.status.id;
-          if (comment.status.user) {
-            status_user_screen_name = comment.status.user.screen_name;
-            status_user_id = comment.status.user.id;
-          }
+        status_id = comment.status.id;
+        if (comment.status.user) {
+          status_user_screen_name = comment.status.user.screen_name;
+          status_user_id = comment.status.user.id;
         }
-      comment_btn = ('<a class="replyComment" href="javascript:void(0);" ' +
+      }
+      var tpl = '<a class="replyComment" href="javascript:void(0);" ' +
         ' onclick="javascript:doComment(this,\'{{status_user_screen_name}}\',\'{{status_user_id}}\',\'{{status_id}}\',\'{{comment_user_screen_name}}\',\'{{comment_user_id}}\',\'{{comment_id}}\');" ' +
         ' title="'+ i18n.get("btn_reply_comment_title") +'">' +
-        i18n.get("abb_reply") +'</a>').format({
+        i18n.get("abb_reply") +'</a>';
+      comment_btn = format(tpl, {
           status_id: status_id,
           status_user_screen_name: status_user_screen_name,
           status_user_id: status_user_id,
@@ -486,7 +510,7 @@ function buildComment(comment, status_id, status_user_screen_name, status_user_i
     } else { // repost
       var status = comment;
       status_id = status.id;
-      exports.TWEETS[String(status_id)] = status;
+      exports.TWEETS[status_id] = status;
       status_user_id = status.user.id;
       status_user_screen_name = status.user.screen_name;
       // 直接回复给转发者的微博
@@ -495,20 +519,20 @@ function buildComment(comment, status_id, status_user_screen_name, status_user_i
       comment_user_screen_name = '';
       var retweeted_status_screen_name = '';
       var retweeted_status_id = '';
-      if(status.retweeted_status && status.retweeted_status.user) {
+      if (status.retweeted_status && status.retweeted_status.user) {
         retweeted_status_screen_name = status.retweeted_status.user.screen_name;
         retweeted_status_id = status.retweeted_status.id;
       }
       status.retweeted_status_screen_name = retweeted_status_screen_name;
       status.retweeted_status_id = retweeted_status_id;
-      var repost_btn = ('<a class="replyComment" href="javascript:void(0);" ' +
+      var repost_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
         'onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" ' +
         'title="'+ i18n.get("btn_repost_title") +'">' +
-        i18n.get("abb_repost") +'</a>').format(status);
-      comment_btn = ('<a class="replyComment" href="javascript:void(0);" ' +
+        i18n.get("abb_repost") +'</a>', status);
+      comment_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
         'onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" ' +
         'title="'+ i18n.get("btn_comment_title") +'">&nbsp;&nbsp;' +
-        i18n.get("abb_comment") +'</a>').format(status);
+        i18n.get("abb_comment") +'</a>', status);
       comment_btn += repost_btn;
       datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
         ' ' + status.source + ' ' + i18n.get('comm_repost');
@@ -521,8 +545,8 @@ function buildComment(comment, status_id, status_user_screen_name, status_user_i
     } else {
       comment.user.verified = '';
     }
-    var reply_user = ('<a target="_blank" href="javascript:getUserTimeline(\'{{screen_name}}\', \'{{id}}\');" rhref="{{t_url}}" title="' +
-      i18n.get("btn_show_user_title") +'">@{{screen_name}}{{verified}}</a>').format(comment.user);
+    var reply_user = format('<a target="_blank" href="javascript:getUserTimeline(\'{{screen_name}}\', \'{{id}}\');" rhref="{{t_url}}" title="' +
+      i18n.get("btn_show_user_title") +'">@{{screen_name}}{{verified}}</a>', comment.user);
     return '<li><span class="commentContent">' +
       reply_user + ': ' + tapi.process_text(c_user, comment) +
       '</span><span class="msgInfo">(' + datetime + ')</span>' +
@@ -698,4 +722,26 @@ var popupBox = exports.popupBox = {
       popupBox.show();
     }
 };
+
+function showTips(message) {
+  var tip = $('#msgInfoWarp .messageInfo');
+  if (tip.length === 0) {
+    $('<div class="messageInfo"></div>')
+    .appendTo('#msgInfoWarp');
+    tip = $('#msgInfoWarp .messageInfo');
+  }
+  tip.html(message);
+  if (tip.is(':hidden')) {
+    tip.fadeIn('slow')
+    .animate({opacity: 1.0}, 3000)
+    .fadeOut('slow');
+  }
+}
+exports.showTips = showTips;
+
+function showErrorTips(err) {
+  var message = err.name + ': ' + err.message;
+  showTips(message);
+}
+exports.showErrorTips = showErrorTips;
 

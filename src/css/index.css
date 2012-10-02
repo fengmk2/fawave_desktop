@@ -276,7 +276,10 @@ li .thumbnail_pic{
 }
 li .thumbnail_pic .img_loading{position:absolute;left:42%;top:43%;}
 
-.readmore_loading{display:none; text-align:center; height:20px;}
+.readmore_loading {
+  text-align: center;
+  height: 20px;
+}
 
 /* 人间网的表情*/
 .renjian_emot{
@@ -808,7 +811,11 @@ div.loading_bar span {
 }
 
 .fullname {
-    color: #999;
-    font-size: 12px;
-    font-weight: normal;
+  color: #999;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.del_favorite_btn img, .add_favorite_btn img{
+  width: 11px;
 }

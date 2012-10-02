@@ -3,11 +3,12 @@
   "name": "fawave",
   "main": "src/index.html",
   "dependencies": {
-    "weibo": ">=0.6.2"
+    "moment": ">=1.7.0",
+    "weibo": ">=0.6.3"
   },
   "window": {
     "icon": "images/icon128.png",
-    "toolbar": false,
+    "toolbar": true,
     "width": 650,
     "height": 600,
     "position": "center",

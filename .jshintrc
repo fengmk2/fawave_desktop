@@ -16,7 +16,7 @@
     "$",
     "chrome",
     "localStorage",
-    "_u",
+    "document",
     "getUser"
   ],
 

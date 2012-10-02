@@ -6,15 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="FaWave desktop">
 <meta name="author" content="fengmk2 <fengmk2@gmail.com>">
-<link rel="stylesheet" href="css/main.css" />
+<link rel="stylesheet" href="css/index.css" />
 <link rel="stylesheet" href="css/emoji.css" />
 <link rel="stylesheet" href="themes/pip_io/css/theme.css" />
 <style id="styleCustomResize"></style>
 <script src="js/lib/jquery-1.8.2.min.js"></script>
+<script src="js/lib/special_scroll.js"></script>
 <script src="js/patch.js"></script>
-
-<script src="main.js"></script>
+<script src="index.js"></script>
 <script>
+
 var i18n = require('./js/i18n');
 var _u = {
   // 向页面写内容
@@ -116,14 +117,14 @@ var _u = {
         <a id="btnAlertMode" href="javascript:void(0);" title="" mode="alert" onclick="changeAlertMode()"><img src="images/alert_mode.png" /></a>
         <a id="btnAutoInsert" href="javascript:void(0);" title="" mode="notautoinsert" onclick="changeAutoInsertMode()"><img src="images/notautoinsert.png" /></a>
       </span>
-      <li class="tab-friends_timeline" href="#friends_timeline_timeline"><script>_u.wi('comm_TabName_friends_timeline')</script><span class="unreadCount"></span></li>
-      <li class="tab-mentions" href="#mentions_timeline"><script>_u.wi('comm_TabName_mentions')</script><span class="unreadCount"></span></li>
-      <li class="tab-comments_mentions" href="#comments_mentions_timeline"><script>_u.wi('comm_TabName_comments_mentions')</script><span class="unreadCount"></span></li>
-      <li class="tab-comments_timeline" href="#comments_timeline_timeline"><script>_u.wi('comm_TabName_comments_timeline')</script><span class="unreadCount"></span></li>
-      <li class="tab-direct_messages" href="#direct_messages_timeline"><script>_u.wi('comm_TabName_direct_messages')</script><span class="unreadCount"></span></li>
-      <li class="tab-favorites only_click" href="#favorites_timeline"><script>_u.wi('comm_TabName_favorites')</script><span class="unreadCount"></span></li>
-      <li class="tab-followers only_click" href="#followers_timeline"><script>_u.wi('comm_TabName_followers')</script><span class="unreadCount"></span></li>
-      <li class="tab-user_timeline only_click" href="#user_timeline_timeline"><script>_u.wi('comm_TabName_user_timeline')</script><span class="unreadCount"></span></li>
+      <li class="tab-friends_timeline timeline_tab" data-type="friends_timeline" href="#friends_timeline_timeline"><script>_u.wi('comm_TabName_friends_timeline')</script><span class="unreadCount"></span></li>
+      <li class="tab-mentions timeline_tab" data-type="mentions" href="#mentions_timeline"><script>_u.wi('comm_TabName_mentions')</script><span class="unreadCount"></span></li>
+      <li class="tab-comments_mentions timeline_tab" data-type="comments_mentions" href="#comments_mentions_timeline"><script>_u.wi('comm_TabName_comments_mentions')</script><span class="unreadCount"></span></li>
+      <li class="tab-comments_timeline timeline_tab" data-type="comments_timeline" href="#comments_timeline_timeline"><script>_u.wi('comm_TabName_comments_timeline')</script><span class="unreadCount"></span></li>
+      <li class="tab-direct_messages timeline_tab" data-type="direct_messages" href="#direct_messages_timeline"><script>_u.wi('comm_TabName_direct_messages')</script><span class="unreadCount"></span></li>
+      <li class="tab-favorites only_click timeline_tab" data-type="favorites" href="#favorites_timeline"><script>_u.wi('comm_TabName_favorites')</script><span class="unreadCount"></span></li>
+      <li class="tab-followers only_click timeline_tab" data-type="followers" href="#followers_timeline"><script>_u.wi('comm_TabName_followers')</script><span class="unreadCount"></span></li>
+      <li class="tab-user_timeline only_click timeline_tab" data-type="user_timeline" href="#user_timeline_timeline"><script>_u.wi('comm_TabName_user_timeline')</script><span class="unreadCount"></span></li>
     </ul>
     <div class="clearFix"></div>
   </div>
@@ -344,7 +345,7 @@ var _u = {
                 rhref="#{tweet.retweet_user.t_url}">
                 #{tweet.retweet_user.screen_name}<?js if (tweet.retweet_user.verified) { ?><img title="#{_u.i18n('comm_verified')}" src="images/verified#{tweet.retweet_user.verified_type && tweet.retweet_user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
               </a>
-              <?js if(show_fullname) { ?><span class="fullname">#{tweet.retweet_user.name}</span> <?js } ?>
+              <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweet_user.name}</span> <?js } ?>
              <?js } ?> #{_u.i18n("comm_retweet_by_after")}</div>
              <?js } ?>
           </div>
@@ -370,15 +371,19 @@ var _u = {
            <?js } else { ?>
            #{tweet.created_at.format("yyyy-MM-dd hh:mm:ss")}
            <?js } ?>
-           #{_u.i18n('comm_post_by')} #{tweet.source|| _u.i18n("comm_web_site")}
+           #{_u.i18n('comm_post_by')} #{tweet.source || _u.i18n("comm_web_site")}
            <?js if (!tweet.retweeted_status && tweet.in_reply_to_status_id && tweet.in_reply_to_screen_name) { ?>
            <a href="javascript:void(0);" class="show_source_status_btn" status_id="#{tweet.in_reply_to_status_id}" 
                title="#{_u.i18n('comm_show_original_status')}">#{_u.i18n("btn_show_source_status", [tweet.in_reply_to_screen_name])}</a>
            <?js } ?>
            <!-- 提示私信是回复给谁的 -->
            #{btn.messageReplyToBtn}
-        </div>
         <?js } ?>
+        <!-- 收藏时间 -->
+        <?js if (tweet.favorited_at) { ?>
+          | 收藏于 #{tweet.favorited_at.format("yyyy-MM-dd hh:mm:ss")}
+        <?js } ?>
+        </div>
       </div>
       </div> <!-- end .li_wrap -->
       <?js if(tweet.retweeted_status && tweet.retweeted_status.text){ ?>
@@ -710,7 +715,7 @@ var _u = {
               <div class="recent_tweet">#{_u.i18n("comm_recent_tweet")}: 
               ${user.status.text}
               |
-              <?js if(user.status.t_url) { ?>
+              <?js if (user.status.t_url) { ?>
               <a href="#{user.status.t_url}" target="_blank">#{user.status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
               <?js } else { ?>
               #{user.status.created_at.format("yyyy-MM-dd hh:mm:ss")}

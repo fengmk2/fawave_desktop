@@ -29,27 +29,27 @@ var filterDatasByMaxId = utils.filterDatasByMaxId;
 var PAGE_SIZE = CONST.PAGE_SIZE;
 
 
-window._i18n_messages = null;
-function reload_i18n_messages(language, callback) {
-  if (!language) {
-    window._i18n_messages = null;
-    return callback && callback();
-  }
-  var url = chrome.extension.getURL('/_locales/' + language + '/messages.json');
-  if (url) {
-    $.get(url, function (messages) {
-      messages = eval('[' + messages + ']')[0];
-      window._i18n_messages = messages;
-      callback && callback(messages);
-    });
-  }
-}
+// window._i18n_messages = null;
+// function reload_i18n_messages(language, callback) {
+//   if (!language) {
+//     window._i18n_messages = null;
+//     return callback && callback();
+//   }
+//   var url = chrome.extension.getURL('/_locales/' + language + '/messages.json');
+//   if (url) {
+//     $.get(url, function (messages) {
+//       messages = eval('[' + messages + ']')[0];
+//       window._i18n_messages = messages;
+//       callback && callback(messages);
+//     });
+//   }
+// }
 
 // 如果用户设置了默认语言，则加载相应的语言文件
 (function () {
   var language = Settings.get().default_language;
   if (language) {
-    reload_i18n_messages(language);
+    // reload_i18n_messages(language);
   }
 })();
 
@@ -60,8 +60,8 @@ var SHORT_URLS = {};
 var IMAGE_URLS = {};
 var VIEW_STATUS = {}; // 上次的浏览状态
 
-window.checking = {}; // 正在检查是否有最新微博
-window.paging = {}; // 正在获取分页微博
+var checking = {}; // 正在检查是否有最新微博
+var paging = {}; // 正在获取分页微博
 
 function _format_data_key(data_type, end_str, user_uniquekey) {
   if (!user_uniquekey) {
@@ -128,11 +128,11 @@ function set_data_cache(cache, data_type, user_uniquekey) {
 
 // 上次id参数缓存
 function setLastMsgId(id, t, user_uniqueKey) {
-  localStorage.setObject(user_uniqueKey + t + window.LAST_MSG_ID, id);
+  localStorage.setObject(user_uniqueKey + t + CONST.LAST_MSG_ID, id);
 }
 
 function getLastMsgId(t, user_uniqueKey) {
-  return localStorage.getObject(user_uniqueKey + t + window.LAST_MSG_ID);
+  return localStorage.getObject(user_uniqueKey + t + CONST.LAST_MSG_ID);
 }
 
 /**
@@ -211,11 +211,11 @@ var friendships = {
           message += ', ' + user_info.message;
         }
       }
-      window.showMsg(message);
+      // window.showMsg(message);
       if (callback) { 
         callback(user_info, textStatus, statuCode); 
       }
-      window.hideLoading();
+      // window.hideLoading();
     });
   },
   destroy: function (user_id, screen_name, callback) { //取消更随某人
@@ -226,14 +226,14 @@ var friendships = {
         if (user_info.screen_name) {
           screen_name = user_info.screen_name;
         }
-        window.showMsg(i18n.get("msg_f_destroy_success").format({name: screen_name}));
+        // window.showMsg(i18n.get("msg_f_destroy_success").format({name: screen_name}));
       } else {
         user_info = null;
       }
       if (callback) { 
         callback(user_info, textStatus, statuCode); 
       }
-      window.hideLoading();
+      // window.hideLoading();
     });
   },
   show: function (user_id) { //查看与某人的跟随关系
@@ -370,7 +370,7 @@ function checkTimeline(t, user_uniqueKey) {
   }
   setDoChecking(user_uniqueKey, t, 'checking', true);
   var _key = user_uniqueKey + t + '_tweets';
-  var params = { count: window.PAGE_SIZE };
+  var params = { count: PAGE_SIZE };
   var last_id = null;
   if (tweets[_key] && tweets[_key].length > 0) {
     last_id = getLastMsgId(t, user_uniqueKey);
@@ -378,7 +378,7 @@ function checkTimeline(t, user_uniqueKey) {
   if (last_id) {
     params.since_id = last_id;
   }
-  if (c_user.blogType === 'tqq' && !last_id) {
+  if (c_user.blogtype === 'tqq' && !last_id) {
     // 腾讯微博的第一次获取加pageflag=0，获取第一页
     params.pageflag = 0;
     params.since_id = 0;
@@ -396,8 +396,9 @@ function checkTimeline(t, user_uniqueKey) {
     }
     var data = result || {};
     var sinaMsgs = data.items || data;
-    console.log(t + ' items ' + sinaMsgs.length);
-    var popupView = window;
+    console.log(c_user.screen_name + ':' + t + ' items ' + sinaMsgs.length);
+    var popupView = null;
+    // var popupView = window;
     // var popupView = getPopupView();
     if (!tweets[_key]) {
       tweets[_key] = [];
@@ -692,13 +693,13 @@ function isDoChecking(user_uniqueKey, t, c_t) {
   if (!user_uniqueKey) {
     user_uniqueKey = getUser().uniqueKey;
   }
-  if (window[c_t][user_uniqueKey + t]) {
-    var d = new Date().getTime();
-    var _d = d - window[c_t][user_uniqueKey + t + '_time'];
-    if (_d < 60 * 1000) { //如果还没有超过一分钟
-      return true;
-    }
-  }
+  // if (window[c_t][user_uniqueKey + t]) {
+  //   var d = new Date().getTime();
+  //   var _d = d - window[c_t][user_uniqueKey + t + '_time'];
+  //   if (_d < 60 * 1000) { //如果还没有超过一分钟
+  //     return true;
+  //   }
+  // }
   return false;
 }
 
@@ -706,13 +707,14 @@ function setDoChecking(user_uniqueKey, t, c_t, v) {
   if (!user_uniqueKey) {
     user_uniqueKey = getUser().uniqueKey;
   }
-  window[c_t][user_uniqueKey + t] = v;
-  window[c_t][user_uniqueKey + t + '_time'] = new Date().getTime();
+  // window[c_t][user_uniqueKey + t] = v;
+  // window[c_t][user_uniqueKey + t + '_time'] = new Date().getTime();
 }
 
 //在页面显示提示信息
 //@user: 当前用户
 function showNewMsg(msgs, t, user) {
+  return;
   if (getAlertMode() === 'dnd') { return; } //免打扰模式
   if (Settings.get().isShowInPage[t]) {
     chrome.tabs.getSelected(null, function (tab) {
@@ -1134,9 +1136,9 @@ function removeSharedContextmenu() {
   // }
 }
 
-if (Settings.get().enableContextmenu) {
-  createSharedContextmenu();
-}
+// if (Settings.get().enableContextmenu) {
+//   createSharedContextmenu();
+// }
 
 var r_method_manager = {
   test: function (request, sender, sendResponse) {
