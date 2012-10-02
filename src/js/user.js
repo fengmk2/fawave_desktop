@@ -12,9 +12,6 @@ var CONST = require('./const');
 function getUserList(t) {
   t = t || 'show'; // 默认，获取用于显示的列表
   var users = localStorage.getObject(CONST.USER_LIST_KEY) || [];
-  if (t === 'all' && users.length !== undefined) { // 兼容旧格式
-    return users;
-  }
   var items = [], user = null;
   for (var i = 0, l = users.length; i < l; i++) {
     user = users[i];
@@ -79,6 +76,28 @@ function getUserByUniqueKey(uniqueKey, t) {
   return null;
 }
 exports.getUserByUniqueKey = getUserByUniqueKey;
+
+function saveUser(user) {
+  var users = localStorage.getObject(CONST.USER_LIST_KEY) || [];
+  var currentUser = localStorage.getObject(CONST.CURRENT_USER_KEY);
+  if (currentUser.uniqueKey === user.uniqueKey) {
+    setUser(user);
+  }
+  var found = false;
+  for (var i = 0, l = users.length; i < l; i++) {
+    var u = users[i];
+    if (u.uniqueKey === user.uniqueKey) {
+      users[i] = user;
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    users.push(user);
+  }
+  saveUserList(users);
+}
+exports.saveUser = saveUser;
 
 // 获取用户的某一timeline的未读信息数
 function getUnreadTimelineCount(t, user_uniqueKey) {

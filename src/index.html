@@ -54,8 +54,8 @@ var _u = {
         <img src="images/image.gif" /><script>_u.wi('comm_pic')</script>
       </a>
       <script>_u.wia('#btnUploadPic','title','btn_pic_title');</script>&nbsp;
-      <button onclick="cleanTxtContent();" class="btn"><script>_u.wi('comm_clear')</script></button>
-      <span id="doingWarp"></span>
+      <button id="btnClearText" class="btn"><script>_u.wi('comm_clear')</script></button>
+      <!-- <span id="doingWarp"></span> -->
       <span>
       <a id="urlShortenBtn" href="javascript:" onclick="addShortenUrl()"><img src="images/link_add.png" /></a>
       <script>_u.wia('#urlShortenBtn','title','comm_url_shorten');</script>
@@ -108,8 +108,10 @@ var _u = {
         <a href="javascript:window.location='options.html';">配置</a>
         <a id="doingWithCapture" href="javascript:void(0);"><img src="images/capture.png" /></a>
         <script>_u.wia('#doingWithCapture','title','btn_share_title_with_capture');</script>
+        <!--
         <a id="doing" href="javascript:void(0);"><img src="images/world_link.png" /></a>
         <script>_u.wia('#doing','title','btn_share_title');</script>
+      -->
         <a id="btnForceRefresh" href="javascript:void(0);" onclick="forceRefresh(this)"><img src="images/refresh.png" /></a>
         <script>_u.wia('#btnForceRefresh','title','btn_refresh_title');</script>
         <a id="btnNewWinPopup" href="javascript:void(0);" onclick="openPopupInNewWin()"><img src="images/new_win.png" /></a>
@@ -191,7 +193,7 @@ var _u = {
     <ul></ul>
     </div><!-- accountListDock END -->
 
-    <span id="gototop" class="gototop" onclick="setScrollTotop();" title="返回顶部"><img src="images/go_to_top.png" /></span>
+    <span id="gototop" class="gototop" title="返回顶部"><img src="images/go_to_top.png" /></span>
     <script>_u.wia('#gototop','title','comm_go_to_top');</script>
 
   </div><!-- div.wrap END -->
