@@ -76,7 +76,7 @@ label.title{color:#AB5603; font-weight:bold;}
 	padding:3px;
 	width:100px;
 	height:100px;
-	cursor: url(../images/big.cur), auto;
+	cursor: url(../images/big.gif), auto;
 }
 #facebox img{max-width:none;}
 #facebox .image a{display:none;}

@@ -10,6 +10,7 @@
  * Module dependencies.
  */
 
+var EventEmitter = require('events').EventEmitter;
 var weibo = require('weibo');
 var i18n = require('./js/i18n');
 var utils = require('./js/utils');
@@ -18,6 +19,7 @@ var CONST = require('./js/const');
 var setting = require('./js/setting');
 var ui = require('./js/ui');
 var inherits = require('util').inherits;
+var format = require('weibo/lib/utils').format;
 
 // TODO: need to remove
 var getUser = User.getUser;
@@ -190,22 +192,22 @@ function init() {
     resizeFawave();
   });
 
-  changeAlertMode(setting.getAlertMode());
-  changeAutoInsertMode(setting.getAutoInsertMode());
+  // changeAlertMode(setting.getAlertMode());
+  // changeAutoInsertMode(setting.getAutoInsertMode());
 
   $('#ye_dialog_close').click(function () {
     hideReplyInput();
   });
   
-  initTabs();
+  // initTabs();
   initTxtContentEven();
 
-  initChangeUserList();
+  // initChangeUserList();
   
   // 显示上次打开的tab
   // var last_data_type = getBackgroundView().get_last_data_type(c_user.uniqueKey) || 'friends_timeline';
-  var last_data_type = 'friends_timeline';
-  _change_tab(last_data_type);
+  // var last_data_type = 'friends_timeline';
+  // _change_tab(last_data_type);
   
   addUnreadCountToTabs();
   initIamDoing();
@@ -3591,6 +3593,8 @@ function destroy_blocking(ele, user_id) {
   });
 };
 
+var stateManager = new EventEmitter();
+
 function Controller() {
   this.init();
 }
@@ -3598,11 +3602,11 @@ function Controller() {
 Controller.prototype.init = function () {
   for (var i = 0; i < this.events.length; i++) {
     var item = this.events[i];
-    this.on(item.events, item.selecter, item.handler);
+    this.bindEvents(item.events, item.selecter, item.handler);
   }
 };
 
-Controller.prototype.on = function (events, selecter, handler) {
+Controller.prototype.bindEvents = function (events, selecter, handler) {
   $(document).on(events, selecter, {controller: this}, handler);
 };
 
@@ -3611,12 +3615,143 @@ function TimelineController() {
     { events: 'click', selecter: '.timeline_tab', handler: this.click }
   ];
 
-  $(".list_warp").on('scrollstop', {controller: this}, this.checkScroll);
+  $(".list_warp").on('scrollstop', { controller: this }, this.checkScroll);
+
+  this.lastTimelines = {}; // cache user last timeline type
+  this.timelineScrolls = {};
+  this.cache = {}; // {uniqueKey: {}, ...}
+  this.list = {}; // {uniqueKey: [], ...}
+  this.favoritedCache = {}; // {uniqueKey: {}}
 
   TimelineController.super_.call(this);
+
+  var self = this;
+  stateManager.on('favorite_create', function (data) {
+    var uniqueKey = data.user.uniqueKey;
+    var cache = self.favoritedCache[uniqueKey];
+    if (!cache) {
+      cache = self.favoritedCache[uniqueKey] = {};
+    }
+    cache[data.id] = data.created_at;
+  }).on('favorite_destroy', function (data) {
+    var uniqueKey = data.user.uniqueKey;
+    var cache = self.favoritedCache[uniqueKey];
+    if (cache) {
+      delete cache[data.id];
+    }
+  }).on('user_change', this.changeUser.bind(this));
+
+  stateManager.emit('timeline_ready');
 }
 
 inherits(TimelineController, Controller);
+
+TimelineController.prototype.fillFavorited = function (user, statuses) {
+  if (!statuses || !statuses.length) {
+    return statuses;
+  }
+  var cache = this.favoritedCache[user.uniqueKey];
+  if (!cache) {
+    return statuses;
+  }
+  for (var i = 0; i < statuses.length; i++) {
+    var status = statuses[i];
+    if (!status.favorited_at) {
+      status.favorited_at = cache[status.id];
+    }
+  }
+  return statuses;
+};
+
+TimelineController.prototype.getCacheStatus = function (uniqueKey, id) {
+  var cache = this.cache[uniqueKey];
+  if (!cache) {
+    cache = this.cache[uniqueKey] = {};
+    this.list[uniqueKey] = [];
+    return null;
+  }
+  return cache[id] || null;
+};
+
+TimelineController.prototype.getCacheStatuses = function (user, timeline) {
+  var key = user.uniqueKey + ':' + timeline; 
+  var list = this.list[key];
+  return this.fillFavorited(user, list);
+};
+
+TimelineController.prototype.cacheStatuses = function (user, timeline, statuses, append) {
+  if (!statuses || !statuses.length) {
+    return this;
+  }
+  var key = user.uniqueKey + ':' + timeline; 
+  var list = this.list[key];
+  var cache = this.cache[user.uniqueKey];
+  if (!cache) {
+    cache = this.cache[user.uniqueKey] = {};
+  }
+  if (!list) {
+    list = this.list[key] = [];
+  }
+  for (var i = 0; i < statuses.length; i++) {
+    var status = statuses[i];
+    cache[status.id] = status;
+  }
+  console.log(key + ' before: ' + list.length);
+  if (append) {
+    list = list.concat(statuses);
+  } else {
+    // preppend
+    list = statuses.concat(list);
+    if (list.length > 20) {
+      list = list.slice(0, 20);
+      cache = {};
+      for (var i = 0; i < list.length; i++) {
+        var status = list[i];
+        cache[status.id] = status;
+      }
+    }
+  }
+  this.cache[user.uniqueKey] = cache;
+  this.list[key] = list;
+  console.log(key + ' after: ' + list.length);
+  return list;
+};
+
+TimelineController.prototype.setLastTimeline = function (user, timeline) {
+  this.lastTimelines[user.uniqueKey] = timeline;
+};
+
+TimelineController.prototype.getLastTimeline = function (user) {
+  return this.lastTimelines[user.uniqueKey] || 'friends_timeline';
+};
+
+TimelineController.prototype.setScrollTop = function (user, timeline, top) {
+  var key = user.uniqueKey + ':' + timeline;
+  this.timelineScrolls[key] = top;
+};
+
+TimelineController.prototype.getScrollTop = function (user, timeline) {
+  var key = user.uniqueKey + ':' + timeline;
+  return this.timelineScrolls[key]
+};
+
+TimelineController.prototype.changeUser = function (fromUser, toUser) {
+  // 保存当前查看状态
+  var self = this;
+  var tab = $('.tabs .active');
+  var timeline = tab.data('type');
+  self.setLastTimeline(fromUser, timeline);
+  self.setScrollTop(fromUser, timeline, TimelineController.getWarp(timeline).scrollTop());
+  tab.removeClass('active');
+
+  // 清空所有当前用户的数据
+  $('.list_warp ul').html('');
+  $('.list_p').hide();
+
+  // 切换会上次用户正在查看的状态
+  var lastTimeline = self.getLastTimeline(toUser);
+  $('.tab-' + lastTimeline).addClass('active').click();
+};
 
 TimelineController.prototype.checkScroll = function (event) {
   var self = event.data.controller;
@@ -3630,9 +3765,11 @@ TimelineController.prototype.checkScroll = function (event) {
   } else {
     btn.hide();
   }
-  var scrollHeight = warp.prop('scrollHeight') - warp.height();
-  if (scrollTop >= scrollHeight) {
-    self.showMore(tab);
+  if (scrollTop > 0) {
+    var scrollHeight = warp.prop('scrollHeight') - warp.height();
+    if (scrollTop >= scrollHeight) {
+      self.showMore(tab);
+    }
   }
 };
 
@@ -3641,6 +3778,7 @@ TimelineController.prototype.showMore = function (tab) {
     return;
   }
   var self = this;
+  var user = User.getUser();
   var timeline = tab.data('type');
   var params = {};
   var warp = TimelineController.getWarp(timeline);
@@ -3648,7 +3786,7 @@ TimelineController.prototype.showMore = function (tab) {
   params.max_id = max_id;
   console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
-  self.fetch(timeline, params, function (err, data) {
+  self.fetch(user, timeline, params, function (err, data) {
     tab.data('is_loading', false);
     if (err) {
       ui.showErrorTips(err);
@@ -3659,7 +3797,8 @@ TimelineController.prototype.showMore = function (tab) {
     if (data.cursor) {
       tab.data('cursor', data.cursor);
     }
-    self.showItems(items, timeline, true);
+    self.cacheStatuses(user, timeline, items, true);
+    self.showItems(user, items, timeline, true);
   });
 };
 
@@ -3673,12 +3812,29 @@ TimelineController.prototype.click = function (event) {
   var active = tab.hasClass('active');
   var self = event.data.controller;
   var timeline = tab.data('type');
-  
+  var currentUser = User.getUser();
   var warp = TimelineController.getWarp(timeline);
-  var scrollTop = active ? warp.scrollTop() : (warp.data('scrollTop') || 0);
+  var isEmpty = warp.find('ul li:first').length === 0;
+  var timelineScrollTop = self.getScrollTop(currentUser, timeline) || 0;
+  var scrollTop = active ? 0 : timelineScrollTop;
+  var needRefresh = (active || isEmpty) && warp.scrollTop() <= 100;
+
+  if (isEmpty) {
+    
+    // 判断是否有缓存，有则加载，并恢复 scroll
+    var list = self.getCacheStatuses(currentUser, timeline);
+    if (list && list.length) {
+      // load last statuses
+      self.showItems(currentUser, list, timeline, true, 'status');
+      // warp.scrollTop(warp.data('scrollTop') || 0);
+      needRefresh = false;
+      console.log('empty top ' + timelineScrollTop);
+      scrollTop = timelineScrollTop;
+    }
+  }
   
   // 刷新条件: 当前是 active 或者 没有任何内容, 并且 warp scroll 在顶部 <= 100
-  if ((active || warp.find('ul li:first').length === 0) && scrollTop <= 100) {
+  if (needRefresh) {
     self.refresh(tab);
     scrollTop = 0;
   }
@@ -3686,19 +3842,15 @@ TimelineController.prototype.click = function (event) {
   if (!active) {
     // save the current active scrollTop
     var activeTimeline = $('.tabs .active').data('type');
-    if (activeTimeline) {
-      var activeWarp = TimelineController.getWarp(activeTimeline);
-      console.log('activeTimeline: ' + activeTimeline + ', scrollTop: ' + activeWarp.scrollTop());
-      activeWarp.data('scrollTop', activeWarp.scrollTop());
-    }
+    var activeWarp = TimelineController.getWarp(activeTimeline);
+    console.log('activeTimeline: ' + activeTimeline + ', scrollTop: ' + activeWarp.scrollTop());
+    self.setScrollTop(currentUser, activeTimeline, activeWarp.scrollTop());
 
     // active click tab
     tab.siblings().removeClass('active').end().addClass('active');
-    warp.parent().siblings().hide().end().show();
-  } else {
-    // if active should go to the top 0
-    scrollTop = 0;
+    $('.list_p').hide();
   }
+  warp.parent().show();
   
   // go to the last top
   warp.scrollTop(scrollTop);
@@ -3709,6 +3861,7 @@ TimelineController.prototype.refresh = function (tab) {
     return;
   }
   var self = this;
+  var user = User.getUser();
   var active = tab.hasClass('active');
   tab.find('.unreadCount').html('').hide();
 
@@ -3716,7 +3869,7 @@ TimelineController.prototype.refresh = function (tab) {
   var params = self.getParams(tab);
   console.log(timeline + ' refreshing...');
   tab.data('is_loading', true);
-  self.fetch(timeline, params, function (err, data) {
+  self.fetch(user, timeline, params, function (err, data) {
     tab.data('is_loading', false);
     if (err) {
       ui.showErrorTips(err);
@@ -3727,71 +3880,33 @@ TimelineController.prototype.refresh = function (tab) {
     if (data.cursor) {
       tab.data('cursor', data.cursor);
     }
-    self.showItems(items, timeline, false);
+    items = self.cacheStatuses(user, timeline, items, false);
+    self.showItems(user, items, timeline, false);
     // 只保留最新的数据 40条数据
     var warp = TimelineController.getWarp(timeline);
     warp.find('ul li:gt(39)').remove();
   });
 };
 
-TimelineController.prototype.showItems = function (items, timeline, append, data_type) {
+TimelineController.prototype.showItems = function (user, items, timeline, append, dataType) {
   if (!items || !items.length) {
     return;
   }
   var _ul = $("#" + timeline + "_timeline ul.list");
-  // if (t === 'sent_direct_messages') {
-  //   t = 'direct_messages';
-  // }
-  data_type = data_type || 'status';
+  dataType = dataType || 'status';
   var method = append ? 'append' : 'prepend';
   var direct = append ? 'last' : 'first';
-  var last_item;
-  if (data_type === 'status') {
-    last_item = $("#" + timeline + "_timeline ul.list li.tweetItem:" + direct);
-  } else {
-    last_item = $("#" + timeline + "_timeline ul.list div.user_info:" + direct);
-  }
-  var max_id = last_item.attr('did');
-  var result = utils.filterDatasByMaxId(items, max_id, append);
-  items = result.news;
-
-  var htmls = data_type === 'status' ? buildStatusHtml(items, timeline) : buildUsersHtml(items, timeline);
+  // var lastItem;
+  // if (dataType === 'status') {
+  //   lastItem = $("#" + timeline + "_timeline ul.list li.tweetItem:" + direct);
+  // } else {
+  //   lastItem = $("#" + timeline + "_timeline ul.list div.user_info:" + direct);
+  // }
+  // var max_id = lastItem.attr('did');
+  // var result = utils.filterDatasByMaxId(items, max_id, append);
+  // items = result.news;
+  var htmls = dataType === 'status' ? buildStatusHtml(items, timeline) : buildUsersHtml(items, timeline);
   _ul[method](htmls.join(''));
-  
-  // 处理缩址
-  // ShortenUrl.expandAll();
-  
-  // if (timeline !== 'direct_messages' && data_type === 'status') {
-  //   var ids = [];
-  //   var counts_max_id_num = tapi.get_config(getUser()).support_counts_max_id_num || 99;
-  //   for (var i = 0, len = msgs.length; i < len; i++){
-  //     var status = msgs[i];
-  //     var retweeted_status = status.retweeted_status || status.status;
-  //     ids.push(status.id);
-  //     if (retweeted_status){
-  //       ids.push(retweeted_status.id);
-  //       if (retweeted_status.retweeted_status) {
-  //         ids.push(retweeted_status.retweeted_status.id);
-  //       }
-  //     }
-  //   }
-  //   if (ids.length > 0) {
-  //     if (ids.length > counts_max_id_num) {
-  //       var ids2 = ids.slice(0, counts_max_id_num);
-  //       ids = ids.slice(counts_max_id_num, ids.length);
-  //       showCounts(t, ids2);
-  //     }
-  //     showCounts(t, ids);
-  //   }
-  // }
-  // var h_old = _ul.height();
-  // //hold住当前阅读位置
-  // var list_warp = $("#" + t + '_timeline .list_warp');
-  // var st_old = list_warp.scrollTop();
-  // if (!append && st_old > 50){ //大于50才做处理，否则不重新定位(顶部用户可能想直接看到最新的微博)
-  //   var h_new = _ul.height();
-  //   list_warp.scrollTop(h_new - h_old + st_old);
-  // }
 };
 
 TimelineController.prototype.getParams = function (tab) {
@@ -3799,9 +3914,9 @@ TimelineController.prototype.getParams = function (tab) {
   return params;
 };
 
-TimelineController.prototype.fetch = function (timeline, params, callback) {
-  var user = getUser();
+TimelineController.prototype.fetch = function (user, timeline, params, callback) {
   var loading = $('#loading').show();
+  var self = this;
   weibo[timeline](user, params, function (err, data) {
     loading.hide();
     if (err) {
@@ -3815,18 +3930,11 @@ TimelineController.prototype.fetch = function (timeline, params, callback) {
         // item: {status: Status, created_at: create time, tags: []}
         statuses.push(item.status);
         item.status.favorited_at = item.created_at;
+        stateManager.emit('favorite_create', { user: user, id: item.status.id, created_at: item.created_at });
       }
-      items = data.items = statuses;
+      items = statuses;
     }
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      if (!item.favorited_at) {
-        item.favorited_at = FavoriteController.cache[item.id];
-      }
-      if (item.retweeted_status) {
-        item.retweeted_status.favorited_at = FavoriteController.cache[item.retweeted_status.id];
-      }
-    }
+    data.items = self.fillFavorited(user, items);
     callback(err, data);
   });
 }
@@ -3861,12 +3969,12 @@ FavoriteController.prototype.add = function (event) {
     btn.removeClass('add_favorite_btn').addClass('del_favorite_btn').show();
     // TODO cache the favorite items
     ui.showTips(i18n.get("msg_add_favorites_success"));
-    FavoriteController.cache[id] = new Date();
+    stateManager.emit('favorite_create', {user: user, id: id, created_at: new Date()})
   });
 };
 
 FavoriteController.prototype.del = function (event) {
-  var controller = event.data.controller;
+  var self = event.data.controller;
   var btn = $(this);
   btn.hide();
   var id = btn.data('id');
@@ -3881,15 +3989,113 @@ FavoriteController.prototype.del = function (event) {
     btn.find('img').attr('src', 'images/favorites_2.gif');
     btn.removeClass('del_favorite_btn').addClass('add_favorite_btn').show();
     ui.showTips(i18n.get("msg_del_favorites_success"));
-    delete FavoriteController.cache[id];
+    stateManager.emit('favorite_destroy', {user: user, id: id})
   });
 }
+
+function AccountController() {
+  this.events = [
+    { events: 'click', selecter: '#accountListDock ul li', handler: this.change }
+  ];
+  AccountController.super_.call(this);
+
+  this.refresh();
+
+  stateManager.once('timeline_ready', function () {
+    $('#accountListDock li.current').click();
+  });
+}
+
+inherits(AccountController, Controller);
+
+AccountController.prototype.showHeader = function (user) {
+  var header = $("#header .user");
+  header.find('.face, .name_link').attr('href', user.t_url);
+  header.find('.face .icon').attr('src', user.profile_image_url);
+  header.find('.face .bt').attr('src', 'images/blogs/' + user.blogType + '_16.png');
+  header.find('.info .name').html(user.screen_name);
+  var nums = '';
+  var config = weibo.get_config(user);
+  nums += user.name + '&nbsp;&nbsp;&nbsp;&nbsp;';
+  nums += format(i18n.get("comm_counts_info"), user);
+  if (user.favourites_count !== undefined) {
+      nums += ', ' + user.favourites_count + i18n.get("comm_favourite");
+  }
+  header.find('.info .nums').html(nums);
+};
+
+AccountController.prototype.refresh = function () {
+  var currentUser = User.getUser();
+  if (!currentUser) {
+    return this;
+  }
+  this.showHeader(currentUser);
+  var users = User.getUserList();
+  // if (users.length <= 1) {
+  //   $("#msgInfoWarp").css('bottom', 0);
+  //   return this;
+  // }
+  // 底部Dock
+  var tpl = ' \
+    <li class="{{uniqueKey}} {{_current}}" data-uid="{{uniqueKey}}"> \
+      <span class="username">{{screen_name}}</span> \
+      <a href="javascript:void(0);"><img src="{{profile_image_url}}" /></a> \
+      <img src="images/blogs/{{blogType}}_16.png" class="blogType" /> \
+      <span class="unr"></span> \
+    </li>';
+  var html = '<ul>';
+  for (var i = 0; i < users.length; i++) {
+    var user = users[i];
+    if (user.uniqueKey === currentUser.uniqueKey) {
+      user._current = 'current';
+    } else {
+      user._current = '';
+    }
+    html += format(tpl, user);
+  }
+  html += '</ul>';
+  $("#accountListDock").html(html);
+  // 防止被用户列表遮挡
+  $("#msgInfoWarp").css('bottom', 40);
+  return this;
+};
+
+AccountController.prototype.change = function (event) {
+  var userTab = $(this);
+  var self = event.data.controller;
+  var uniqueKey = userTab.data('uid');
+  var toUser = User.getUserByUniqueKey(uniqueKey);
+  if (!toUser) {
+    // 用户被删除，刷新列表
+    self.refresh();
+    return;
+  }
+  
+  var currentUser = getUser();
+  // 获取当前的tab
+  var currentTab = $(".tabs li.active");
+  if (currentTab.length === 0) {
+    // TODO: 一般不会出现这种情况
+    currentTab = $(".tabs li:first");
+  }
+
+  if (currentUser.uniqueKey === uniqueKey) {
+    currentTab.click();
+    return;
+  }
+  
+  User.setUser(toUser);
+  self.refresh();
+
+  stateManager.emit('user_change', currentUser, toUser);
+};
 
 $(function () {
 
   console.log('controllers init...');
-  new FavoriteController();
+  new AccountController();
   new TimelineController();
+  new FavoriteController();
   console.log('controllers inited.');
 
   init();

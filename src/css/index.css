@@ -414,7 +414,7 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
   right: -1px;
   color: white;
 }
-.imgicon{cursor: url(../images/big.cur), auto;}
+.imgicon{cursor: url(../images/big.gif), auto;}
 
 .list li .edit a.ort{
   display:inline-block;
