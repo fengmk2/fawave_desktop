@@ -281,6 +281,10 @@ li .thumbnail_pic .img_loading{position:absolute;left:42%;top:43%;}
   height: 20px;
 }
 
+.text_right {
+  text-align: right;
+}
+
 /* 人间网的表情*/
 .renjian_emot{
   display: inline-block;
@@ -819,3 +823,8 @@ div.loading_bar span {
 .del_favorite_btn img, .add_favorite_btn img{
   width: 11px;
 }
+
+.comment_paging a {
+  display: none;
+}
+

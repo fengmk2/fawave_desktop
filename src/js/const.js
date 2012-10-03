@@ -14,7 +14,7 @@ var i18n = require('./i18n');
 
 exports = module.exports = {
   PAGE_SIZE: 20,
-  COMMENT_PAGE_SIZE: 8,
+  COMMENT_PAGE_SIZE: 10,
   SETTINGS_KEY: 'fawave_SETTINGS_KEY',
 
   UNSEND_TWEET_KEY: 'idi_UNSEND_TWEET_KEY', //未发送的tweet，保存下次显示

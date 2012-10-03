@@ -50,8 +50,6 @@ function endswith(s, suffix) {
   return s.indexOf(suffix, s.length - suffix.length) !== -1;
 }
 
-exports.TWEETS = {};
-
 var _BUTTON_TPLS = {
   showMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{user.profile_image_url}}\', {{geo.coordinates[0]}}, {{geo.coordinates[1]}});" title="' +
     i18n.get("btn_geo_title") + '"><img src="images/mapspin2a.png"/></a>',
@@ -258,16 +256,20 @@ function buildStatusHtml(statuses, t, c_user) {
   default:
     break;
   }
-  var comments_count_tpl = '<a href="javascript:void(0);" timeline_type="comment" title="' +
-    i18n.get("btn_show_comments_title") +
-    '" onclick="showComments(this, \'{{id}}\');">{{comments_count}}</a>';
+  var comments_count_tpl = '<a href="javascript:void(0);" data-sid="{{id}}" title="' +
+    i18n.get("btn_show_comments_title") + '"">{{comments_count}}</a>';
   var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
   var isFavorited = t === 'favorites';
   for (var i = 0, len = statuses.length; i < len; i++) {
     var status = statuses[i];
-    exports.TWEETS[status.id] = status;
     status.reposts_count = status.reposts_count || 0;
-    status.user = status.user || status.sender;
+    status.user = status.user || status.sender || {};
+    if (status.retweeted_status) {
+      status.retweeted_status.user = status.retweeted_status.user || {};
+      if (status.retweeted_status.retweeted_status) {
+        status.retweeted_status.retweeted_status.user = status.retweeted_status.retweeted_status.user;
+      }
+    }
     /*
      * status.retweeted_status 转发
      * status.status 评论
@@ -278,21 +280,24 @@ function buildStatusHtml(statuses, t, c_user) {
     status.comments_btn = comments_btn;
     status.rt_comments_count = status.rtrt_comments_count = '-';
     var rtrt_status = null;
+    if (rtrt_status && !rtrt_status.user) {
+      rtrt_status.user = {};
+    }
     if (rt_status && rt_status.user) {
       rt_status.reposts_count = rt_status.reposts_count || 0;
       rt_status.comments_count = rt_status.comments_count || 0;
       status.retweeted_status_screen_name = rt_status.user.screen_name;
       status.retweeted_status_id = rt_status.id;
-      exports.TWEETS[rt_status.id] = rt_status;
       status.rt_comments_count = format(comments_count_tpl, rt_status);
       rtrt_status = rt_status.retweeted_status = rt_status.retweeted_status || rt_status.status;
+      if (rtrt_status && !rtrt_status.user) {
+        rtrt_status.user = {};
+      }
       if (rtrt_status && rtrt_status.user) {
-        exports.TWEETS[rtrt_status.id] = rtrt_status;
         rtrt_status.reposts_count = rtrt_status.reposts_count || 0;
         rtrt_status.comments_count = rtrt_status.comments_count || 0;
         status.rtrt_comments_count = format(comments_count_tpl, rtrt_status);
       }
-      // console.log(JSON.stringify(rt_status))
     } else {
       status.retweeted_status_id = status.retweeted_status_screen_name = '';
     }
@@ -359,7 +364,6 @@ function buildStatusHtml(statuses, t, c_user) {
       user: status.user,
       account: c_user,
       tweet: status,
-      retweeted_status: status.retweeted_status,
       is_rt_rt: false,
       support_follow: support_follow,
       show_fullname: show_fullname,
@@ -456,13 +460,13 @@ exports.buildUserInfo = buildUserInfo;
 
 //生成粉丝信息
 function buildFansLi(user, t) {
-    var context = {
-      t: t,
-      provinces: provinces,
-      getUserCountsInfo: getUserCountsInfo,
-      user: user
+  var context = {
+    t: t,
+    provinces: provinces,
+    getUserCountsInfo: getUserCountsInfo,
+    user: user
   };
-    return Shotenjin.render(TEMPLATE_FANS, context);
+  return Shotenjin.render(TEMPLATE_FANS, context);
 }
 exports.buildFansLi = buildFansLi;
 
@@ -470,79 +474,76 @@ exports.buildFansLi = buildFansLi;
  * 生成评论列表 / 转发列表
  * timeline_type: repost, comment
  */
-function buildComment(comment, status_id, status_user_screen_name, status_user_id, timeline_type) {
-    var c_user = getUser();
-    var comment_id = comment.id;
-    exports.TWEETS[String(comment_id)] = comment;
-    var comment_user_screen_name = comment.user.screen_name;
-    var comment_user_id = comment.user.id;
-    var datetime = moment(comment.created_at).format("YYYY-MM-DD HH:mm:ss");
-    var comment_btn = '';
-    if (timeline_type === 'comment') {
-      if (comment.status && comment.status.id) {
-        status_id = comment.status.id;
-        if (comment.status.user) {
-          status_user_screen_name = comment.status.user.screen_name;
-          status_user_id = comment.status.user.id;
-        }
+function buildComment(user, comment, timeline_type, status_id, status_user_screen_name, status_user_id) {
+  timeline_type = timeline_type || 'comment';
+  var c_user = user;
+  var comment_id = comment.id;
+  var comment_user_screen_name = comment.user.screen_name;
+  var comment_user_id = comment.user.id;
+  var datetime = moment(comment.created_at).format("YYYY-MM-DD HH:mm:ss");
+  var comment_btn = '';
+  if (timeline_type === 'comment') {
+    if (comment.status && comment.status.id) {
+      status_id = comment.status.id;
+      if (comment.status.user) {
+        status_user_screen_name = comment.status.user.screen_name;
+        status_user_id = comment.status.user.id;
       }
-      var tpl = '<a class="replyComment" href="javascript:void(0);" ' +
-        ' onclick="javascript:doComment(this,\'{{status_user_screen_name}}\',\'{{status_user_id}}\',\'{{status_id}}\',\'{{comment_user_screen_name}}\',\'{{comment_user_id}}\',\'{{comment_id}}\');" ' +
-        ' title="'+ i18n.get("btn_reply_comment_title") +'">' +
-        i18n.get("abb_reply") +'</a>';
-      comment_btn = format(tpl, {
-          status_id: status_id,
-          status_user_screen_name: status_user_screen_name,
-          status_user_id: status_user_id,
-          comment_id: comment_id,
-          comment_user_screen_name: comment_user_screen_name,
-          comment_user_id: comment_user_id
-        });
-    } else { // repost
-      var status = comment;
-      status_id = status.id;
-      exports.TWEETS[status_id] = status;
-      status_user_id = status.user.id;
-      status_user_screen_name = status.user.screen_name;
-      // 直接回复给转发者的微博
-      comment_id = ''; 
-      comment_user_id = '';
-      comment_user_screen_name = '';
-      var retweeted_status_screen_name = '';
-      var retweeted_status_id = '';
-      if (status.retweeted_status && status.retweeted_status.user) {
-        retweeted_status_screen_name = status.retweeted_status.user.screen_name;
-        retweeted_status_id = status.retweeted_status.id;
-      }
-      status.retweeted_status_screen_name = retweeted_status_screen_name;
-      status.retweeted_status_id = retweeted_status_id;
-      var repost_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
-        'onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" ' +
-        'title="'+ i18n.get("btn_repost_title") +'">' +
-        i18n.get("abb_repost") +'</a>', status);
-      comment_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
-        'onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" ' +
-        'title="'+ i18n.get("btn_comment_title") +'">&nbsp;&nbsp;' +
-        i18n.get("abb_comment") +'</a>', status);
-      comment_btn += repost_btn;
-      datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
-        ' ' + status.source + ' ' + i18n.get('comm_repost');
     }
-    if (comment.user.verified) {
-      comment.user.verified = '<img title="'+ i18n.get("comm_verified") +
-        '" src="images/verified' +
-        (comment.user.verified_type && comment.user.verified_type > 0 ? '_blue.png' : '.gif') +
-        '" />';
-    } else {
-      comment.user.verified = '';
+    var tpl = '<a class="replyComment" href="javascript:void(0);" title="' +
+      i18n.get("btn_reply_comment_title") + '">' +
+      i18n.get("abb_reply") + '</a>';
+    comment_btn = format(tpl, {
+      status_id: status_id,
+      status_user_screen_name: status_user_screen_name,
+      status_user_id: status_user_id,
+      comment_id: comment_id,
+      comment_user_screen_name: comment_user_screen_name,
+      comment_user_id: comment_user_id
+    });
+  } else { // repost
+    var status = comment;
+    status_id = status.id;
+    status_user_id = status.user.id;
+    status_user_screen_name = status.user.screen_name;
+    // 直接回复给转发者的微博
+    comment_id = ''; 
+    comment_user_id = '';
+    comment_user_screen_name = '';
+    var retweeted_status_screen_name = '';
+    var retweeted_status_id = '';
+    if (status.retweeted_status && status.retweeted_status.user) {
+      retweeted_status_screen_name = status.retweeted_status.user.screen_name;
+      retweeted_status_id = status.retweeted_status.id;
     }
-    var reply_user = format('<a target="_blank" href="javascript:getUserTimeline(\'{{screen_name}}\', \'{{id}}\');" rhref="{{t_url}}" title="' +
-      i18n.get("btn_show_user_title") +'">@{{screen_name}}{{verified}}</a>', comment.user);
-    return '<li><span class="commentContent">' +
-      reply_user + ': ' + tapi.process_text(c_user, comment) +
-      '</span><span class="msgInfo">(' + datetime + ')</span>' +
-      comment_btn + '</li>';
+    status.retweeted_status_screen_name = retweeted_status_screen_name;
+    status.retweeted_status_id = retweeted_status_id;
+    var repost_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
+      'onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" ' +
+      'title="' + i18n.get("btn_repost_title") + '">' +
+      i18n.get("abb_repost") + '</a>', status);
+    comment_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
+      'onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" ' +
+      'title="' + i18n.get("btn_comment_title") + '">&nbsp;&nbsp;' +
+      i18n.get("abb_comment") + '</a>', status);
+    comment_btn += repost_btn;
+    datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
+      ' ' + status.source + ' ' + i18n.get('comm_repost');
+  }
+  if (comment.user.verified) {
+    comment.user.verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
+      (comment.user.verified_type && comment.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
+  } else {
+    comment.user.verified = '';
+  }
+  var reply_user = format('<a target="_blank" title="' + i18n.get("btn_show_user_title") +
+    '">@{{screen_name}}{{verified}}</a>', comment.user);
+  return '<li><span class="commentContent">' +
+    reply_user + ': ' + tapi.process_text(c_user, comment) +
+    '</span><span class="msgInfo">(' + datetime + ')</span>' +
+    comment_btn + '</li>';
 }
+exports.buildComment = buildComment;
 
 function getUserCountsInfo(user) {
   if (user.statuses_count === undefined) {

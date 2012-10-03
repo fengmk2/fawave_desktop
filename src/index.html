@@ -218,21 +218,27 @@ var _u = {
     <!-- 表情选择 End -->
 </div><!-- wrapper END -->
 <div id="ye_dialog_window" >
-  <a title="关闭 Close" href="javascript:void(0);" id="ye_dialog_close"></a>
+  <a title="关闭 Close" href="javascript:void(0);" class="close_dialog" id="ye_dialog_close"></a>
   <div id="ye_dialog_title"></div>
   <div id="ye_dialog_body" >
     <div class="replyDialog">
       <textarea class="uTextarea" id="replyTextarea"></textarea><br/>
       <span id="replyInputCount" class="conTinge">(还可以输入140字)</span>
-      <a id="btnAddReplyEmotional" href="javascript:void(0);" onclick="fawave.face.show(this, 'replyTextarea');" title="点击添加表情"><img src="images/face.gif" /><script>_u.wi('comm_emotional')</script></a>
+      <a id="btnAddReplyEmotional" href="javascript:void(0);"
+        onclick="fawave.face.show(this, 'replyTextarea');"
+        title="点击添加表情"><img src="images/face.gif" /><script>_u.wi('comm_emotional')</script>
+      </a>
       <script>_u.wia('#btnAddReplyEmotional','title','btn_emotional_title');</script>
       <p>
-        <input type="checkbox" id="chk_sendOneMore" /><label for="chk_sendOneMore" id="txt_sendOneMore"></label><br/>
-        <input type="checkbox" id="chk_sendOneMore2" /><label for="chk_sendOneMore2" id="txt_sendOneMore2"></label><br/>
-        <input type="checkbox" id="chk_originalComment" /><label for="chk_originalComment" id="txt_originalComment">包含原评论</label>
+        <input type="checkbox" id="chk_sendOneMore" />
+        <label for="chk_sendOneMore" id="txt_sendOneMore"></label><br/>
+        <input type="checkbox" id="chk_sendOneMore2" />
+        <label for="chk_sendOneMore2" id="txt_sendOneMore2"></label><br/>
+        <input type="checkbox" id="chk_originalComment" />
+        <label for="chk_originalComment" id="txt_originalComment">包含原评论</label>
       </p>
       <button id="replySubmit" type="button" title="按 ctrl + enter 发送" class="btn" style="float: right;"><script>_u.wi('comm_send')</script></button>
-      <a href="javascript:hideReplyInput();"  style="float: right; color: #99a8bb; margin-right: 20px; margin-top: 5px; font-size: 10px;"><script>_u.wi('comm_close')</script></a>
+      <a href="javascript:void(0);" class="close_dialog" style="float: right; color: #99a8bb; margin-right: 20px; margin-top: 5px; font-size: 10px;"><script>_u.wi('comm_close')</script></a>
       <script>_u.wia('#replySubmit','title','comm_send_tip');</script>
     </div>
   </div>
@@ -356,12 +362,14 @@ var _u = {
           <!-- 转发 End -->
           <?js } ?>
         </div>
-        <div class="comments">
-          <p style="text-align:right;"><a href="javascript:void(0);" class="comment_hide_list_btn" onclick="showComments(this, '#{tweet.id}');">#{_u.i18n("btn_hide_comments")}</a></p>
+        <div class="comments" data-id="#{tweet.id}">
+          <p class="text_right">
+            <a href="javascript:void(0);" class="comment_hide_list_btn">#{_u.i18n("btn_hide_comments")}</a>
+          </p>
           <ul class="comment_list"></ul>
-          <div class="comment_paging" page="1">
-            <a class="pre_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.id}', true);" style="display:none;">#{_u.i18n("btn_prev_page")}</a>
-            <a class="next_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.id}');" style="display:none;">#{_u.i18n("btn_next_page")}</a>
+          <div class="comment_paging">
+            <a class="pre_page" href="javascript:void(0);">#{_u.i18n("btn_prev_page")}</a>
+            <a class="next_page" href="javascript:void(0);">#{_u.i18n("btn_next_page")}</a>
           </div>
           <br />
         </div>
@@ -476,12 +484,12 @@ var _u = {
     </div>
     <?js } ?>
 
-    <div class="comments">
-      <p style="text-align:right;"><a href="javascript:void(0);" class="comment_hide_list_btn" onclick="showComments(this, '#{tweet.retweeted_status.id}');">#{_u.i18n("btn_hide_comments")}</a></p>
+    <div class="comments" data-id="#{tweet.retweeted_status.id}">
+      <p class="text_right"><a href="javascript:void(0);" class="comment_hide_list_btn">#{_u.i18n("btn_hide_comments")}</a></p>
       <ul class="comment_list"></ul>
-      <div class="comment_paging" page="1">
-        <a class="pre_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.retweeted_status.id}', true);" style="display:none;">#{_u.i18n("btn_prev_page")}</a>
-        <a class="next_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.retweeted_status.id}');" style="display:none;">#{_u.i18n("btn_next_page")}</a>
+      <div class="comment_paging">
+        <a class="pre_page" href="javascript:void(0);">#{_u.i18n("btn_prev_page")}</a>
+        <a class="next_page" href="javascript:void(0);">#{_u.i18n("btn_next_page")}</a>
       </div>
       <br />
 
