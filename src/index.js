@@ -1193,84 +1193,6 @@ function getFavorites(is_click) {
   });
 }
 
-// 显示评论数和回复数
-function showCounts(t, ids) {
-  if (!ids || ids.length === 0 || ['direct_messages'].indexOf(t) >= 0){
-    return;
-  }
-  var c_user = getUser();
-  var config = tapi.get_config(c_user);
-  if (!c_user || !config.support_counts){
-    return;
-  }
-  ids = ids.join(',');
-  var data = {ids: ids, user: c_user};
-  showLoading();
-  return;
-  tapi.counts(data, function (counts, textStatus) {
-    hideLoading();
-    if (textStatus === 'error' || !counts || counts.error) {
-      return;
-    }
-    if (!counts.length && counts.length <= 0) {
-      return;
-    }
-    var isTQQ = c_user.blogType === 'tqq';
-    var isStatus = t.indexOf('comment') < 0;
-    for (var i = 0, l = counts.length; i < l; i++) {
-      var item = counts[i];
-      $('#'+ t +'_timeline .showCounts_' + item.id).each(function () {
-        var _li = $(this);
-        if (isTQQ && isStatus) {
-          // 腾讯微博，需要使用原始微博的counts 替换转发的
-          var $retweetLi = _li.find('.tweetItem:first');
-          if ($retweetLi.length > 0) {
-            return;
-          }
-        }
-        var _edit = _li.find('.edit:eq(0)');
-        if (!_edit) {
-          return;
-        }
-        if (config.support_repost_timeline) {
-          _edit.find('.repostCounts a').html(item.rt);
-        } else {
-          _edit.find('.repostCounts').html('('+ item.rt +')');
-        }
-        var _comm_txt = '(0)';
-        if (item.comments > 0) {
-          _comm_txt = '(<a href="javascript:void(0);" title="' + 
-            i18n.get("comm_show_comments") +
-            '" timeline_type="comment" onclick="showComments(this,' + 
-            item.id + ');">' + item.comments + '</a>)';
-        }
-        _edit.find('.commentCounts').html(_comm_txt);
-        if (isTQQ && isStatus) {
-          // 腾讯微博，需要使用原始微博的counts 替换转发的
-          var $retweetLi = _li.parents('.tweetItem:first');
-          _edit = $retweetLi.find('.edit:eq(0)');
-          if (!_edit) {
-            return;
-          }
-          if (config.support_repost_timeline) {
-            _edit.find('.repostCounts a').html(item.rt);
-          } else {
-            _edit.find('.repostCounts').html('('+ item.rt +')');
-          }
-          var _comm_txt = '(0)';
-          if (item.comments > 0) {
-            _comm_txt = '(<a href="javascript:void(0);" title="' + 
-              i18n.get("comm_show_comments") +
-              '" timeline_type="comment" onclick="showComments(this,' + 
-              $retweetLi.attr('did') + ');">' + item.comments + '</a>)';
-          }
-          _edit.find('.commentCounts').html(_comm_txt);
-        }
-      });
-    }
-  });
-}
-
 //======>>>>>>> 查看评论 / 转发列表 <<<<<<<
 //@ele: 触发该事件的元素, 如果ele的timeline_type == 'repost'，则代表是转发列表
 //@tweetId: 微博ID
@@ -2769,30 +2691,6 @@ function showRefreshBtn() {
   $("#btnForceRefresh").attr('disabled', true).fadeIn();
 };// <<=== 强制刷新结束
 
-function _showLoading() {
-  $("#loading").show();
-};
-
-function _hideLoading() {
-  $("#loading").hide();
-};
-
-// 翻译
-function translateText(ele) {
-  var $ele = $(ele).parents('.userName').next();
-  if (!$ele.hasClass('tweet_text')) {
-    $ele = $ele.find('.tweet_text');
-  }
-  $(ele).hide();
-  var settings = setting.Settings.get();
-  var target = settings.translate_target;
-  tapi.translate(User.getUser(), $ele.text(), target, function (translatedText) {
-    if (translatedText) {
-      $ele.after('<hr /><div class="tweet_text_old">' + translatedText + '</div>');
-    }
-  });
-};
-
 // instapaper / read it later
 function read_later(ele, service_type) {
     service_type = service_type || 'instapaper';
@@ -3027,11 +2925,6 @@ TimelineController.prototype.getUnreadStatuses = function (user, timeline) {
   return list;
 };
 
-TimelineController.prototype.cleanUnreadStatuses = function (user, timeline) {
-  var key = user.uniqueKey + ':' + timeline;
-  delete this.unreadStatuses[key];
-};
-
 TimelineController.prototype.fillFavorited = function (user, statuses) {
   if (!statuses || !statuses.length) {
     return statuses;
@@ -3049,7 +2942,8 @@ TimelineController.prototype.fillFavorited = function (user, statuses) {
   return statuses;
 };
 
-TimelineController.prototype.getCacheStatus = function (uniqueKey, id) {
+TimelineController.prototype.getCacheStatus = function (user, id) {
+  var uniqueKey = user.uniqueKey;
   var cache = this.cache[uniqueKey];
   if (!cache) {
     cache = this.cache[uniqueKey] = {};
@@ -3065,7 +2959,7 @@ TimelineController.prototype.getCacheStatuses = function (user, timeline) {
   return this.fillFavorited(user, list);
 };
 
-TimelineController.prototype.setCacheStatus = function (user, timeline, items) {
+TimelineController.prototype.setCacheStatuses = function (user, timeline, items) {
   var key = user.uniqueKey + ':' + timeline; 
   delete this.list[key];
   delete this.cache[user.uniqueKey];
@@ -3075,6 +2969,7 @@ TimelineController.prototype.setCacheStatus = function (user, timeline, items) {
     var item = items[i];
     cache[item.id] = item;
   }
+  this.cache[user.uniqueKey] = cache;
 };
 
 TimelineController.prototype.cacheStatuses = function (user, timeline, statuses, append) {
@@ -3166,6 +3061,10 @@ TimelineController.prototype.showMore = function (tab) {
   var warp = TimelineController.getWarp(timeline);
   var max_id = warp.find('ul li:last').attr('did');
   params.max_id = max_id;
+  var status = self.getCacheStatus(user, max_id);
+  if (status.timestamp) {
+    params.max_time = status.timestamp;
+  }
   console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
   self.fetch(user, timeline, params, function (err, data) {
@@ -3174,7 +3073,6 @@ TimelineController.prototype.showMore = function (tab) {
       ui.showErrorTips(err);
       return;
     }
-    console.log(timeline + data.items.length);
     var items = data.items;
     if (data.cursor) {
       tab.data('cursor', data.cursor);
@@ -3243,7 +3141,7 @@ TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
     items = items.slice(0, 20);
   }
   // set cache
-  self.setCacheStatus(user, timeline, items);
+  self.setCacheStatuses(user, timeline, items);
   $("#" + timeline + "_timeline ul.list").html('');
   self.showItems(user, items, timeline, false);
   if (items.length < 10) {
@@ -3260,15 +3158,14 @@ TimelineController.prototype.refresh = function (tab, firstLoad) {
   var timeline = tab.data('type');
   var active = tab.hasClass('active');
   var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
-  console.log('read statuses ' + timeline + ' :' + unreadCount)
+  console.log('read statuses ' + timeline + ' :' + unreadCount);
+  var unreadStatuses = self.getUnreadStatuses(user, timeline);
   stateManager.emit('read_statuses', {
     uniqueKey: user.uniqueKey,
     timeline: timeline,
     count: unreadCount
   });
-  var unreadStatuses = self.getUnreadStatuses(user, timeline);
   if (unreadStatuses.length > 0) {
-    self.cleanUnreadStatuses(user, timeline);
     self.mergeNew(tab, user, timeline, unreadStatuses);
     return;
   }
@@ -3276,9 +3173,12 @@ TimelineController.prototype.refresh = function (tab, firstLoad) {
   var params = {}; // self.getParams(tab);
   var since_id = user.since_ids && user.since_ids[timeline];
   if (!firstLoad && since_id) {
-    params.since_id = since_id;
+    params.since_id = since_id.id;
+    if (since_id.timestamp) {
+      params.since_time = since_id.timestamp;
+    }
   }
-  console.log(timeline + ' refreshing... since_id: ' + since_id);
+  console.log(timeline + ' refreshing... since_id: ' + JSON.stringify(since_id));
   tab.data('is_loading', true);
   self.fetch(user, timeline, params, function (err, data) {
     tab.data('is_loading', false);
@@ -3295,7 +3195,7 @@ TimelineController.prototype.refresh = function (tab, firstLoad) {
       stateManager.emit('read_statuses', {
         uniqueKey: user.uniqueKey,
         timeline: timeline,
-        since_id: items[0].id,
+        since_id: { id: items[0].id, timestamp: items[0].timestamp },
         count: newCount
       });
     }
@@ -3322,6 +3222,7 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   // items = result.news;
   var htmls = dataType === 'status' ? buildStatusHtml(items, timeline) : buildUsersHtml(items, timeline);
   _ul[method](htmls.join(''));
+  stateManager.emit('show_statuses', user, items, timeline);
 };
 
 TimelineController.prototype.getParams = function (tab) {
@@ -3468,11 +3369,6 @@ AccountController.prototype.newStatuses = function (data) {
   user.unreads[data.timeline] = timelineCount;
   User.saveUser(user);
   this.refresh();
-  // unreadTip.html('' + user.unreadCount);
-  // uniqueKey: uniqueKey,
-  //   timeline: timeline,
-  //   statuses: items,
-  //   since_id: since_id
 };
 
 AccountController.prototype.showHeader = function (user) {
@@ -3586,8 +3482,11 @@ RefreshController.prototype.watch = function (user) {
       var user = User.getUserByUniqueKey(uniqueKey);
       var params = {};
       var since_id = user.since_ids && user.since_ids[timeline];
-      if (since_id) {
-        params.since_id = since_id;
+      if (since_id && since_id.id) {
+        params.since_id = since_id.id;
+        if (since_id.timestamp) {
+          params.since_time = since_id.timestamp;
+        }
       }
       weibo[timeline](user, params, function (err, result) {
         if (err) {
@@ -3600,7 +3499,7 @@ RefreshController.prototype.watch = function (user) {
             uniqueKey: uniqueKey,
             timeline: timeline,
             statuses: items,
-            since_id: items[0].id
+            since_id: { id: items[0].id, timestamp: items[0].timestamp }
           });
         }
       });
@@ -3622,6 +3521,79 @@ RefreshController.prototype.unwatch = function (user) {
   delete this.timers[user.uniqueKey];
 };
 
+function StatusCounterController() {
+  stateManager.on('show_statuses', this.showCounts.bind(this));
+}
+
+StatusCounterController.prototype.showCounts = function (user, statuses, timeline) {
+  var map = {};
+  for (var i = 0; i < statuses.length; i++) {
+    var status = statuses[i];
+    map[status.id] = status;
+    if (status.retweeted_status) {
+      map[status.retweeted_status.id] = status.retweeted_status;
+    }
+  }
+  var ids = Object.keys(map);
+  var loading = $('#loading').show();
+  console.log(timeline + ' count() ids: ' + ids.length + ' ' + JSON.stringify(ids));
+  weibo.count(user, ids, function (err, counts) {
+    loading.hide();
+    if (err) {
+      return ui.showErrorTips(err);
+    }
+    console.log('got counts: '+ counts.length);
+    var isTQQ = user.blogtype === 'tqq';
+    var isStatus = timeline.indexOf('comment') < 0;
+    for (var i = 0, l = counts.length; i < l; i++) {
+      var item = counts[i];
+      $('#'+ timeline +'_timeline .showCounts_' + item.id).each(function () {
+        var toolbar = $(this);
+        // if (isTQQ && isStatus) {
+        //   // 腾讯微博，需要使用原始微博的counts 替换转发的
+        //   var $retweetLi = _li.find('.tweetItem:first');
+        //   if ($retweetLi.length > 0) {
+        //     return;
+        //   }
+        // }
+        var editor = toolbar.find('.edit:eq(0)');
+        if (!editor) {
+          return;
+        }
+        editor.find('.repostCounts a').html(item.reposts);
+        // _edit.find('.repostCounts').html('('+ item.reposts +')');
+        // if (config.support_repost_timeline) {
+        //   _edit.find('.repostCounts a').html(item.rt);
+        // } else {
+        //   _edit.find('.repostCounts').html('('+ item.rt +')');
+        // }
+        editor.find('.commentCounts a').html(item.comments);
+        // if (isTQQ && isStatus) {
+        //   // 腾讯微博，需要使用原始微博的counts 替换转发的
+        //   var $retweetLi = _li.parents('.tweetItem:first');
+        //   _edit = $retweetLi.find('.edit:eq(0)');
+        //   if (!_edit) {
+        //     return;
+        //   }
+        //   _edit.find('.repostCounts a').html(item.rt);
+        //   // if (config.support_repost_timeline) {
+        //   //   _edit.find('.repostCounts a').html(item.rt);
+        //   // } else {
+        //   //   _edit.find('.repostCounts').html('('+ item.rt +')');
+        //   // }
+        //   var _comm_txt = '(0)';
+        //   if (item.comments > 0) {
+        //     _comm_txt = '(<a href="javascript:void(0);" title="' + 
+        //       i18n.get("comm_show_comments") +
+        //       '" timeline_type="comment" onclick="showComments(this,' + 
+        //       $retweetLi.attr('did') + ');">' + item.comments + '</a>)';
+        //   }
+        //   _edit.find('.commentCounts').html(_comm_txt);
+        // }
+      });
+    }
+  });
+};
 
 $(function () {
   resizeFawave();
@@ -3638,6 +3610,7 @@ $(function () {
 
   new TextContentController();
   new StatusController();
+  new StatusCounterController();
   console.log('controllers inited.');
 
   var currentUser = User.getUser();

@@ -283,7 +283,7 @@ var _u = {
             #{user.screen_name}<?js if (user.verified) { ?><img title="#{_u.i18n('comm_verified')}" 
             src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
           </a>
-          <?js if(show_fullname) { ?><span class="fullname">#{user.name}</span> <?js } ?>
+          <?js if (show_fullname) { ?><span class="fullname">#{user.name}</span> <?js } ?>
           <span class="edit">
             <?js if(tweet.related_dialogue_url){ ?>
             <a href="#{tweet.related_dialogue_url}" title="#{_u.i18n('comm_show_related_dialogue')}" target="_blank"><img src="images/inreply.png" /></a>
@@ -307,7 +307,6 @@ var _u = {
             </div>
             <?js 
             if (tweet.thumbnail_pic) { ?>
-            
             <div>
             <?js
               var pics = [];
@@ -388,7 +387,7 @@ var _u = {
         </div>
       </div>
       </div> <!-- end .li_wrap -->
-      <?js if(tweet.retweeted_status && tweet.retweeted_status.text){ ?>
+      <?js if (tweet.retweeted_status && tweet.retweeted_status.text) { ?>
       <!-- 转发 -->
       <!-- {{retweeted_status_out}} -->
       <!-- {{retweeted_retweeted_status_out}} -->
@@ -396,89 +395,105 @@ var _u = {
       <?js } ?>
     </li>
   </textarea>
-  <!-- 转发模板（包括评论、@我的所带的原status） -->
-  <textarea id="tp_time_line_rt">
-    <!-- 转发 -->
-    <div class="msg">
-      <div class="tweetItem retweeted commentWrap showCounts_#{tweet.retweeted_status.id} <?js if(is_rt_rt){ ?>rt_retweeted<?js } ?>" id="tweet#{tweet.retweeted_status.id}">
-        <div class="userName">
-            <?js if(is_rt_rt){ ?>
-            <span class="showtip">
-            <a user_id="#{retweeted_status_user.id}" user_screen_name="#{retweeted_status_user.screen_name}" 
-                href="javascript:getUserTimeline('#{retweeted_status_user.screen_name}', '#{retweeted_status_user.id}');">@#{retweeted_status_user.screen_name}</a>
-            <?js if(show_fullname) { ?><span class="fullname">#{retweeted_status_user.name}</span> <?js } ?>
-            #{buildTipboxUserInfo(retweeted_status_user, show_fullname)}
-            </span>
-            <?js } ?>
-            <?js if ((tType === 'comments_timeline' || tType === 'comments_mentions') && !is_rt_rt) { ?> 
-                #{_u.i18n('comm_comment_to_before')} 
-            <?js }else{ ?> 
-                #{_u.i18n('comm_repost_to_before')}
-            <?js } ?>
-          <span class="showtip">
-            <a target="_blank" 
-              href="javascript:getUserTimeline('#{tweet.retweeted_status.user.screen_name}', '#{tweet.retweeted_status.user.id}');" 
-              rhref="#{tweet.retweeted_status.user.t_url}">
-              @#{tweet.retweeted_status.user.screen_name}<?js if(tweet.retweeted_status.user.verified){ ?><img title="#{_u.i18n('comm_verified')}" src="images/verified#{tweet.retweeted_status.user.verified_type && tweet.retweeted_status.user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
-            </a>
-            <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweeted_status.user.name}</span> <?js } ?>
-            #{buildTipboxUserInfo(tweet.retweeted_status.user, show_fullname)}
-          </span>
-          #{_u.i18n("comm_repost_to_after")}: 
-          <span class="edit">
-              <?js if (support_instapaper) { ?>
-                          <a href="javascript:void(0);" onclick="javascript:read_later(this, 'instapaper');" title="#{_u.i18n('btn_read_later_title')}">RL</a>
-                          <?js } ?>
-                          <?js if(support_readitlater){ ?>
-                          <a href="javascript:void(0);" onclick="javascript:read_later(this, 'readitlater');" title="#{_u.i18n('btn_read_it_later_title')}">RIL</a>
-                          <?js } ?>
-            #{ btn.rtAddFavoritesMsgBtn + btn.rtReplyBtn + btn.rtRetweetBtn + btn.rtRepostBtn + btn.rtRepostCounts + btn.rtOretweetBtn + btn.rtCommentBtn + btn.rtCommentCounts}
-            <a href="javascript:void(0);" onclick="javascript:translateText(this);" title="#{_u.i18n('btn_translate_title')}">#{_u.i18n("btn_translate")}</a>
-          </span>
-        </div>
-        <div class="tweet_text">#{processMsg(account, tweet.retweeted_status)} #{btn.rtShowMapBtn}
-          <?js if (tweet.crosspostSource) { ?>
-          <a target="_blank" href="#{tweet.crosspostSource}" title="#{_u.i18n('comm_show_original')}">#{_u.i18n('comm_show_original')}</a>
-          <?js } ?>
-        </div>
-        <?js if(tweet.retweeted_status.thumbnail_pic){ ?>
-        <div>
-          <a target="_blank" href="javascript:void(0);" 
-              bmiddle="#{tweet.retweeted_status.bmiddle_pic}" 
-              title="#{_u.i18n("btn_show_original_pic_title")}" 
-              original="#{tweet.retweeted_status.original_pic}" 
-              class="thumbnail_pic" >
-          <img class="imgicon pic" src="#{tweet.retweeted_status.thumbnail_pic}" /></a>
-        </div>
+
+<!-- 转发模板（包括评论、@我的所带的原status） -->
+<!-- 转发 -->
+<script id="tp_time_line_rt" type="text/template">
+
+<div class="msg">
+
+  <div class="tweetItem retweeted commentWrap showCounts_#{tweet.retweeted_status.id} <?js if (is_rt_rt){ ?>rt_retweeted<?js } ?>" id="tweet#{tweet.retweeted_status.id}">
+    <div class="userName">
+      <?js if (is_rt_rt) { ?>
+      <span class="showtip">
+      <a user_id="#{retweeted_status_user.id}" user_screen_name="#{retweeted_status_user.screen_name}" 
+        href="javascript:getUserTimeline('#{retweeted_status_user.screen_name}', '#{retweeted_status_user.id}');">@#{retweeted_status_user.screen_name}</a>
+      <?js if (show_fullname) { ?><span class="fullname">#{retweeted_status_user.name}</span> <?js } ?>
+      #{buildTipboxUserInfo(retweeted_status_user, show_fullname)}
+      </span>
+      <?js } ?>
+      <?js if ((tType === 'comments_timeline' || tType === 'comments_mentions') && !is_rt_rt) { ?> 
+        #{_u.i18n('comm_comment_to_before')} 
+      <?js } else { ?> 
+        #{_u.i18n('comm_repost_to_before')}
+      <?js } ?>
+      <span class="showtip">
+        <a target="_blank" 
+          href="javascript:getUserTimeline('#{tweet.retweeted_status.user.screen_name}', '#{tweet.retweeted_status.user.id}');" 
+          rhref="#{tweet.retweeted_status.user.t_url}">
+          @#{tweet.retweeted_status.user.screen_name}<?js if(tweet.retweeted_status.user.verified){ ?><img title="#{_u.i18n('comm_verified')}" src="images/verified#{tweet.retweeted_status.user.verified_type && tweet.retweeted_status.user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
+        </a>
+        <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweeted_status.user.name}</span> <?js } ?>
+        #{buildTipboxUserInfo(tweet.retweeted_status.user, show_fullname)}
+      </span>
+      #{_u.i18n("comm_repost_to_after")}: 
+      <span class="edit">
+      <?js if (support_instapaper) { ?>
+        <a href="javascript:void(0);" onclick="javascript:read_later(this, 'instapaper');" title="#{_u.i18n('btn_read_later_title')}">RL</a>
         <?js } ?>
-        <!-- {{retweeted_retweeted_status_in}} -->
-        <?js if (tweet.retweeted_status.created_at) { ?>
-        <div class="msgInfo">
-          <?js if (tweet.retweeted_status.t_url) { ?>
-          <a href="#{tweet.retweeted_status.t_url}" target="_blank">#{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
-          <?js } else { ?>
-          #{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}
-          <?js } ?>
-          #{_u.i18n('comm_post_by')} #{tweet.retweeted_status.source || _u.i18n("comm_web_site")}
-          <?js if (!tweet.retweeted_status.retweeted_status && tweet.retweeted_status.in_reply_to_status_id && tweet.retweeted_status.in_reply_to_screen_name) { ?>
-           <a href="javascript:void(0);" class="show_source_status_btn" status_id="#{tweet.retweeted_status.in_reply_to_status_id}" 
-               title="#{_u.i18n('comm_show_original_status')}">#{_u.i18n("btn_show_source_status", [tweet.retweeted_status.in_reply_to_screen_name])}</a>
-           <?js } ?>
-        </div>
-        <?js } ?>
-        <div class="comments">
-          <p style="text-align:right;"><a href="javascript:void(0);" class="comment_hide_list_btn" onclick="showComments(this, '#{tweet.retweeted_status.id}');">#{_u.i18n("btn_hide_comments")}</a></p>
-          <ul class="comment_list"></ul>
-          <div class="comment_paging" page="1">
-            <a class="pre_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.retweeted_status.id}', true);" style="display:none;">#{_u.i18n("btn_prev_page")}</a>
-            <a class="next_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.retweeted_status.id}');" style="display:none;">#{_u.i18n("btn_next_page")}</a>
-          </div>
-          <br />
-        </div>
-      </div>
+        <?js if (support_readitlater) { ?>
+        <a href="javascript:void(0);" onclick="javascript:read_later(this, 'readitlater');" title="#{_u.i18n('btn_read_it_later_title')}">RIL</a>
+      <?js } ?>
+        #{ btn.rtAddFavoritesMsgBtn + btn.rtReplyBtn + btn.rtRetweetBtn + btn.rtRepostBtn + btn.rtRepostCounts + btn.rtOretweetBtn + btn.rtCommentBtn + btn.rtCommentCounts }
+        <a href="javascript:void(0);" onclick="javascript:translateText(this);" title="#{_u.i18n('btn_translate_title')}">#{_u.i18n("btn_translate")}</a>
+      </span>
     </div>
-    <!-- 转发 End -->
-  </textarea>
+
+    <div class="tweet_text">#{processMsg(account, tweet.retweeted_status)} #{btn.rtShowMapBtn}
+    <?js if (tweet.crosspostSource) { ?>
+      <a target="_blank" href="#{tweet.crosspostSource}" 
+        title="#{_u.i18n('comm_show_original')}">#{_u.i18n('comm_show_original')}</a>
+    <?js } ?>
+    </div>
+    <?js if (tweet.retweeted_status.thumbnail_pic) { ?>
+    <div>
+      <a target="_blank" href="javascript:void(0);" 
+        bmiddle="#{tweet.retweeted_status.bmiddle_pic}" 
+        title="#{_u.i18n("btn_show_original_pic_title")}" 
+        original="#{tweet.retweeted_status.original_pic}" 
+        class="thumbnail_pic" >
+      <img class="imgicon pic" src="#{tweet.retweeted_status.thumbnail_pic}" /></a>
+    </div>
+    <?js } ?>
+
+    <!-- {{retweeted_retweeted_status_in}} -->
+    <?js if (tweet.retweeted_status.created_at) { ?>
+    <div class="msgInfo">
+      <?js if (tweet.retweeted_status.t_url) { ?>
+      <a href="#{tweet.retweeted_status.t_url}" target="_blank">#{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
+      <?js } else { ?>
+      #{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}
+      <?js } ?>
+      #{_u.i18n('comm_post_by')} #{tweet.retweeted_status.source || _u.i18n("comm_web_site")}
+      <?js if (!tweet.retweeted_status.retweeted_status &&
+               tweet.retweeted_status.in_reply_to_status_id &&
+               tweet.retweeted_status.in_reply_to_screen_name) { ?>
+       <a href="javascript:void(0);" class="show_source_status_btn" 
+         status_id="#{tweet.retweeted_status.in_reply_to_status_id}" 
+         title="#{_u.i18n('comm_show_original_status')}">
+         #{_u.i18n("btn_show_source_status", [tweet.retweeted_status.in_reply_to_screen_name])}</a>
+       <?js } ?>
+    </div>
+    <?js } ?>
+
+    <div class="comments">
+      <p style="text-align:right;"><a href="javascript:void(0);" class="comment_hide_list_btn" onclick="showComments(this, '#{tweet.retweeted_status.id}');">#{_u.i18n("btn_hide_comments")}</a></p>
+      <ul class="comment_list"></ul>
+      <div class="comment_paging" page="1">
+        <a class="pre_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.retweeted_status.id}', true);" style="display:none;">#{_u.i18n("btn_prev_page")}</a>
+        <a class="next_page" href="javascript:void(0);" onclick="commentPage(this, '#{tweet.retweeted_status.id}');" style="display:none;">#{_u.i18n("btn_next_page")}</a>
+      </div>
+      <br />
+
+    </div>
+
+  </div>
+
+</div>
+
+</script>
+<!-- 转发 End -->
+
   <!-- 用户信息tipbox模板 -->
   <textarea id="tp_tipbox_user_info">
     <div class="tipbox">
@@ -731,7 +746,7 @@ var _u = {
 
 <script>
 var TEMPLATE = $("#tp_time_line").val();
-var TEMPLATE_RT = $("#tp_time_line_rt").val();
+var TEMPLATE_RT = $("#tp_time_line_rt").html();
 var TEMPLATE_USER_INFO = $("#tp_user_info").val();
 var TEMPLATE_TIPBOX_USER_INFO = $("#tp_tipbox_user_info").val();
 var TEMPLATE_FANS = $("#tp_fans").val();

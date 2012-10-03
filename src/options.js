@@ -951,7 +951,6 @@ function saveAccount() {
 //            }
 //        }
 //    }
-  // appkey = 'fawave';
   var pin = $.trim($('#account-pin').val()); // oauth pin码
   var apiProxy = $.trim($('#account-proxy-api').val());
   var user = {
@@ -959,16 +958,16 @@ function saveAccount() {
     authtype: authtype
   };
   // 目前只允许twitter设置代理
-  if (blogtype === 'twitter' && apiProxy) {
-      user.apiProxy = apiProxy;
-  }
+  // if (blogtype === 'twitter' && apiProxy) {
+  //   user.apiProxy = apiProxy;
+  // }
   // 目前只是新浪需要设在key
-  if (blogtype === 'tsina' && appkey) {
-    user.appkey = appkey;
-    if (appkey_secret) {
-      user.appkey_secret = appkey_secret;
-    }
-  }
+  // if (blogtype === 'tsina' && appkey) {
+  //   user.appkey = appkey;
+  //   if (appkey_secret) {
+  //     user.appkey_secret = appkey_secret;
+  //   }
+  // }
 
   if ((authtype === 'baseauth' || authtype === 'xauth') && userName && pwd) {
     user.userName = userName;
@@ -982,55 +981,57 @@ function saveAccount() {
     } else {
       _verify_credentials(user);
     }
-  } else if (authtype === 'oauth') {
-    var request_token_key = $('#account-request-token-key').val();
-    var request_token_secret = $('#account-request-token-secret').val();
-    if (pin && ((request_token_key && request_token_secret) || 
-        blogtype === 'weibo' || blogtype === 'diandian' ||
-        blogtype === 'googleplus' || blogtype === 'facebook' || blogtype === 'renren')) {
-      user.oauth_pin = pin;
-      // 设置request token
-      user.oauth_token = request_token_key;
-      user.oauth_token_secret = request_token_secret;
-      $('#save-account').attr('disabled', true);
-      console.log(user)
-      weibo.get_access_token(user, function (err, auth_user) {
-        auth_user.blogType = auth_user.blogtype;
-        auth_user.authType = auth_user.authtype;
-        console.log(arguments)
-        _verify_credentials(auth_user);
-      });
-    } else { // 跳到登录页面
-      // window.open('https://api.weibo.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost.nodeweibo.com%3A8088%2Foauth%2Fcallback&client_id=1122960051&response_type=code')
-      weibo.get_authorization_url(user, function (err, info) {
-        if (err) {
-          return _showMsg('get_authorization_url ' + err.name + ': ' + err.message);
-        }
-        $('#account-request-token-key').val(user.oauth_token);
-        $('#account-request-token-secret').val(user.oauth_token_secret);
-        var callbackURL = weibo.get_config(user).oauth_callback;
-        setTimeout(function () {
-          var win = window.open(info.auth_url, '_blank');
-          $(win).on('load', function () {
-            console.log('load: ' + win.location.href);
-            var timer = setInterval(function () {
-              var url = win.location.href;
-              console.log(url);
-              if (url.indexOf(callbackURL) < 0) {
-                return;
-              }
-              clearInterval(timer);
-              win.close();
-              win = null;
-              oauth_callback(url);
-            }, 1000);
-          });
-        }, 500);
-      });
-    }
-  } else {
-    _showMsg(i18n.get("msg_need_username_and_pwd"));
+    return;
   }
+  if (authtype !== 'oauth') {
+    ui.showTips(i18n.get("msg_need_username_and_pwd"));
+    return;
+  }
+  var request_token = $('#account-request-token-key').val();
+  var request_token_secret = $('#account-request-token-secret').val();
+  if (pin && request_token && request_token_secret) {
+    user.oauth_pin = pin;
+    // 设置request token
+    user.oauth_token = request_token;
+    user.oauth_token_secret = request_token_secret;
+    $('#save-account').attr('disabled', true);
+    console.log(user)
+    weibo.get_access_token(user, function (err, auth_user) {
+      auth_user.blogType = auth_user.blogtype;
+      auth_user.authType = auth_user.authtype;
+      console.log(arguments)
+      _verify_credentials(auth_user);
+    });
+    return;
+  }
+
+  // 跳到登录页面
+  weibo.get_authorization_url(user, function (err, info) {
+    if (err) {
+      ui.showErrorTips(err);
+      return;
+    }
+    $('#account-request-token-key').val(info.oauth_token);
+    $('#account-request-token-secret').val(info.oauth_token_secret);
+    var callbackURL = weibo.get_config(user).oauth_callback;
+    setTimeout(function () {
+      var win = window.open(info.auth_url, '_blank');
+      $(win).on('load', function () {
+        console.log('load: ' + win.location.href);
+        var timer = setInterval(function () {
+          var url = win.location.href;
+          console.log(url);
+          if (url.indexOf(callbackURL) < 0) {
+            return;
+          }
+          clearInterval(timer);
+          win.close();
+          win = null;
+          oauth_callback(url);
+        }, 1000);
+      });
+    }, 500);
+  });
 }
 
 function onSelBlogTypeChange() {

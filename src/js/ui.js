@@ -65,7 +65,7 @@ var _BUTTON_TPLS = {
     i18n.get("btn_old_rt_title") + '">RT</a>',
   repostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" title="' +
     i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
-  repostCounts: '<span class="repostCounts">({{repost_count}})</span>',
+  repostCounts: '<span class="repostCounts">({{reposts_count}})</span>',
   commentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" title="' +
     i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
   commentCounts: '<span class="commentCounts">({{comments_btn}})</span>',
@@ -96,7 +96,7 @@ var _BUTTON_TPLS = {
     i18n.get("btn_mention_title") + '">@</a>',
   rtAddFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
     i18n.get("btn_add_favorites_title") + '"><img width="11px" src="images/favorites_2.gif"/></a>',
-  rtRepostCounts: '<span class="repostCounts">({{retweeted_status.repost_count}})</span>',
+  rtRepostCounts: '<span class="repostCounts">({{retweeted_status.reposts_count}})</span>',
     
     // rt rt
   rtrtShowMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{retweeted_status.retweeted_status.user.profile_image_url}}\', {{retweeted_status.retweeted_status.geo.coordinates[0]}}, {{retweeted_status.retweeted_status.geo.coordinates[1]}});" title="' +
@@ -113,7 +113,7 @@ var _BUTTON_TPLS = {
     i18n.get("btn_mention_title") + '">@</a>',
   rtrtAddFavoritesMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="addFavorites(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
     i18n.get("btn_add_favorites_title") + '"><img width="11px" src="images/favorites_2.gif"/></a>',
-  rtrtRepostCounts: '<span class="repostCounts">({{retweeted_status.retweeted_status.repost_count}})</span>'
+  rtrtRepostCounts: '<span class="repostCounts">({{retweeted_status.retweeted_status.reposts_count}})</span>'
 };
 
 function buildStatusHtml(statuses, t, c_user) {
@@ -140,301 +140,292 @@ function buildStatusHtml(statuses, t, c_user) {
   var support_do_favorite = config.support_do_favorite;
   var show_fullname = config.show_fullname;
   var need_set_readed = false; // 必须设置为已读
-  if (t === 'user_timeline' || t === 'favorites') {
-      need_set_readed = true;
-  }
+  // if (t === 'user_timeline' || t === 'favorites') {
+  //   need_set_readed = true;
+  // }
   var BUTTON_TPLS = $.extend({}, _BUTTON_TPLS);
 
   // 不支持收藏
   if (!support_do_favorite) {
-      BUTTON_TPLS.addFavoritesMsgBtn = BUTTON_TPLS.delFavoritesMsgBtn = '';
+    BUTTON_TPLS.addFavoritesMsgBtn = BUTTON_TPLS.delFavoritesMsgBtn = '';
   }
   // 不支持repost(转发)
-  if (!config.support_repost) {
-      BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
-          BUTTON_TPLS.rtrtRepostCounts = BUTTON_TPLS.repostBtn = 
-          BUTTON_TPLS.rtRepostBtn = BUTTON_TPLS.rtrtRepostBtn = '';
-  }
-  if (!config.support_counts) {
-      BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
-          BUTTON_TPLS.rtrtRepostCounts = '';
-  }
+  // if (!config.support_repost) {
+  //     BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
+  //         BUTTON_TPLS.rtrtRepostCounts = BUTTON_TPLS.repostBtn = 
+  //         BUTTON_TPLS.rtRepostBtn = BUTTON_TPLS.rtrtRepostBtn = '';
+  // }
+  // if (!config.support_counts) {
+  //     BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
+  //         BUTTON_TPLS.rtrtRepostCounts = '';
+  // }
   // 不支持删除私信
   if (!config.support_destroy_msg) {
-      BUTTON_TPLS.delDirectMsgBtn = '';
+    BUTTON_TPLS.delDirectMsgBtn = '';
   }
 // 不支持私信
   if (!config.support_direct_messages) {
-      BUTTON_TPLS.delDirectMsgBtn = '';
-      BUTTON_TPLS.new_msgBtn = '';
+    BUTTON_TPLS.delDirectMsgBtn = '';
+    BUTTON_TPLS.new_msgBtn = '';
   }
   // 不支持评论
   if (!support_do_comment) {
-      BUTTON_TPLS.commentBtn = BUTTON_TPLS.commentCounts = 
-          BUTTON_TPLS.rtCommentCounts = BUTTON_TPLS.rtCommentBtn = '';
+    BUTTON_TPLS.commentBtn = BUTTON_TPLS.commentCounts = 
+    BUTTON_TPLS.rtCommentCounts = BUTTON_TPLS.rtCommentBtn = '';
   }
   
   // 支持转发列表
   var tpl;
-  if (config.support_repost && config.support_repost_timeline) {
-    tpl = '<span class="repostCounts">(<a href="javascript:void(0);" title="' + 
-        i18n.get("comm_show_repost_timeline") + 
-        '" timeline_type="repost" onclick="showRepostTimeline(this, \'{{id}}\');">{{repost_count}}</a>)</span>';
-    BUTTON_TPLS.repostCounts = tpl;
-    BUTTON_TPLS.rtRepostCounts = tpl.replace(/\{\{repost_count\}\}/g, '{{retweeted_status.repost_count}}')
-      .replace(/\{\{id\}\}/g, '{{retweeted_status.id}}');
-    BUTTON_TPLS.rtrtRepostCounts = tpl.replace(/\{\{repost_count\}\}/g, 
-      '{{retweeted_status.retweeted_status.repost_count}}')
-      .replace(/\{\{id\}\}/g, '{{retweeted_status.retweeted_status.id}}');
-  }
-    var messageReplyToBtn = '';
-    var support_instapaper = !!Settings.get().instapaper_user;
-    var support_readitlater = !!Settings.get().readitlater_user;
-    switch (t) {
-        case 'friends_timeline':
-        case 'favorites':
-        case 'mentions':
-        case 'user_timeline':
-            BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.delCommentBtn = '';
-            break;
-        case 'comments_mentions':
-        case 'comments_timeline':
-            BUTTON_TPLS.repostBtn = BUTTON_TPLS.repostCounts = 
-            BUTTON_TPLS.commentCounts = BUTTON_TPLS.delTweetBtn = 
-            BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
-            BUTTON_TPLS.delFavoritesMsgBtn = '';
-        BUTTON_TPLS.commentBtn = '<a class="commenttweet" href="javascript:void(0);" ' + 
-          ' onclick="javascript:doComment(this,\'{{status.user.screen_name}}\', \'{{status.user.id}}\', \'{{status.id}}\',\'{{user.screen_name}}\', \'{{user.id}}\',\'{{id}}\');" ' +
-          ' title="' + i18n.get("btn_reply_comment_title") + '">' + i18n.get("abb_reply") + '</a>';
-          break;
-      case 'comments_by_me':
-        BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
-        BUTTON_TPLS.delFavoritesMsgBtn = '';
-          break;
-      case 'direct_messages':
-        BUTTON_TPLS.repostBtn = BUTTON_TPLS.oretweetBtn = 
-        BUTTON_TPLS.repostCounts = BUTTON_TPLS.commentBtn = 
-        BUTTON_TPLS.commentCounts = BUTTON_TPLS.delCommentBtn = 
-        BUTTON_TPLS.delTweetBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
-        BUTTON_TPLS.retweetBtn = BUTTON_TPLS.replyBtn = 
-        BUTTON_TPLS.delFavoritesMsgBtn = '';
-        BUTTON_TPLS.new_msgBtn = BUTTON_TPLS.new_msgBtn.replace('>' + 
-          i18n.get("abb_send_direct_message") +'<', '>'+ i18n.get("abb_reply") +'<');
+  // if (config.support_repost && config.support_repost_timeline) {
+  tpl = '<span class="repostCounts">(<a href="javascript:void(0);" title="' + 
+    i18n.get("comm_show_repost_timeline") + 
+    '" timeline_type="repost" onclick="showRepostTimeline(this, \'{{id}}\');">{{reposts_count}}</a>)</span>';
+  BUTTON_TPLS.repostCounts = tpl;
+  BUTTON_TPLS.rtRepostCounts = tpl.replace(/\{\{reposts_count\}\}/g, '{{retweeted_status.reposts_count}}')
+    .replace(/\{\{id\}\}/g, '{{retweeted_status.id}}');
+  BUTTON_TPLS.rtrtRepostCounts = tpl.replace(/\{\{reposts_count\}\}/g, 
+    '{{retweeted_status.retweeted_status.reposts_count}}')
+    .replace(/\{\{id\}\}/g, '{{retweeted_status.retweeted_status.id}}');
+// }
+  var messageReplyToBtn = '';
+  var support_instapaper = !!Settings.get().instapaper_user;
+  var support_readitlater = !!Settings.get().readitlater_user;
+  switch (t) {
+  case 'friends_timeline':
+  case 'favorites':
+  case 'mentions':
+  case 'user_timeline':
+    BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.delCommentBtn = '';
+    break;
+  case 'comments_mentions':
+  case 'comments_timeline':
+    BUTTON_TPLS.repostBtn = BUTTON_TPLS.repostCounts = 
+    BUTTON_TPLS.commentCounts = BUTTON_TPLS.delTweetBtn = 
+    BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
+    BUTTON_TPLS.delFavoritesMsgBtn = '';
+    BUTTON_TPLS.commentBtn = '<a class="commenttweet" href="javascript:void(0);" ' + 
+      ' onclick="javascript:doComment(this,\'{{status.user.screen_name}}\', \'{{status.user.id}}\', \'{{status.id}}\',\'{{user.screen_name}}\', \'{{user.id}}\',\'{{id}}\');" ' +
+      ' title="' + i18n.get("btn_reply_comment_title") + '">' + i18n.get("abb_reply") + '</a>';
+    break;
+  case 'comments_by_me':
+    BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
+    BUTTON_TPLS.delFavoritesMsgBtn = '';
+    break;
+  case 'direct_messages':
+    BUTTON_TPLS.repostBtn = BUTTON_TPLS.oretweetBtn = 
+    BUTTON_TPLS.repostCounts = BUTTON_TPLS.commentBtn = 
+    BUTTON_TPLS.commentCounts = BUTTON_TPLS.delCommentBtn = 
+    BUTTON_TPLS.delTweetBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
+    BUTTON_TPLS.retweetBtn = BUTTON_TPLS.replyBtn = 
+    BUTTON_TPLS.delFavoritesMsgBtn = '';
+    BUTTON_TPLS.new_msgBtn = BUTTON_TPLS.new_msgBtn.replace('>' + 
+      i18n.get("abb_send_direct_message") + '<', '>' + i18n.get("abb_reply") + '<');
 //        BUTTON_TPLS.replyBtn = '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{user.screen_name}}\',\'\');" title="'
 //          + i18n.get("btn_mention_title") +'">@</a>';
-        messageReplyToBtn = '回复给 <a class="newMessage" href="javascript:void(0);" ' + 
-          ' onclick="doNewMessage(this,\'{{recipient.screen_name}}\',\'{{recipient.id}}\');" title="' + 
-          i18n.get("btn_direct_message_title") + '">{{recipient.screen_name}}</a>';
-        support_instapaper = support_readitlater = false;
-          break;
-      default:
-          break;
+    messageReplyToBtn = '回复给 <a class="newMessage" href="javascript:void(0);" ' + 
+      ' onclick="doNewMessage(this,\'{{recipient.screen_name}}\',\'{{recipient.id}}\');" title="' + 
+      i18n.get("btn_direct_message_title") + '">{{recipient.screen_name}}</a>';
+    support_instapaper = support_readitlater = false;
+    break;
+  default:
+    break;
+  }
+  if (c_user.blogtype !== 'twitter' && c_user.blogtype !== 'identi_ca') {
+    BUTTON_TPLS.rtOretweetBtn = BUTTON_TPLS.oretweetBtn = '';
+  }
+  switch (c_user.blogtype) {
+  case 'digu':
+    if (t === 'mentions') {
+      BUTTON_TPLS.replyBtn = BUTTON_TPLS.replyBtn.replace('>@<', '>' + i18n.get("abb_reply") + '<');
     }
-    if (c_user.blogtype !== 'twitter' && c_user.blogtype !== 'identi_ca') {
-      BUTTON_TPLS.rtOretweetBtn = BUTTON_TPLS.oretweetBtn = '';
-    }
-    switch (c_user.blogtype) {
-      case 'digu':
-        if (t === 'mentions') {
-          BUTTON_TPLS.replyBtn = BUTTON_TPLS.replyBtn.replace('>@<', '>' + i18n.get("abb_reply") +'<');
-        }
-        break;
-      case 'renjian':
-        case 'fanfou':
-        BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
-        BUTTON_TPLS.rtrtRepostCounts = '';
-        break;
-      case 'douban':
-        BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = BUTTON_TPLS.rtrtReplyBtn = '';
-        break;
-      case 'renren':
-        BUTTON_TPLS.delCommentBtn = BUTTON_TPLS.delTweetBtn =
-          BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = BUTTON_TPLS.rtrtReplyBtn = '';
-        break;
-      case 'facebook':
-        BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = 
-        BUTTON_TPLS.rtrtReplyBtn = BUTTON_TPLS.new_msgBtn = BUTTON_TPLS.commentCounts = '';
-        break;
-      default:
-        break;
-    }
-    var comments_count_tpl = '<a href="javascript:void(0);" timeline_type="comment" title="' +
-      i18n.get("btn_show_comments_title") +
-      '" onclick="showComments(this, \'{{id}}\');">{{comments_count}}</a>';
-    var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
-    var isFavorited = t === 'favorites';
-    for (var i = 0, len = statuses.length; i < len; i++) {
-      var status = statuses[i];
-      exports.TWEETS[status.id] = status;
-      status.repost_count = status.repost_count === undefined ? '-' : status.repost_count;
-      status.user = status.user || status.sender;
-      /*
-       * status.retweeted_status 转发
-       * status.status 评论
-       */
-      var rt_status = status.retweeted_status = status.retweeted_status || status.status;
-      if (status.comments_count === undefined) {
-        status.comments_count = '0';
+    break;
+  case 'renjian':
+  case 'fanfou':
+    BUTTON_TPLS.repostCounts = BUTTON_TPLS.rtRepostCounts = 
+    BUTTON_TPLS.rtrtRepostCounts = '';
+    break;
+  case 'douban':
+    BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = BUTTON_TPLS.rtrtReplyBtn = '';
+    break;
+  case 'renren':
+    BUTTON_TPLS.delCommentBtn = BUTTON_TPLS.delTweetBtn =
+      BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = BUTTON_TPLS.rtrtReplyBtn = '';
+    break;
+  case 'facebook':
+    BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = 
+    BUTTON_TPLS.rtrtReplyBtn = BUTTON_TPLS.new_msgBtn = BUTTON_TPLS.commentCounts = '';
+    break;
+  default:
+    break;
+  }
+  var comments_count_tpl = '<a href="javascript:void(0);" timeline_type="comment" title="' +
+    i18n.get("btn_show_comments_title") +
+    '" onclick="showComments(this, \'{{id}}\');">{{comments_count}}</a>';
+  var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
+  var isFavorited = t === 'favorites';
+  for (var i = 0, len = statuses.length; i < len; i++) {
+    var status = statuses[i];
+    exports.TWEETS[status.id] = status;
+    status.reposts_count = status.reposts_count || 0;
+    status.user = status.user || status.sender;
+    /*
+     * status.retweeted_status 转发
+     * status.status 评论
+     */
+    var rt_status = status.retweeted_status = status.retweeted_status || status.status;
+    status.comments_count = status.comments_count || 0;
+    var comments_btn = format(comments_count_tpl, status);
+    status.comments_btn = comments_btn;
+    status.rt_comments_count = status.rtrt_comments_count = '-';
+    var rtrt_status = null;
+    if (rt_status && rt_status.user) {
+      rt_status.reposts_count = rt_status.reposts_count || 0;
+      rt_status.comments_count = rt_status.comments_count || 0;
+      status.retweeted_status_screen_name = rt_status.user.screen_name;
+      status.retweeted_status_id = rt_status.id;
+      exports.TWEETS[rt_status.id] = rt_status;
+      status.rt_comments_count = format(comments_count_tpl, rt_status);
+      rtrt_status = rt_status.retweeted_status = rt_status.retweeted_status || rt_status.status;
+      if (rtrt_status && rtrt_status.user) {
+        exports.TWEETS[rtrt_status.id] = rtrt_status;
+        rtrt_status.reposts_count = rtrt_status.reposts_count || 0;
+        rtrt_status.comments_count = rtrt_status.comments_count || 0;
+        status.rtrt_comments_count = format(comments_count_tpl, rtrt_status);
       }
-      var comments_btn = format(comments_count_tpl, status);
-      status.comments_btn = comments_btn;
-      status.rt_comments_count = status.rtrt_comments_count = '-';
-      var rtrt_status = null;
-      if (rt_status && rt_status.user) {
-        if (rt_status.repost_count === undefined) {
-          rt_status.repost_count = '0';
-        }
-        if (rt_status.comments_count === undefined) {
-          rt_status.comments_count = '0';
-        }
-        status.retweeted_status_screen_name = rt_status.user.screen_name;
-        status.retweeted_status_id = rt_status.id;
-        exports.TWEETS[rt_status.id] = rt_status;
-        status.rt_comments_count = format(comments_count_tpl, rt_status);
-        rtrt_status = rt_status.retweeted_status = rt_status.retweeted_status || rt_status.status;
-        if (rtrt_status && rtrt_status.user) {
-          exports.TWEETS[rtrt_status.id] = rtrt_status;
-          if (rtrt_status.repost_count === undefined) {
-            rtrt_status.repost_count = '0';
-          }
-          if (rtrt_status.comments_count === undefined) {
-            rtrt_status.comments_count = '0';
-          }
-          status.rtrt_comments_count = format(comments_count_tpl, rtrt_status);
-        }
-      } else {
-        status.retweeted_status_id = status.retweeted_status_screen_name = '';
-      }
-      var buttons = {};
-      for (var key in BUTTON_TPLS) {
-        tpl = BUTTON_TPLS[key];
-        var map_status = status;
-        if (key.substring(0, 4) === 'rtrt') {
-          map_status = status.retweeted_status ? status.retweeted_status.retweeted_status: null;
-          if (!map_status) {
-            tpl = '';
-          }
-        } else if (key.substring(0, 2) === 'rt') {
-          map_status = status.retweeted_status;
-          if (!map_status) {
-              tpl = '';
-            }
-        }
-
-        if (tpl && endswith(key, 'MapBtn') &&
-          (!map_status.geo || !map_status.geo.coordinates || map_status.geo.coordinates[0] === '0.0')) {
+      // console.log(JSON.stringify(rt_status))
+    } else {
+      status.retweeted_status_id = status.retweeted_status_screen_name = '';
+    }
+    var buttons = {};
+    for (var key in BUTTON_TPLS) {
+      tpl = BUTTON_TPLS[key];
+      var map_status = status;
+      if (key.substring(0, 4) === 'rtrt') {
+        map_status = status.retweeted_status ? status.retweeted_status.retweeted_status: null;
+        if (!map_status) {
           tpl = '';
         }
-        if (tpl) {
-          tpl = format(tpl, status);
+      } else if (key.substring(0, 2) === 'rt') {
+        map_status = status.retweeted_status;
+        if (!map_status) {
+          tpl = '';
         }
-        buttons[key] = tpl;
       }
-      if (status.favorited_at) {
-        buttons.addFavoritesMsgBtn = '';
-      } else {
-        buttons.delFavoritesMsgBtn = '';
+
+      if (tpl && endswith(key, 'MapBtn') &&
+        (!map_status.geo || !map_status.geo.coordinates || map_status.geo.coordinates[0] === '0.0')) {
+        tpl = '';
       }
-      if (c_user && status.user && c_user.id === status.user.id) {
-        status.myTweet = true;
-        buttons.new_msgBtn = '';
-        buttons.rtOretweetBtn = buttons.oretweetBtn = '';
-      } else {
-        buttons.delTweetBtn = '';
+      if (tpl) {
+        tpl = format(tpl, status);
       }
-      // 不支持评论
-      if (status.hide_comments === true) {
-        buttons.commentBtn = buttons.commentCounts =
-          buttons.rtCommentCounts = buttons.rtCommentBtn = '';
-      }
-      if (rt_status && rt_status.retweeted) {
-        buttons.rtOretweetBtn = '<a class="oretweet ort orted" href="javascript:void(0);" title="' + 
-          i18n.get("btn_rted_title") + '"></a>';
-      }
-      if (status.retweeted) {
-        buttons.oretweetBtn = '<a class="oretweet ort orted" href="javascript:void(0);" title="' + 
-          i18n.get("btn_rted_title") + '"></a>';
-      }
-      var status_type = status.status_type || t;
-      if (need_set_readed) {
-        status.readed = true;
-      }
-      var context = {
-        provinces: provinces,
-        tType: status_type,
-        getUserCountsInfo: getUserCountsInfo,
-        buildTipboxUserInfo: buildTipboxUserInfo,
-        processMsg: tapi.process_text.bind(tapi),
-        user: status.user,
-        account: c_user,
-        tweet: status,
-        is_rt_rt: false,
-        support_follow: support_follow,
-        show_fullname: show_fullname,
-        support_instapaper: support_instapaper,
-        support_readitlater: support_readitlater,
-        btn: buttons
-      };
-      if (messageReplyToBtn && status.recipient && status.recipient.id !== c_user.id) {
-        buttons.messageReplyToBtn = format(messageReplyToBtn, status);
-      }
-      try {
-        var html = Shotenjin.render(window.TEMPLATE, context);
-        if (rt_status) {
-          rt_status.user = rt_status.user || {};
-          // console.log(window.TEMPLATE_RT)
-          html = html.replace(rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT, context));
-          if (rtrt_status) {
-            if (!TEMPLATE_RT_RT) {
-              TEMPLATE_RT_RT = window.TEMPLATE_RT
-                .replace(/tweet\.retweeted_status/g, 'tweet.retweeted_status.retweeted_status')
-                .replace(/btn\.rt/g, 'btn.rtrt');
-            }
-            context.is_rt_rt = true;
-            context.retweeted_status_user = rt_status.user || {};
-            html = html.replace(rt_rt_replace_pre, Shotenjin.render(TEMPLATE_RT_RT, context));
-          }
-        }
-        htmls.push(html);
-      } catch (err) {
-        throw err;
-        console.log(err);
-      }
+      buttons[key] = tpl;
+    }
+    if (status.favorited_at) {
+      buttons.addFavoritesMsgBtn = '';
+    } else {
+      buttons.delFavoritesMsgBtn = '';
+    }
+    if (c_user && status.user && c_user.id === status.user.id) {
+      status.myTweet = true;
+      buttons.new_msgBtn = '';
+      buttons.rtOretweetBtn = buttons.oretweetBtn = '';
+    } else {
+      buttons.delTweetBtn = '';
+    }
+    // 不支持评论
+    if (status.hide_comments === true) {
+      buttons.commentBtn = buttons.commentCounts =
+        buttons.rtCommentCounts = buttons.rtCommentBtn = '';
+    }
+    if (rt_status && rt_status.retweeted) {
+      buttons.rtOretweetBtn = '<a class="oretweet ort orted" href="javascript:void(0);" title="' + 
+        i18n.get("btn_rted_title") + '"></a>';
+    }
+    if (status.retweeted) {
+      buttons.oretweetBtn = '<a class="oretweet ort orted" href="javascript:void(0);" title="' + 
+        i18n.get("btn_rted_title") + '"></a>';
+    }
+    var status_type = status.status_type || t;
+    if (need_set_readed) {
       status.readed = true;
     }
-    return htmls;
+    var context = {
+      provinces: provinces,
+      tType: status_type,
+      getUserCountsInfo: getUserCountsInfo,
+      buildTipboxUserInfo: buildTipboxUserInfo,
+      processMsg: tapi.process_text.bind(tapi),
+      user: status.user,
+      account: c_user,
+      tweet: status,
+      retweeted_status: status.retweeted_status,
+      is_rt_rt: false,
+      support_follow: support_follow,
+      show_fullname: show_fullname,
+      support_instapaper: support_instapaper,
+      support_readitlater: support_readitlater,
+      btn: buttons
+    };
+    if (messageReplyToBtn && status.recipient && status.recipient.id !== c_user.id) {
+      buttons.messageReplyToBtn = format(messageReplyToBtn, status);
+    }
+    try {
+      var html = Shotenjin.render(window.TEMPLATE, context);
+      if (rt_status) {
+        rt_status.user = rt_status.user || {};
+        html = html.replace(rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT, context));
+        // if (rtrt_status) {
+        //   if (!TEMPLATE_RT_RT) {
+        //     TEMPLATE_RT_RT = window.TEMPLATE_RT
+        //       .replace(/tweet\.retweeted_status/g, 'tweet.retweeted_status.retweeted_status')
+        //       .replace(/btn\.rt/g, 'btn.rtrt');
+        //   }
+        //   context.is_rt_rt = true;
+        //   context.retweeted_status_user = rt_status.user || {};
+        //   html = html.replace(rt_rt_replace_pre, Shotenjin.render(TEMPLATE_RT_RT, context));
+        // }
+      }
+      htmls.push(html);
+    } catch (err) {
+      // throw err;
+      console.error(err);
+    }
+    status.readed = true;
+  }
+  return htmls;
 }
 exports.buildStatusHtml = buildStatusHtml;
 
 function buildUsersHtml(users, t, c_user) {
   var htmls = [];
-    if (!users || users.length === 0) { 
-      return htmls; 
+  if (!users || users.length === 0) { 
+    return htmls; 
+  }
+  if (!c_user) {
+    c_user = getUser();
+  }
+  var config = tapi.get_config(c_user);
+  for (var i = 0, len = users.length; i < len; i++) {
+    var user = users[i];
+    var context = {
+      provinces: provinces,
+      tType: t,
+      getUserCountsInfo: getUserCountsInfo,
+      buildTipboxUserInfo: buildTipboxUserInfo,
+      processMsg: tapi.process_text.bind(tapi),
+      user: user,
+      account: c_user,
+      support_blocking: config.support_blocking,
+      support_follow: !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren'
+    };
+    try {
+      htmls.push(Shotenjin.render(TEMPLATE_FANS, context));
+    } catch (err) {
+      console.error(err);
     }
-    if(!c_user){
-        c_user = getUser();
-    }
-    var config = tapi.get_config(c_user);
-    for(var i = 0, len = users.length; i < len; i++) {
-      var user = users[i];
-        var context = {
-            provinces: provinces,
-            tType: t,
-            getUserCountsInfo: getUserCountsInfo,
-            buildTipboxUserInfo: buildTipboxUserInfo,
-            processMsg: tapi.process_text.bind(tapi),
-            user: user,
-            account: c_user,
-            support_blocking: config.support_blocking,
-            support_follow: !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren'
-        };
-        try {
-            htmls.push(Shotenjin.render(TEMPLATE_FANS, context));
-        } catch(err) {
-            log(err);
-        }
-    }
-    return htmls;
+  }
+  return htmls;
 }
 
 // 生成Tipbox用户信息(鼠标移到用户头像时显示的用户信息)

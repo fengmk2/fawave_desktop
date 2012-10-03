@@ -22,7 +22,7 @@ exports.apps = {
   tqq: {
     appkey: '801196838',
     secret: '9f1a88caa8709de7dccbe3cae4bdc962',
-    oauth_callback: 'oob'
+    oauth_callback: 'http://nodeweibo.org/fawave/oauth/callback'
   }
 };
 
