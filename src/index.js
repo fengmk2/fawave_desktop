@@ -272,6 +272,7 @@ function ToolbarController() {
 inherits(ToolbarController, Controller);
 
 ToolbarController.prototype.destroy = function (btn, method, id) {
+  var timeline = $('#tl_tabs .active').data('type');
   var user = getUser();
   var loading = $('#loading').show();
   tapi[method](user, id, function (err, result) {
@@ -280,6 +281,7 @@ ToolbarController.prototype.destroy = function (btn, method, id) {
       return ui.showErrorTips(err);
     }
     btn.closest('.tweetItem').remove();
+    stateManager.emit('remove_status', user, timeline, id);
     ui.showTips(i18n.get("msg_delete_success"));
   });
 };
@@ -379,7 +381,7 @@ ToolbarController.prototype.showRepostDialog = function (event) {
   var self = event.data.controller;
 
   var sid = btn.data('id');
-  var status = $('#tweet' + sid).data('originalItem');
+  var status = ViewCache.get(sid);
   var screen_name = status.user.screen_name;
 
   // ActionCache.set('doRepost', [ null, userName, tweetId, rtUserName, reTweetId ]);
@@ -432,6 +434,27 @@ ToolbarController.prototype.showRepostDialog = function (event) {
     $t.select();
   }
   _initText($t, config);
+};
+
+var ViewCache = {
+  setItems: function (items) {
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var id = '#tweet' + item.id;
+      $(id).data('originalItem', item);
+      if (item.retweeted_status) {
+        id = '#tweet' + item.retweeted_status.id;
+        $(id).data('originalItem', item.retweeted_status);
+        if (item.retweeted_status.retweeted_status) {
+          id = '#tweet' + item.retweeted_status.retweeted_status.id;
+          $(id).data('originalItem', item.retweeted_status.retweeted_status);
+        }
+      }
+    }
+  },
+  get: function (id) {
+    return $('#tweet' + id).data('originalItem');
+  }
 };
 
 function TextContentController() {
@@ -1406,10 +1429,7 @@ CommentListController.prototype.showPage = function (wrap, action) {
     list.html(html);
     if (buildMethod === 'buildRepost') {
       // cache them for repost
-      for (var i = 0; i < items.length; i++) {
-        var item = items[i];
-        $('#tweet' + item.id).data('originalItem', item);
-      }
+      ViewCache.setItems(items);
     }
     nextBtn.show();
     preBtn.show();
@@ -1703,6 +1723,7 @@ function _start_updates(stat) {
 };
 
 function _sendMsgWraper(msg, user, stat, selLi, pic) {
+  var uniqueKey = user.uniqueKey;
   function callback (err, result) {
     if (err) {
       ui.showErrorTips(err);
@@ -1744,10 +1765,12 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
       selLi = null;
       $("#btnSend, #txtContent").removeAttr('disabled');
       if (stat.successCount > 0) { // 有发送成功的
-        // setTimeout(callCheckNewMsg, 1000, 'friends_timeline');
+        setTimeout(function () {
+          stateManager.emit('check_timeline', uniqueKey, 'friends_timeline');
+        }, 1000);
         var failCount = stat.userCount - stat.successCount;
         if (stat.userCount > 1 && failCount > 0){ // 多个用户，并且有发送失败才显示
-          showMsg(i18n.get("msg_send_complete").format({
+          ui.showTips(i18n.get("msg_send_complete").format({
             successCount: stat.successCount, 
             errorCount: failCount
           }));
@@ -1840,13 +1863,19 @@ function sendRepost(msg, repostTweetId, notSendMord) {
   //     }
   //   }
   // }
+  var loading = $('#loading').show();
   tapi.repost(user, sid, msg, function (err, result) {
+    loading.hide();
+    $btn.removeAttr('disabled');
+    $txt.removeAttr('disabled');
     if (err) {
       return ui.showErrorTips(err);
     }
     $('.close_dialog:first').click();
-    $txt.val('').removeAttr('disabled');
-    // setTimeout(callCheckNewMsg, 1000, 'friends_timeline');
+    $txt.val('');
+    setTimeout(function () {
+      stateManager.emit('check_timeline', user.uniqueKey, 'friends_timeline');
+    }, 1000);
     $btn.removeAttr('disabled');
     ui.showTips(i18n.get("msg_repost_success"));
   });
@@ -2520,15 +2549,6 @@ var SmoothScroller = {
 //   }
 // });// <<=== 平滑滚动结束
 
-//强制刷新
-function forceRefresh(ele) {
-  $(ele).attr('disabled', true).fadeOut();
-  var bg = getBackgroundView();
-  var user = User.getUser();
-  bg.RefreshManager.refreshUser(user);
-  setTimeout(showRefreshBtn, 10*1000);
-}
-
 function showRefreshBtn() {
   $("#btnForceRefresh").attr('disabled', true).fadeIn();
 };// <<=== 强制刷新结束
@@ -2740,6 +2760,7 @@ function TimelineController() {
   }).on('user_change', this.changeUser.bind(this));
 
   stateManager.on('new_statuses', this.newStatuses.bind(this));
+  stateManager.on('remove_status', this.removeCacheStatus.bind(this));
 
   stateManager.emit('timeline_ready');
 }
@@ -2760,9 +2781,10 @@ TimelineController.prototype.newStatuses = function (data) {
   this.unreadStatuses[key] = list;
 };
 
-TimelineController.prototype.getUnreadStatuses = function (user, timeline) {
+TimelineController.prototype.readUnreadStatuses = function (user, timeline) {
   var key = user.uniqueKey + ':' + timeline;
   var list = this.unreadStatuses[key] || [];
+  delete this.unreadStatuses[key];
   return list;
 };
 
@@ -2787,6 +2809,20 @@ TimelineController.prototype.getCacheStatuses = function (user, timeline) {
   var key = user.uniqueKey + ':' + timeline; 
   var list = this.list[key];
   return this.fillFavorited(user, list);
+};
+
+TimelineController.prototype.removeCacheStatus = function (user, timeline, id) {
+  var key = user.uniqueKey + ':' + timeline; 
+  var list = this.list[key];
+  id = String(id);
+  if (list) {
+    for (var i = 0; i < list.length; i++) {
+      if (id === list[i].id) {
+        list.splice(i, 1);
+        return true;
+      }
+    }
+  }
 };
 
 TimelineController.prototype.setCacheStatuses = function (user, timeline, items) {
@@ -2977,7 +3013,7 @@ TimelineController.prototype.refresh = function (tab, firstLoad) {
   var active = tab.hasClass('active');
   var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
   console.log('read statuses ' + timeline + ' :' + unreadCount);
-  var unreadStatuses = self.getUnreadStatuses(user, timeline);
+  var unreadStatuses = self.readUnreadStatuses(user, timeline);
   stateManager.emit('read_statuses', {
     uniqueKey: user.uniqueKey,
     timeline: timeline,
@@ -3040,18 +3076,8 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   // items = result.news;
   var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline) : ui.buildUsersHtml(items, timeline);
   _ul[method](htmls.join(''));
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    var id = '#tweet' + item.id;
-    $(id).data('originalItem', item);
-    if (item.retweeted_status) {
-      id = '#tweet' + item.retweeted_status.id;
-      $(id).data('originalItem', item.retweeted_status);
-      if (item.retweeted_status.retweeted_status) {
-        id = '#tweet' + item.retweeted_status.retweeted_status.id;
-        $(id).data('originalItem', item.retweeted_status.retweeted_status);
-      }
-    }
+  if (dataType === 'status') {
+    ViewCache.setItems(items);
   }
   stateManager.emit('show_statuses', user, items, timeline);
 };
@@ -3294,7 +3320,36 @@ function RefreshController() {
   this.timers = {}; // {uniqueKey: {}}
   stateManager.on('user_add', this.watch.bind(this));
   stateManager.on('user_remove', this.unwatch.bind(this));
+  stateManager.on('check_timeline', this.check.bind(this));
 };
+
+RefreshController.prototype.check = function (uniqueKey, timeline) {
+  var user = User.getUserByUniqueKey(uniqueKey);
+  var params = {};
+  var since_id = user.since_ids && user.since_ids[timeline];
+  if (since_id && since_id.id) {
+    params.since_id = since_id.id;
+    if (since_id.timestamp) {
+      params.since_time = since_id.timestamp;
+    }
+  }
+  weibo[timeline](user, params, function (err, result) {
+    if (err) {
+      return ui.showErrorTips(err);
+    }
+    var items = result.items;
+    console.log(uniqueKey +' refresh ' + timeline +
+      ' since_id ' + JSON.stringify(since_id) + ': ' + items.length);
+    if (items.length > 0) {
+      stateManager.emit('new_statuses', {
+        uniqueKey: uniqueKey,
+        timeline: timeline,
+        statuses: items,
+        since_id: { id: items[0].id, timestamp: items[0].timestamp }
+      });
+    }
+  });
+}
 
 RefreshController.prototype.watch = function (user) {
   var uniqueKey = user.uniqueKey;
@@ -3309,34 +3364,12 @@ RefreshController.prototype.watch = function (user) {
   timelines.forEach(function (item) {
     var timeline = item[0];
     var timeout = item[1];
-    var timer = setInterval(function () {
-      var user = User.getUserByUniqueKey(uniqueKey);
-      var params = {};
-      var since_id = user.since_ids && user.since_ids[timeline];
-      if (since_id && since_id.id) {
-        params.since_id = since_id.id;
-        if (since_id.timestamp) {
-          params.since_time = since_id.timestamp;
-        }
-      }
-      weibo[timeline](user, params, function (err, result) {
-        if (err) {
-          return ui.showErrorTips(err);
-        }
-        var items = result.items;
-        console.log(uniqueKey +' refresh ' + timeline +
-          ' since_id ' + JSON.stringify(since_id) + ': ' + items.length);
-        if (items.length > 0) {
-          stateManager.emit('new_statuses', {
-            uniqueKey: uniqueKey,
-            timeline: timeline,
-            statuses: items,
-            since_id: { id: items[0].id, timestamp: items[0].timestamp }
-          });
-        }
-      });
-    }, timeout);
+    var check = function () {
+      stateManager.emit('check_timeline', uniqueKey, timeline);
+    };
+    var timer = setInterval(check, timeout);
     timers[timeline] = timer;
+    check();
   });
   this.timers[uniqueKey] = timers;
 };
