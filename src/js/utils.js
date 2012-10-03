@@ -21,6 +21,19 @@ function updateVersion() {
   localStorage.setObject('VERSION', VERSION);
 }
 
+function display_size(bytes) {   // simple function to show a friendly size
+  var i = 0, fixed = 0;
+  while (1023 < bytes) {
+    bytes /= 1024;
+    ++i;
+  }
+  if (i > 1) {
+    fixed = 1;
+  }
+  return bytes.toFixed(fixed) + [" B", " KB", " MB", " GB", " TB"][i];
+}
+exports.display_size = display_size;
+
 //需要不停检查更新的timeline的分类列表
 var T_LIST = exports.T_LIST = {
   all: ['friends_timeline', 'mentions', 'comments_timeline', 'direct_messages'],

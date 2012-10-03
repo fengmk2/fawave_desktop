@@ -625,7 +625,6 @@ var popupBox = exports.popupBox = {
         if(!h){
             h = this.box.height();
         }
-        console.log(Math.max(10, $("body").height() / 2 - h / 2))
         this.box.css({
             top: getPageScroll()[1] + (Math.max(10, $("body").height() / 2 - h / 2)),
             // top: Math.max(10, $("body").height() / 2 - h / 2),

@@ -5,6 +5,7 @@
 global.Storage = Storage;
 global.localStorage = localStorage;
 global.$ = $;
+global.jQuery = jQuery;
 global.document = document;
 global.window = window;
 

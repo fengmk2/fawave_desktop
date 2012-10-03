@@ -38,6 +38,7 @@ var showLoading = utils.showLoading;
 var hideLoading = utils.hideLoading;
 var unreadDes = CONST.unreadDes;
 var popupBox = ui.popupBox;
+var display_size = utils.display_size;
 
 var fawave = {};
 function getTimelineOffset(t) {
@@ -154,7 +155,6 @@ function initEvents() {
 }
 
 function init() {
-  console.log('init()');
   var c_user = User.getUser();
   if (!c_user) {
     window.location = 'options.html#user_set';
@@ -282,13 +282,69 @@ function _init_image_preview(image_src, size, preview_id, btn_id, top_padding, l
 }
 
 function TextContentController() {
-  $('#txtContent')
+  var input = $('#txtContent')
   .on('keydown', { controller: this }, this.keypress)
   .on('input focus', { controller: this }, this.count);
+  input[0].onpaste = this.paste;
+
   $('#btnSend').click(this.send.bind(this));
   $('#btnClearText').click(this.clearText.bind(this));
+  $('#show_status_input').on('click', { controller: this }, this.toggleTextInput);
 }
 inherits(TextContentController, Controller);
+
+TextContentController.prototype.paste = function (event) {
+  _get_clipboard_file(event, function (file, image_src) {
+    if (file) {
+      window.imgForUpload = file;
+      window.imgForUpload.fileName = 'fawave.png';
+      _init_image_preview(image_src, file.size, 'upImgPreview', 'btnUploadPic');
+    }
+  });
+};
+
+TextContentController.prototype.toggleTextInput = function (event) {
+  var self = event.data.controller;
+  if ($("#submitWarp").data('status') !== 'show') {
+    self.showTextInput();
+    if (window.imgForUpload) {
+      setTimeout(function () {
+        $("#upImgPreview").show();
+      }, 500);
+    }
+  } else {
+    $("#upImgPreview").hide();
+    self.hideTextInput();
+  }
+};
+
+TextContentController.prototype.showTextInput = function () {
+  var $submitWarp = $("#submitWarp");
+  if ($submitWarp.data('status') !== 'show') {
+    initSelectSendAccounts();
+    var h_submitWrap = $submitWarp.find(".w").height();
+    var h = window.innerHeight - 70 - h_submitWrap;
+    $(".list_warp").css('height', h);
+    $submitWarp.data('status', 'show').css('height', h_submitWrap);
+    $("#header .write").addClass('active').find('b').addClass('up');
+    $("#doing").appendTo('#doingWarp');
+    ActionCache.set('showMsgInput', []);
+  }
+  var $text = $("#txtContent");
+  var value = $text.val();
+  $text.focus().val('').val(value); //光标在最后面
+  countInputText();
+};
+
+TextContentController.prototype.hideTextInput = function () {
+  fawave.face.hide();
+  var h = window.innerHeight - 70;
+  $(".list_warp").css('height', h);
+  $("#submitWarp").data('status', 'hide').css('height', 0);
+  $("#header .write").removeClass('active').find('b').removeClass('up');
+  $("#doing").prependTo('#tl_tabs .btns');
+  ActionCache.set('showMsgInput', null);
+};
 
 TextContentController.prototype.send = function () {
   var text = $('#txtContent').val().trim();
@@ -340,21 +396,7 @@ function initTxtContentEven() {
   if (unsendTweet) {
     $txtContent.val(unsendTweet);
   }
-
-  $txtContent.bind('input focus', countInputText);
-
-  // $txtContent[0].oninput = $txtContent[0].onfocus = countInputText;
   
-  // 黏贴图片
-  $txtContent[0].onpaste = function (e) {
-    _get_clipboard_file(e, function (file, image_src) {
-      if (file) {
-        // window.imgForUpload = file;
-        // window.imgForUpload.fileName = 'fawave.png';
-        _init_image_preview(image_src, file.size, 'upImgPreview', 'btnUploadPic');
-      }
-    });
-  };
 
   
   //>>>发送微博事件初始化 结束<<<
@@ -385,8 +427,8 @@ function initTxtContentEven() {
     $replyText[0].onpaste = function (e) {
       _get_clipboard_file(e, function (file, image_src) {
         if (file) {
-          // window.imgForUpload_reply = file;
-          // window.imgForUpload_reply.fileName = 'fawave_reply.png';
+          window.imgForUpload_reply = file;
+          window.imgForUpload_reply.fileName = 'fawave_reply.png';
           _init_image_preview(image_src, file.size, 'upImgPreview_reply', 'btnAddReplyEmotional', 60);
           countReplyText();
         }
@@ -1710,12 +1752,14 @@ function _start_updates(stat) {
 };
 
 function _sendMsgWraper(msg, user, stat, selLi, pic) {
-  function callback(err, result) {
+  function callback (err, result) {
+    if (err) {
+      ui.showErrorTips(err);
+      console.error(err);
+    }
     stat.uploadCount--;
     stat.sendedCount++;
-    if (result === true ||
-        (result && (result.id || (result.data && result.data.id))) ||
-        textStatus === 'success') {
+    if (result && result.id) {
       stat.successCount++;
       $("#accountsForSend li[uniquekey='" + user.uniqueKey +"']").removeClass('sel');
       if (result) {
@@ -1738,7 +1782,7 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
         $("#txtContent").val('').data({source_url: '', short_url: ''});
         window.imgForUpload = null;
         $('#upImgPreview').hide().find('.img').html('');
-        hideMsgInput();
+        $('#show_status_input').click();
         selLi.addClass('sel');
       } else {
         // 不选中
@@ -1769,7 +1813,9 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
   };
   if (pic) {
     var data = {status: msg};
-    pic = {file: pic};
+    var fileName = pic.fileName || pic.name;
+    var contentType = pic.fileType || pic.type
+    pic = { data: pic, name: fileName, content_type: contentType };
     var $loading_bar = $('#upImgPreview .loading_bar');
     var onprogress = null;
     if (!$loading_bar.data('uploading')) {
@@ -1781,9 +1827,10 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
         $loading_bar.find('div').css({'border-left-width': width + 'px'}).find('span').html(html);
       };
     }
-    tapi.upload(user, data, pic, null, onprogress, callback);
+    pic.progress = onprogress;
+    weibo.upload(user, data, pic, callback);
   } else {
-    tapi.update(user, msg, callback);
+    weibo.update(user, msg, callback);
   }
 };
 
@@ -1910,48 +1957,6 @@ function callCheckNewMsg(t, uniqueKey) {
     b_view.checkNewMsg(t, uniqueKey);
   }
 }
-
-function showMsgInput() {
-  var $submitWarp = $("#submitWarp");
-  if ($submitWarp.data('status') !== 'show') {
-    initSelectSendAccounts();
-    var h_submitWrap = $submitWarp.find(".w").height();
-    var h = window.innerHeight - 70 - h_submitWrap;
-    $(".list_warp").css('height', h);
-    $submitWarp.data('status', 'show').css('height', h_submitWrap);
-    $("#header .write").addClass('active').find('b').addClass('up');
-    $("#doing").appendTo('#doingWarp');
-    ActionCache.set('showMsgInput', []);
-  }
-  var $text = $("#txtContent");
-  var value = $text.val();
-  $text.focus().val('').val(value); //光标在最后面
-  countInputText();
-};
-
-function hideMsgInput() {
-  fawave.face.hide();
-  var h = window.innerHeight - 70;
-  $(".list_warp").css('height', h);
-  $("#submitWarp").data('status', 'hide').css('height', 0);
-  $("#header .write").removeClass('active').find('b').removeClass('up');
-  $("#doing").prependTo('#tl_tabs .btns');
-  ActionCache.set('showMsgInput', null);
-};
-
-function toogleMsgInput(ele) {
-  if ($("#submitWarp").data('status') !== 'show') {
-    showMsgInput();
-    if (window.imgForUpload) {
-      setTimeout(function () {
-        $("#upImgPreview").show();
-      }, 500);
-    }
-  } else {
-    $("#upImgPreview").hide();
-    hideMsgInput();
-  }
-};
 
 function hideReplyInput() {
   fawave.face.hide();
@@ -2518,7 +2523,6 @@ function _getWindowId(callback) {
 
 //打开上传图片窗口
 function openUploadImage(tabId, image_url, image_source_link, image_need_source_link){
-    initOnUnload();
     var args_str = _get_open_window_args();
     tabId = tabId || '';
     var url = 'upimage.html?tabId=' + tabId;
@@ -3570,10 +3574,10 @@ RefreshController.prototype.watch = function (user) {
   console.log('watch ' + uniqueKey);
   var timers = this.timers[uniqueKey] || {};
   var timelines = [
-    ['friends_timeline', 60000],
-    ['comments_timeline', 60000],
-    ['comments_mentions', 120000],
-    ['mentions', 60000],
+    ['friends_timeline', 120000],
+    ['comments_timeline', 120000],
+    // ['comments_mentions', 120000],
+    ['mentions', 120000],
   ];
   timelines.forEach(function (item) {
     var timeline = item[0];
@@ -3636,5 +3640,13 @@ $(function () {
   new StatusController();
   console.log('controllers inited.');
 
-  // init();
+  var currentUser = User.getUser();
+  if (!currentUser) {
+    window.location = 'options.html#user_set';
+    // window.open('options.html#user_set', '_blank');
+    // window.open('options.html', '_blank');
+    // chrome.tabs.create({url: 'options.html#user_set'});
+    return;
+  }
+
 });
