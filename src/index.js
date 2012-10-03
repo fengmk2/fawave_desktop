@@ -37,7 +37,6 @@ var buildStatusHtml = ui.buildStatusHtml;
 var ShortenUrl = utils.ShortenUrl;
 var showLoading = utils.showLoading;
 var hideLoading = utils.hideLoading;
-var unreadDes = CONST.unreadDes;
 var popupBox = ui.popupBox;
 var display_size = utils.display_size;
 
@@ -2968,7 +2967,7 @@ TimelineController.prototype.click = function (event) {
   
   // 刷新条件: 当前是 active 或者 没有任何内容, 并且 warp scroll 在顶部 <= 100
   if (needRefresh) {
-    self.refresh(tab, isEmpty);
+    self.refresh(tab);
     scrollTop = 0;
   }
 
@@ -3003,7 +3002,7 @@ TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
   }
 }
 
-TimelineController.prototype.refresh = function (tab, firstLoad) {
+TimelineController.prototype.refresh = function (tab) {
   if (tab.data('is_loading')) {
     return;
   }
@@ -3026,7 +3025,7 @@ TimelineController.prototype.refresh = function (tab, firstLoad) {
 
   var params = {}; // self.getParams(tab);
   var since_id = user.since_ids && user.since_ids[timeline];
-  if (!firstLoad && since_id) {
+  if (since_id) {
     params.since_id = since_id.id;
     if (since_id.timestamp) {
       params.since_time = since_id.timestamp;
@@ -3195,11 +3194,6 @@ AccountController.prototype.readStatuses = function (data) {
   if (!user) {
     return;
   }
-  var count = (user.unreadCount || 0) - data.count;
-  if (count <= 0) {
-    count = 0;
-  }
-  user.unreadCount = count;
   user.unreads = user.unreads || {};
   user.unreads[data.timeline] = 0;
   if (data.since_id) {
@@ -3215,10 +3209,6 @@ AccountController.prototype.newStatuses = function (data) {
   if (!user) {
     return;
   }
-  // var unreadTip = $('#accountListDock .' + user.uniqueKey + ' .unr');
-  var count = (user.unreadCount || 0) + data.statuses.length;
-  console.log(data.timeline + ' new :' + count)
-  user.unreadCount = count;
   user.since_ids = user.since_ids || {};
   user.since_ids[data.timeline] = data.since_id;
   user.unreads = user.unreads || {};
@@ -3263,14 +3253,28 @@ AccountController.prototype.refresh = function () {
   // 底部Dock
   var tpl = ' \
     <li class="{{uniqueKey}} {{_current}}" data-uid="{{uniqueKey}}"> \
-      <span class="username">{{screen_name}}</span> \
+      <span class="username">{{unreadTips}}</span> \
       <a href="javascript:void(0);"><img src="{{profile_image_url}}" /></a> \
-      <img src="images/blogs/{{blogType}}_16.png" class="blogType" /> \
+      <img src="images/blogs/{{blogtype}}_16.png" class="blogType" /> \
       <span class="unr">{{unreadCount}}</span> \
     </li>';
   var html = '<ul>';
   for (var i = 0; i < users.length; i++) {
     var user = users[i];
+    var unreads = user.unreads || {};
+    var unreadTips = [];
+    user.unreadCount = 0;
+    for (var timeline in unreads) {
+      var count = unreads[timeline];
+      if (count) {
+        user.unreadCount += count;
+        unreadTips.push(unreads[timeline] + (CONST.unreadDes[timeline] || '未知'));
+      }
+    }
+    user.unreadTips = user.screen_name;
+    if (unreadTips.length > 0) {
+      user.unreadTips += ' (' + unreadTips.join(', ') + ')'; 
+    }
     user.unreadCount = user.unreadCount || '';
     if (user.uniqueKey === currentUser.uniqueKey) {
       user._current = 'current';
@@ -3357,9 +3361,9 @@ RefreshController.prototype.watch = function (user) {
   var timers = this.timers[uniqueKey] || {};
   var timelines = [
     ['friends_timeline', 60000],
-    ['comments_timeline', 120000],
-    ['comments_mentions', 120000],
-    ['mentions', 120000],
+    ['comments_timeline', 300000],
+    ['comments_mentions', 300000],
+    ['mentions', 300000],
   ];
   timelines.forEach(function (item) {
     var timeline = item[0];
