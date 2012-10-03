@@ -444,14 +444,20 @@ TextContentController.prototype.count = function (event) {
   $('#wordCount').html(values[1]);
 };
 
-function sendMsgByActionType(c) { // c:要发送的内容
+function sendMsgByActionType(c) {
   if (!c) {
     return ui.showTips(i18n.get("msg_need_content"));
   }
+
   $("#replySubmit, #replyTextarea").attr('disabled', true);
+
   if (window.imgForUpload_reply) {
     // 增加图片链接
     Nodebox.upload({}, window.imgForUpload_reply, function (err, info) {
+      if (err) {
+        return ui.showTips(err);
+      }
+
       if (info && (info.link || info.url)) {
         var picurl = info.link || info.url;
         if ($('#repostTweetId').val()) {
@@ -469,9 +475,10 @@ function sendMsgByActionType(c) { // c:要发送的内容
       var width = parseInt((rpe.loaded / rpe.total) * $loading_bar.width(), 10);
       $loading_bar.find('div').css({'border-left-width': width + 'px'}).find('span').html(html);
     });
-  } else {
-    __sendMsgByActionType(c);
+    return;
   }
+
+  __sendMsgByActionType(c);
 }
 
 function __sendMsgByActionType(c) {
@@ -1179,7 +1186,7 @@ function getFavorites(is_click) {
 
 function CommentListController() {
   this.events = [
-    { events: 'click', selecter: '.commentCounts a', handler: this.show },
+    { events: 'click', selecter: '.commentCounts a, .repostCounts a', handler: this.show },
     { events: 'click', selecter: '.comment_hide_list_btn', handler: this.hide },
     { events: 'click', selecter: '.comments .pre_page', handler: this.prevPage },
     { events: 'click', selecter: '.comments .next_page', handler: this.nextPage },
@@ -1197,6 +1204,9 @@ CommentListController.prototype.show = function (event) {
   var btn = $(this);
   var self = event.data.controller;
   var wrap = btn.closest('.commentWrap').find('.comments');
+  wrap.hide();
+  var toType = btn.data('type') || 'comment';
+  wrap.data('type', toType);
   self.showPage(wrap, 'first');
 }
 
@@ -1215,6 +1225,7 @@ CommentListController.prototype.nextPage = function (event) {
 };
 
 CommentListController.prototype.showPage = function (wrap, action) {
+  var type = wrap.data('type') || 'comment';
   var sid = wrap.data('id');
   var user = User.getUser();
   var list = wrap.find('.comment_list');
@@ -1240,17 +1251,18 @@ CommentListController.prototype.showPage = function (wrap, action) {
       }
     }
   }
-  console.log(sid + ' params: ' + JSON.stringify(params));
+  // console.log(sid + ' params: ' + JSON.stringify(params));
   var loading = $('#loading').show();
-  weibo.comments(user, sid, params, function (err, result) {
+  var method = type === 'repost' ? 'repost_timeline' : 'comments';
+  weibo[method](user, sid, params, function (err, result) {
     loading.hide();
     if (err) {
       return ui.showErrorTips(err);
     }
     var nextBtn = wrap.find('.next_page');
     var preBtn = wrap.find('.pre_page');
-    var comments = result.items;
-    if (comments.length === 0) {
+    var items = result.items;
+    if (items.length === 0) {
       if (action === 'next') {
         nextBtn.hide();
       } else if (action === 'prev') {
@@ -1259,8 +1271,9 @@ CommentListController.prototype.showPage = function (wrap, action) {
       return ui.showTips('没有了');
     }
     var html = '';
-    for (var i = 0; i < comments.length; i++) {
-      html += ui.buildComment(user, comments[i]);
+    var buildMethod = type === 'repost' ? 'buildRepost' : 'buildComment';
+    for (var i = 0; i < items.length; i++) {
+      html += ui[buildMethod](user, items[i]);
     }
     list.html(html);
     nextBtn.show();
@@ -1269,12 +1282,12 @@ CommentListController.prototype.showPage = function (wrap, action) {
       preBtn.hide();
     }
     wrap.show();
-    var first = comments[0];
+    var first = items[0];
     wrap.data('since_id', first.id);
     if (first.timestamp) {
       wrap.data('since_time', first.timestamp);
     }
-    var last = comments[comments.length - 1];
+    var last = items[items.length - 1];
     wrap.data('max_id', last.id);
     if (last.timestamp) {
       wrap.data('max_time', last.timestamp);
@@ -1665,44 +1678,42 @@ function sendWhisper(msg){
 function sendRepost(msg, repostTweetId, notSendMord) {
   var $btn = $("#replySubmit");
   var $txt = $("#replyTextarea");
-  repostTweetId = repostTweetId || $('#repostTweetId').val();
-  var data = { status: msg, id: repostTweetId };
+  var sid = sid || $('#repostTweetId').val();
   var user = getUser();
-  var config = tapi.get_config(user);
-  data.user = user;
+  // var config = tapi.get_config(user);
   $btn.attr('disabled','true');
   $txt.attr('disabled','true');
-  if (config.repost_need_status) {
-    data.retweeted_status = ui.TWEETS[repostTweetId];
-  }
+  // if (config.repost_need_status) {
+  //   data.retweeted_status = ui.TWEETS[repostTweetId];
+  // }
   // 处理是否评论
-  if (!notSendMord) {
-    var $chk_sendOneMore = $('#chk_sendOneMore');
-    if ($chk_sendOneMore.attr("checked") && $chk_sendOneMore.val()) { // 同时给XXX评论
-      if (config.support_repost_comment) {
-        data.is_comment = 1;
-      } else {
-        sendComment(msg, $chk_sendOneMore.val(), true);
-      }
+  // if (!notSendMord) {
+  //   var $chk_sendOneMore = $('#chk_sendOneMore');
+  //   if ($chk_sendOneMore.attr("checked") && $chk_sendOneMore.val()) { // 同时给XXX评论
+  //     if (config.support_repost_comment) {
+  //       data.is_comment = 1;
+  //     } else {
+  //       sendComment(msg, $chk_sendOneMore.val(), true);
+  //     }
+  //   }
+  //   var $chk_sendOneMore2 = $('#chk_sendOneMore2');
+  //   if ($chk_sendOneMore2.attr("checked") && $chk_sendOneMore2.val()) { // 同时给原作者 XXX评论
+  //     if (config.support_repost_comment_to_root) {
+  //       data.is_comment_to_root = 1;
+  //     } else {
+  //       sendComment(msg + '.', $chk_sendOneMore2.val(), true);
+  //     }
+  //   }
+  // }
+  tapi.repost(user, sid, msg, function (err, result) {
+    if (err) {
+      return ui.showErrorTips(err);
     }
-    var $chk_sendOneMore2 = $('#chk_sendOneMore2');
-    if ($chk_sendOneMore2.attr("checked") && $chk_sendOneMore2.val()) { // 同时给原作者 XXX评论
-      if (config.support_repost_comment_to_root) {
-        data.is_comment_to_root = 1;
-      } else {
-        sendComment(msg + '.', $chk_sendOneMore2.val(), true);
-      }
-    }
-  }
-  tapi.repost(data, function(status, textStatus){
-    if (status && (status === true || status.id || (status.retweeted_status && status.retweeted_status.id))) {
-      hideReplyInput();
-      $txt.val('');
-      setTimeout(callCheckNewMsg, 1000, 'friends_timeline');
-      showMsg(i18n.get("msg_repost_success"));
-    }
+    $('.close_dialog:first').click();
+    $txt.val('').removeAttr('disabled');
+    // setTimeout(callCheckNewMsg, 1000, 'friends_timeline');
     $btn.removeAttr('disabled');
-    $txt.removeAttr('disabled');
+    ui.showTips(i18n.get("msg_repost_success"));
   });
 };
 
@@ -3325,9 +3336,9 @@ RefreshController.prototype.watch = function (user) {
   console.log('watch ' + uniqueKey);
   var timers = this.timers[uniqueKey] || {};
   var timelines = [
-    ['friends_timeline', 120000],
+    ['friends_timeline', 60000],
     ['comments_timeline', 120000],
-    // ['comments_mentions', 120000],
+    ['comments_mentions', 120000],
     ['mentions', 120000],
   ];
   timelines.forEach(function (item) {

@@ -176,8 +176,7 @@ function buildStatusHtml(statuses, t, c_user) {
   var tpl;
   // if (config.support_repost && config.support_repost_timeline) {
   tpl = '<span class="repostCounts">(<a href="javascript:void(0);" title="' + 
-    i18n.get("comm_show_repost_timeline") + 
-    '" timeline_type="repost" onclick="showRepostTimeline(this, \'{{id}}\');">{{reposts_count}}</a>)</span>';
+    i18n.get("comm_show_repost_timeline") + '" data-type="repost">{{reposts_count}}</a>)</span>';
   BUTTON_TPLS.repostCounts = tpl;
   BUTTON_TPLS.rtRepostCounts = tpl.replace(/\{\{reposts_count\}\}/g, '{{retweeted_status.reposts_count}}')
     .replace(/\{\{id\}\}/g, '{{retweeted_status.id}}');
@@ -256,7 +255,7 @@ function buildStatusHtml(statuses, t, c_user) {
   default:
     break;
   }
-  var comments_count_tpl = '<a href="javascript:void(0);" data-sid="{{id}}" title="' +
+  var comments_count_tpl = '<a href="javascript:void(0);" title="' +
     i18n.get("btn_show_comments_title") + '"">{{comments_count}}</a>';
   var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
   var isFavorited = t === 'favorites';
@@ -474,62 +473,11 @@ exports.buildFansLi = buildFansLi;
  * 生成评论列表 / 转发列表
  * timeline_type: repost, comment
  */
-function buildComment(user, comment, timeline_type, status_id, status_user_screen_name, status_user_id) {
-  timeline_type = timeline_type || 'comment';
-  var c_user = user;
-  var comment_id = comment.id;
-  var comment_user_screen_name = comment.user.screen_name;
-  var comment_user_id = comment.user.id;
+function buildComment(user, comment) {
   var datetime = moment(comment.created_at).format("YYYY-MM-DD HH:mm:ss");
-  var comment_btn = '';
-  if (timeline_type === 'comment') {
-    if (comment.status && comment.status.id) {
-      status_id = comment.status.id;
-      if (comment.status.user) {
-        status_user_screen_name = comment.status.user.screen_name;
-        status_user_id = comment.status.user.id;
-      }
-    }
-    var tpl = '<a class="replyComment" href="javascript:void(0);" title="' +
-      i18n.get("btn_reply_comment_title") + '">' +
-      i18n.get("abb_reply") + '</a>';
-    comment_btn = format(tpl, {
-      status_id: status_id,
-      status_user_screen_name: status_user_screen_name,
-      status_user_id: status_user_id,
-      comment_id: comment_id,
-      comment_user_screen_name: comment_user_screen_name,
-      comment_user_id: comment_user_id
-    });
-  } else { // repost
-    var status = comment;
-    status_id = status.id;
-    status_user_id = status.user.id;
-    status_user_screen_name = status.user.screen_name;
-    // 直接回复给转发者的微博
-    comment_id = ''; 
-    comment_user_id = '';
-    comment_user_screen_name = '';
-    var retweeted_status_screen_name = '';
-    var retweeted_status_id = '';
-    if (status.retweeted_status && status.retweeted_status.user) {
-      retweeted_status_screen_name = status.retweeted_status.user.screen_name;
-      retweeted_status_id = status.retweeted_status.id;
-    }
-    status.retweeted_status_screen_name = retweeted_status_screen_name;
-    status.retweeted_status_id = retweeted_status_id;
-    var repost_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
-      'onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" ' +
-      'title="' + i18n.get("btn_repost_title") + '">' +
-      i18n.get("abb_repost") + '</a>', status);
-    comment_btn = format('<a class="replyComment" href="javascript:void(0);" ' +
-      'onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" ' +
-      'title="' + i18n.get("btn_comment_title") + '">&nbsp;&nbsp;' +
-      i18n.get("abb_comment") + '</a>', status);
-    comment_btn += repost_btn;
-    datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
-      ' ' + status.source + ' ' + i18n.get('comm_repost');
-  }
+  var comment_btn = '<a class="replyComment" href="javascript:void(0);" title="' +
+    i18n.get("btn_reply_comment_title") + '">' +
+    i18n.get("abb_reply") + '</a>';
   if (comment.user.verified) {
     comment.user.verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
       (comment.user.verified_type && comment.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
@@ -539,11 +487,36 @@ function buildComment(user, comment, timeline_type, status_id, status_user_scree
   var reply_user = format('<a target="_blank" title="' + i18n.get("btn_show_user_title") +
     '">@{{screen_name}}{{verified}}</a>', comment.user);
   return '<li><span class="commentContent">' +
-    reply_user + ': ' + tapi.process_text(c_user, comment) +
+    reply_user + ': ' + tapi.process_text(user, comment) +
     '</span><span class="msgInfo">(' + datetime + ')</span>' +
     comment_btn + '</li>';
 }
 exports.buildComment = buildComment;
+
+exports.buildRepost = function (user, status) {
+  var datetime = moment(status.created_at).format("YYYY-MM-DD HH:mm:ss");
+  var repost_btn = '<a class="replyComment" href="javascript:void(0);" title="' +
+    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>';
+  var btns = format('<a class="replyComment" href="javascript:void(0);" ' +
+    'onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" ' +
+    'title="' + i18n.get("btn_comment_title") + '">&nbsp;&nbsp;' +
+    i18n.get("abb_comment") + '</a>', status);
+  btns += repost_btn;
+  datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
+    ' ' + status.source + ' ' + i18n.get('comm_repost');
+  if (status.user.verified) {
+    status.user.verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
+      (status.user.verified_type && status.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
+  } else {
+    status.user.verified = '';
+  }
+  var reply_user = format('<a target="_blank" title="' + i18n.get("btn_show_user_title") +
+    '">@{{screen_name}}{{verified}}</a>', status.user);
+  return '<li><span class="commentContent">' +
+    reply_user + ': ' + tapi.process_text(user, status) +
+    '</span><span class="msgInfo">(' + datetime + ')</span>' +
+    btns + '</li>';
+};
 
 function getUserCountsInfo(user) {
   if (user.statuses_count === undefined) {
@@ -568,8 +541,8 @@ function getPageScroll() {
     yScroll = document.body.scrollTop;
     xScroll = document.body.scrollLeft; 
   }
-  return new Array(xScroll,yScroll);
-};
+  return new Array(xScroll, yScroll);
+}
 
   // Adapted from getPageSize() by quirksmode.com
 function getPageHeight() {
@@ -583,135 +556,147 @@ function getPageHeight() {
     windowHeight = document.body.clientHeight;
   }
   return windowHeight;
-};
+}
 
-//浮动层
 var popupBox = exports.popupBox = {
-    tp: '<div id="popup_box">' +
-            '<div class="pb_title clearFix"><span class="t"></span><a href="javascript:" onclick="popupBox.close()" class="pb_close">'+ i18n.get("comm_close") +'</a></div>' +
-            '<div class="pb_content"></div>' +
-        '</div>' +
-        '<div id="popup_box_overlay"></di>',
-    box: null,
-    checkBox: function(){
-        if(!this.box){
-            $("body div:eq(0)").append(this.tp);
-            this.box = $("#popup_box");
-            this.overlay = $("#popup_box_overlay ");
-        }
-    },
-    close: function(){
-        this.box.hide();
-        this.overlay.hide();
-    },
-    show: function(img_width, img_height){
-        this.overlay.show();
-        var w = img_width;
-        if(w){
-            var max_w = Number($("#facebox_see_img").css('max-width').replace('px', '')) + 10;
-            w = Math.min(w, max_w);
-        }else{
-            w = this.box.width();
-        }
-        var h = img_height;
-        if(!h){
-            h = this.box.height();
-        }
-        this.box.css({
-            top: getPageScroll()[1] + (Math.max(10, $("body").height() / 2 - h / 2)),
-            // top: Math.max(10, $("body").height() / 2 - h / 2),
-            left: $("body").width() / 2 - w / 2 - 2
-        }).show();
-        $("body").scrollTop(1); //防止图片拉到底部关闭再打开无法滚动的问题
-    },
-    showOverlay: function(){},
-    showImg: function(imgSrc, original, callbackFn){
-        this.checkBox();
-        var image = $('<img />');
-        image.on('load', function() {
-          image.off('load error');
-          popupBox.showOverlay();
-          if (original) {
-            popupBox.box.find('.pb_title .t, .pb_footer .t').html('<a target="_blank" href="' + original +'">'+ i18n.get("comm_show_original_pic") +'</a>');
-          } else {
-            popupBox.box.find('.pb_title .t, .pb_footer .t').html('');
-          }
-          popupBox.box.find('.pb_content').html('<div class="image"><span class="rotate_btn">'
-            + '<a href="javascript:" onclick="$(\'#facebox_see_img\').rotateLeft(90);popupBox.show();"><img src="images/rotate_l.png"></a>'
-            + '<a href="javascript:" onclick="$(\'#facebox_see_img\').rotateRight(90);popupBox.show();" style="margin-left:10px;"><img src="images/rotate_r.png"></a></span>'
-            + '<img id="facebox_see_img" src="' + image.attr('src') + '" class="cur_min" onclick="popupBox.close()" /></div>');
-          popupBox.show(image.width(), image.height());
-          image = null;
-          if (callbackFn) {
-            callbackFn('success');
-          }
-        }).on('error', function() {
-          image.off('load error');
-          image = null;
-          if(callbackFn){ callbackFn('error'); }
-        });
-        image.attr('src', imgSrc);
-    },
-    showMap: function(user_img, myLatitude, myLongitude, geo_info){
-        this.checkBox();
-        var latlng = new google.maps.LatLng(myLatitude, myLongitude);
-        var myOptions = {
-          zoom: 13,
-          center: latlng,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map_canvas = $("#pb_map_canvas");
-        if(!map_canvas.length){
-            this.box.find('.pb_content').html('<div id="pb_map_canvas"></div>');
-            map_canvas = $("#pb_map_canvas");
-        }
+  tp: '<div id="popup_box">' +
+    '<div class="pb_title clearFix"><span class="t"></span><a href="javascript:" onclick="popupBox.close()" class="pb_close">' +
+    i18n.get("comm_close") + '</a></div>' +
+    '<div class="pb_content"></div>' +
+  '</div>' +
+  '<div id="popup_box_overlay"></di>',
+  box: null,
+  checkBox: function () {
+    this.box = $("#popup_box");
+    if (this.box.length === 0) {
+      $("body div:eq(0)").append(this.tp);
+      this.box = $("#popup_box");
+      // init buttons events
+      $(document).on('click', '.left_rotate_btn', function () {
+        $('#facebox_see_img').rotateLeft(90);
         popupBox.show();
-        var map = new google.maps.Map(map_canvas[0], myOptions);
-        var marker = new google.maps.Marker({map: map, position:latlng});
-        
-
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode({'latLng': latlng}, function(results, status) {//根据经纬度查找地理位置
-            if (status == google.maps.GeocoderStatus.OK) {//判断查找状态
-                if (results[0]) {//查找成功
-                    /*
-                        InfoWindow 信息窗口类。显示标记位置的信息
-                    */
-                  var address = results[0].formatted_address;
-                  if(geo_info) {
-                    if(geo_info.ip) {
-                      address += '<br/>IP: ' + geo_info.ip;
-                    }
-                    if(geo_info.more) {
-                      address += '<br/>ISP: ' + geo_info.more;
-                    }
-                  }
-                    var infowindow = new google.maps.InfoWindow({
-                        content: '<img class="map_user_icon" src="'+user_img+'" />' + address,
-                        maxWidth: 60
-                    });
-                    infowindow.open(map, marker);//打开信息窗口。一般与map和标记关联
-                    google.maps.event.addListener(marker, 'click', function() {
-                      infowindow.open(map,marker);
-                    });
-                }
-            } else {
-                showMsg("Geocoder failed due to: " + status, true);
-            }
-        });
-    },
-    showVideo: function (url, playcode) {
-      this.checkBox();
-      popupBox.box.find('.pb_title .t, .pb_footer .t').html('<a target="_blank" href="' + url +'">'+ i18n.get("comm_show_original_vedio") +'</a>');
-      popupBox.box.find('.pb_content').html(playcode);
-      popupBox.show();
-    },
-    showHtmlBox: function (title, content){
-      this.checkBox();
-      popupBox.box.find('.pb_title .t, .pb_footer .t').html(title);
-      popupBox.box.find('.pb_content').html(content);
-      popupBox.show();
+      });
+      $(document).on('click', '.right_rotate_btn', function () {
+        $('#facebox_see_img').rotateRight(90);
+        popupBox.show();
+      });
     }
+    this.overlay = $("#popup_box_overlay ");
+  },
+  close: function () {
+    this.box.hide();
+    this.overlay.hide();
+  },
+  show: function (img_width, img_height) {
+    this.overlay.show();
+    var w = img_width;
+    if (w) {
+      var max_w = Number($("#facebox_see_img").css('max-width').replace('px', '')) + 10;
+      w = Math.min(w, max_w);
+    } else {
+      w = this.box.width();
+    }
+    var h = img_height;
+    if (!h) {
+      h = this.box.height();
+    }
+    this.box.css({
+      top: getPageScroll()[1] + (Math.max(10, $("body").height() / 2 - h / 2)),
+      // top: Math.max(10, $("body").height() / 2 - h / 2),
+      left: $("body").width() / 2 - w / 2 - 2
+    }).show();
+    $("body").scrollTop(1); //防止图片拉到底部关闭再打开无法滚动的问题
+  },
+  showOverlay: function () {},
+  showImg: function (imgSrc, original, callbackFn) {
+    this.checkBox();
+    var image = $('<img />');
+    image.on('load', function () {
+      image.off('load error');
+      popupBox.showOverlay();
+      if (original) {
+        popupBox.box.find('.pb_title .t, .pb_footer .t')
+        .html('<a target="_blank" href="' + original + '">' + i18n.get("comm_show_original_pic") + '</a>');
+      } else {
+        popupBox.box.find('.pb_title .t, .pb_footer .t').html('');
+      }
+      popupBox.box.find('.pb_content')
+      .html('<div class="image"><span class="rotate_btn"> \
+        <a class="left_rotate_btn" href="javascript:void(0);"><img src="images/rotate_l.png"></a> \
+        <a class="right_rotate_btn" href="javascript:void(0);" style="margin-left:10px;"><img src="images/rotate_r.png"></a></span>' +
+        '<img id="facebox_see_img" src="' + image.attr('src') +
+        '" class="cur_min" onclick="popupBox.close()" /></div>');
+      popupBox.show(image.width(), image.height());
+      image = null;
+      callbackFn && callbackFn('success');
+    }).on('error', function () {
+      image.off('load error');
+      image = null;
+      callbackFn && callbackFn('error');
+    });
+    image.attr('src', imgSrc);
+  },
+  // showMap: function (user_img, myLatitude, myLongitude, geo_info) {
+  //   this.checkBox();
+  //   var latlng = new google.maps.LatLng(myLatitude, myLongitude);
+  //   var myOptions = {
+  //     zoom: 13,
+  //     center: latlng,
+  //     mapTypeId: google.maps.MapTypeId.ROADMAP
+  //   };
+  //   var map_canvas = $("#pb_map_canvas");
+  //   if(!map_canvas.length){
+  //       this.box.find('.pb_content').html('<div id="pb_map_canvas"></div>');
+  //       map_canvas = $("#pb_map_canvas");
+  //   }
+  //   popupBox.show();
+  //   var map = new google.maps.Map(map_canvas[0], myOptions);
+  //   var marker = new google.maps.Marker({map: map, position:latlng});
+    
+
+  //   var geocoder = new google.maps.Geocoder();
+  //   geocoder.geocode({'latLng': latlng}, function(results, status) {//根据经纬度查找地理位置
+  //       if (status == google.maps.GeocoderStatus.OK) {//判断查找状态
+  //           if (results[0]) {//查找成功
+                
+  //                   InfoWindow 信息窗口类。显示标记位置的信息
+                
+  //             var address = results[0].formatted_address;
+  //             if(geo_info) {
+  //               if(geo_info.ip) {
+  //                 address += '<br/>IP: ' + geo_info.ip;
+  //               }
+  //               if(geo_info.more) {
+  //                 address += '<br/>ISP: ' + geo_info.more;
+  //               }
+  //             }
+  //               var infowindow = new google.maps.InfoWindow({
+  //                   content: '<img class="map_user_icon" src="'+user_img+'" />' + address,
+  //                   maxWidth: 60
+  //               });
+  //               infowindow.open(map, marker);//打开信息窗口。一般与map和标记关联
+  //               google.maps.event.addListener(marker, 'click', function() {
+  //                 infowindow.open(map,marker);
+  //               });
+  //           }
+  //       } else {
+  //           showMsg("Geocoder failed due to: " + status, true);
+  //       }
+  //   });
+  // },
+  showVideo: function (url, playcode) {
+    this.checkBox();
+    popupBox.box.find('.pb_title .t, .pb_footer .t')
+    .html('<a target="_blank" href="' + url + '">' + i18n.get("comm_show_original_vedio") + '</a>');
+    popupBox.box.find('.pb_content').html(playcode);
+    popupBox.show();
+  },
+  showHtmlBox: function (title, content) {
+    this.checkBox();
+    popupBox.box.find('.pb_title .t, .pb_footer .t').html(title);
+    popupBox.box.find('.pb_content').html(content);
+    popupBox.show();
+  }
 };
 
 function showTips(message) {
