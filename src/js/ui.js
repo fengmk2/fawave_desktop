@@ -53,7 +53,7 @@ function endswith(s, suffix) {
 var _BUTTON_TPLS = {
   showMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{user.profile_image_url}}\', {{geo.coordinates[0]}}, {{geo.coordinates[1]}});" title="' +
     i18n.get("btn_geo_title") + '"><img src="images/mapspin2a.png"/></a>',
-  delTweetBtn: '<a class="deltweet" href="javascript:void(0);" onclick="doDelTweet(\'{{id}}\', this);" title="' +
+  delTweetBtn: '<a class="deltweet" href="javascript:void(0);" data-id="{{id}}" title="' +
     i18n.get("btn_del_tweet_title") + '">' + i18n.get("abb_delete") + '</a>',
   replyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
     i18n.get("btn_mention_title") + '">@</a>',
@@ -61,14 +61,15 @@ var _BUTTON_TPLS = {
     i18n.get("btn_rt_title") + '"></a>',
   retweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this);" title="' +
     i18n.get("btn_old_rt_title") + '">RT</a>',
-  repostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{user.screen_name}}\',\'{{id}}\',\'{{retweeted_status_screen_name}}\',\'{{retweeted_status_id}}\');" title="' +
-    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
+  repostBtn: '<a class="reposttweet" href="javascript:void(0);" ' +
+    ' data-id="{{id}}" title="' + i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
   repostCounts: '<span class="repostCounts">({{reposts_count}})</span>',
-  commentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" title="' +
-    i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
+  commentBtn: '<a class="commenttweet" href="javascript:void(0);" ' +
+    ' data-id="{{id}}" data-uid="{{user.id}}" data-screen_name="{{user.screen_name}}" ' +
+    ' title="' + i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
   commentCounts: '<span class="commentCounts">({{comments_btn}})</span>',
-  delCommentBtn: '<a class="delcommenttweet" href="javascript:void(0);" onclick="javascript:doDelComment(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
-    i18n.get("btn_del_comment_title") + '">' + i18n.get("abb_delete") + '</a>',
+  delCommentBtn: '<a class="delcommenttweet" href="javascript:void(0);" ' +
+    ' data-cid="{{id}}" title="' + i18n.get("btn_del_comment_title") + '">' + i18n.get("abb_delete") + '</a>',
   new_msgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="doNewMessage(this,\'{{user.screen_name}}\',\'{{user.id}}\');" title="' +
     i18n.get("btn_direct_message_title") + '">' + i18n.get("abb_send_direct_message") + '</a>',
   delDirectMsgBtn: '<a class="newMessage" href="javascript:void(0);" onclick="delDirectMsg(this,\'{{user.screen_name}}\',\'{{id}}\');" title="' +
@@ -81,14 +82,15 @@ var _BUTTON_TPLS = {
   // rt
   rtShowMapBtn: '<a class="geobtn" href="javascript:" onclick="showGeoMap(\'{{retweeted_status.user.profile_image_url}}\', {{retweeted_status.geo.coordinates[0]}}, {{retweeted_status.geo.coordinates[1]}});" title="' +
     i18n.get("btn_geo_title") + '"><img src="images/mapspin2a.png"/></a>',
-  rtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
-    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
+  rtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" ' +
+    ' data-id="{{retweeted_status.id}}" title="' + i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
   rtRetweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this, true);" title="' +
     i18n.get("btn_old_rt_title") + '">RT</a>',
   rtOretweetBtn: '<a class="oretweet ort" href="javascript:void(0);" onclick="javascript:sendOretweet(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
     i18n.get("btn_rt_title") + '"></a>',
-  rtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{retweeted_status.user.screen_name}}\', \'{{retweeted_status.user.id}}\', \'{{retweeted_status.id}}\');" title="' +
-    i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
+  rtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" ' +
+    ' data-id="{{retweeted_status.id}}" data-uid="{{retweeted_status.user.id}}" data-screen_name="{{retweeted_status.user.screen_name}}" ' +
+    ' title="' + i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
   rtCommentCounts: '<span class="commentCounts">({{rt_comments_count}})</span>',
   rtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
     i18n.get("btn_mention_title") + '">@</a>',
@@ -102,10 +104,11 @@ var _BUTTON_TPLS = {
   rtrtOretweetBtn: '',
   rtrtRetweetBtn: '<a class="rtweet" href="javascript:void(0);" onclick="doRT(this, false, true);" title="' +
     i18n.get("btn_old_rt_title") + '">RT</a>',
-  rtrtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" onclick="javascript:doRepost(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
-    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
-  rtrtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" onclick="javascript:doComment(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\', \'{{retweeted_status.retweeted_status.user.id}}\', \'{{retweeted_status.retweeted_status.id}}\');" title="' +
-    i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
+  rtrtRepostBtn: '<a class="reposttweet" href="javascript:void(0);" ' +
+    ' data-id="{{retweeted_status.retweeted_status.id}}" title="' + i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>',
+  rtrtCommentBtn: '<a class="commenttweet" href="javascript:void(0);" ' +
+    ' data-id="{{retweeted_status.retweeted_status.id}}" data-uid="{{retweeted_status.retweeted_status.user.id}}" data-screen_name="{{retweeted_status.retweeted_status.user.screen_name}}" ' +
+    ' title="' + i18n.get("btn_comment_title") + '">' + i18n.get("abb_comment") + '</a>',
   rtrtCommentCounts: '<span class="commentCounts">({{rtrt_comments_count}})</span>',
   rtrtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
     i18n.get("btn_mention_title") + '">@</a>',
@@ -201,8 +204,9 @@ function buildStatusHtml(statuses, t, c_user) {
     BUTTON_TPLS.commentCounts = BUTTON_TPLS.delTweetBtn = 
     BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
     BUTTON_TPLS.delFavoritesMsgBtn = '';
-    BUTTON_TPLS.commentBtn = '<a class="commenttweet" href="javascript:void(0);" ' + 
-      ' onclick="javascript:doComment(this,\'{{status.user.screen_name}}\', \'{{status.user.id}}\', \'{{status.id}}\',\'{{user.screen_name}}\', \'{{user.id}}\',\'{{id}}\');" ' +
+    BUTTON_TPLS.commentBtn = '<a class="commenttweet" href="javascript:void(0);" ' +
+      ' data-id="{{status.id}}" data-uid="{{status.user.id}}" data-screen_name="{{status.user.screen_name}}" ' +
+      ' data-cid="{{id}}" data-cuid="{{user.id}}" data-csn="{{user.screen_name}}" ' +
       ' title="' + i18n.get("btn_reply_comment_title") + '">' + i18n.get("abb_reply") + '</a>';
     break;
   case 'comments_by_me':
@@ -462,9 +466,11 @@ exports.buildFansLi = buildFansLi;
  */
 function buildComment(user, comment) {
   var datetime = moment(comment.created_at).format("YYYY-MM-DD HH:mm:ss");
-  var comment_btn = '<a class="replyComment" href="javascript:void(0);" title="' +
-    i18n.get("btn_reply_comment_title") + '">' +
-    i18n.get("abb_reply") + '</a>';
+  var comment_btn = format('<a class="commenttweet replyComment" href="javascript:void(0);" title="' +
+    i18n.get("btn_reply_comment_title") + '" ' +
+    ' data-id="{{status.id}}" data-uid="{{status.user.id}}" data-screen_name="{{status.user.screen_name}}" ' +
+    ' data-cid="{{id}}" data.cuid="{{user.id}}" data-csn="{{user.screen_name}}" ' + '>' +
+    i18n.get("abb_reply") + '</a>', comment);
   if (comment.user.verified) {
     comment.user.verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
       (comment.user.verified_type && comment.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
@@ -482,11 +488,12 @@ exports.buildComment = buildComment;
 
 exports.buildRepost = function (user, status) {
   var datetime = moment(status.created_at).format("YYYY-MM-DD HH:mm:ss");
-  var repost_btn = '<a class="replyComment" href="javascript:void(0);" title="' +
-    i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>';
-  var btns = format('<a class="replyComment" href="javascript:void(0);" ' +
-    'onclick="javascript:doComment(this,\'{{user.screen_name}}\', \'{{user.id}}\', \'{{id}}\');" ' +
-    'title="' + i18n.get("btn_comment_title") + '">&nbsp;&nbsp;' +
+  var repost_btn = format('<a class="reposttweet replyComment" href="javascript:void(0);" ' +
+    ' data-id="{{id}}" data-uid="{{user.id}}" data-screen_name="{{user.screen_name}}" ' +
+    ' title="' + i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>', status);
+  var btns = format('<a class="commenttweet replyComment" href="javascript:void(0);" ' +
+    ' data-id="{{id}}" data-uid="{{user.id}}" data-screen_name="{{user.screen_name}}" ' +
+    ' title="' + i18n.get("btn_comment_title") + '">&nbsp;&nbsp;' +    
     i18n.get("abb_comment") + '</a>', status);
   btns += repost_btn;
   datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
@@ -499,10 +506,10 @@ exports.buildRepost = function (user, status) {
   }
   var reply_user = format('<a target="_blank" title="' + i18n.get("btn_show_user_title") +
     '">@{{screen_name}}{{verified}}</a>', status.user);
-  return '<li><span class="commentContent">' +
+  return '<li id="tweet' + status.id + '"><span class="commentContent">' +
     reply_user + ': ' + tapi.process_text(user, status) +
     '</span><span class="msgInfo">(' + datetime + ')</span>' +
-    btns + '</li>';
+    btns + '</li><div class="clearFix"/>';
 };
 
 function getUserCountsInfo(user) {

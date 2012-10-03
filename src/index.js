@@ -259,6 +259,181 @@ function _init_image_preview(image_src, size, preview_id, btn_id, top_padding, l
   .find('span').html(display_size(size));
 }
 
+function ToolbarController() {
+  this.events = [
+    { events: 'click', selecter: '.reposttweet', handler: this.showRepostDialog },
+    { events: 'click', selecter: '.commenttweet', handler: this.showCommentDialog },
+    { events: 'click', selecter: '.delcommenttweet', handler: this.destroyComment },
+    { events: 'click', selecter: '.deltweet', handler: this.destroyStatus },
+  ];
+
+  ToolbarController.super_.call(this);
+}
+inherits(ToolbarController, Controller);
+
+ToolbarController.prototype.destroy = function (btn, method, id) {
+  var user = getUser();
+  var loading = $('#loading').show();
+  tapi[method](user, id, function (err, result) {
+    loading.hide();
+    if (err) {
+      return ui.showErrorTips(err);
+    }
+    btn.closest('.tweetItem').remove();
+    ui.showTips(i18n.get("msg_delete_success"));
+  });
+};
+
+ToolbarController.prototype.destroyStatus = function (event) {
+  var btn = $(this);
+  var id = btn.data('id');
+  var self = event.data.controller;
+  self.destroy(btn, 'destroy', id);
+};
+
+ToolbarController.prototype.destroyComment = function (event) {
+  var btn = $(this);
+  var cid = btn.data('cid');
+  var self = event.data.controller;
+  self.destroy(btn, 'comment_destroy', cid);
+};
+
+ToolbarController.prototype.showCommentDialog = function (event) {
+  var btn = $(this);
+  var self = event.data.controller;
+
+  var sid = btn.data('id');
+  var uid = btn.data('uid');
+  var screen_name = btn.data('screen_name');
+
+  var cid = btn.data('cid') || '';
+  var cuid = btn.data('cuid') || '';
+  var comment_screen_name = btn.data('csn') || '';
+  // ActionCache.set('doComment', [
+  //     $(ele).attr('id'), userName, userId, tweetId, 
+  //     replyUserName, replyUserId, cid
+  // ]);
+
+  $('#actionType').val('comment');
+  $('#commentTweetId').val(sid);
+  $('#commentUserId').val(uid);
+
+  $('#replyUserName').val(comment_screen_name);
+  $('#replyUserId').val(cuid);
+  $('#commentCommentId').val(cid);
+  $('#ye_dialog_title').html(i18n.get("msg_comment_who").format({username: screen_name}));
+  $('#ye_dialog_window').show();
+
+  var value = $('#replyTextarea').removeAttr('disabled').val();
+  var _txtRep = '';
+  var user = getUser();
+  var config = tapi.get_config(user);
+  if (!value) {
+    value = comment_screen_name ? (i18n.get("msg_comment_reply_default").format({username: comment_screen_name})) : '';
+    var needOriginal = true;
+    if (cid) {
+      // needOriginal = config.comment_reply_need_original || 
+      //   localStorage.getObject(INCLUDE_ORIGINAL_COMMENT) === 1;
+      // 带上原评论内容
+      // window._currentCommentElement = ele; //搓劣的做法，赶时间，暂时这样了
+      $("#chk_originalComment, #txt_originalComment").show();
+      if (needOriginal) {
+        $("#chk_originalComment").attr("checked", true);
+      } else {
+        $("#chk_originalComment").removeAttr("checked");
+      }
+    }
+    // 回复是否带上原评论内容
+    if (needOriginal) {
+      // 查看某条微博的评论列表里
+      _txtRep = btn.parent().find('.commentContent').text();
+      if (_txtRep) {
+        _txtRep = '//' + _txtRep;
+      } else {
+        // 我的评论列表
+        var _tmpP = btn.parents('.commentWrap');
+        if (_tmpP.length && _tmpP.eq(0).find('.msg .tweet .tweet_text').length) {
+          _txtRep = '//@' + comment_screen_name + ':' + _tmpP.eq(0).find('.msg .tweet .tweet_text').text().trim();
+        }
+      }
+    }
+  }
+  
+  // if (config.support_comment_repost) { // 支持repost才显示
+  $('#chk_sendOneMore').attr("checked", false).val(sid).show();
+  $('#txt_sendOneMore').text(i18n.get("msg_repost_too")).show();
+  // } else {
+  //     $('#chk_sendOneMore').val('').hide();
+  //     $('#txt_sendOneMore').text('').hide();
+  // }
+  $('#chk_sendOneMore2').val('').hide();
+  $('#txt_sendOneMore2').text('').hide();
+  
+  var $replyText = $('#replyTextarea');
+  $replyText.val('').focus().val(value).blur().val(value + _txtRep).focus();
+  _initText($replyText, config);
+};
+
+ToolbarController.prototype.showRepostDialog = function (event) {
+  var btn = $(this);
+  var self = event.data.controller;
+
+  var sid = btn.data('id');
+  var status = $('#tweet' + sid).data('originalItem');
+  var screen_name = status.user.screen_name;
+
+  // ActionCache.set('doRepost', [ null, userName, tweetId, rtUserName, reTweetId ]);
+  var user = getUser();
+  var config = tapi.get_config(user);
+  $('#actionType').val('repost');
+  $('#repostTweetId').val(status.id);
+  $('#replyUserName').val(screen_name);
+  $('#ye_dialog_title').html(i18n.get("msg_repost_who").format({username: screen_name}));
+  // var support_comment = config.support_comment && user.blogType !== 'tqq';
+  // if (support_comment) {
+  //     $('#chk_sendOneMore').attr("checked", false).val(tweetId).show();
+  //     $('#txt_sendOneMore').text(i18n.get("msg_comment_too")
+  //         .format({username:userName})).show();
+  // } else { // 不支持repost，则屏蔽
+  //     $('#chk_sendOneMore').attr("checked", false).val('').hide();
+  //     $('#txt_sendOneMore').text('').hide();
+  // }
+  // if (support_comment && rtUserName && rtUserName != userName && reTweetId) {
+  //     $('#chk_sendOneMore2').attr("checked", false).val(reTweetId).show();
+  //     $('#txt_sendOneMore2').text(i18n.get("msg_comment_original_too")
+  //         .format({username:rtUserName})).show();
+  // } else {
+  //     $('#chk_sendOneMore2').attr("checked", false).val('').hide();
+  //     $('#txt_sendOneMore2').text('').hide();
+  // }
+
+  $('#ye_dialog_window').show();
+  var $t = $('#replyTextarea');
+  var value = $t.val().trim();
+  $t.focus().blur();
+  if (!value) {
+    if (status.retweeted_status) {
+      var name = status.user.screen_name;
+      if (user.blogtype === 'tqq') {
+        name = status.user.id;
+      }
+      if (user.blogtype === 'renren') {
+        value = '//转' + name + ':' + status.text;
+      } else {
+        value = config.repost_delimiter + '@' + name + ':' + status.text;
+      }
+    } else {
+      value = i18n.get("comm_repost_default");
+    }
+  }
+  // 光标在前
+  $t.val(value).focus();
+  if (value === i18n.get("comm_repost_default")) {
+    $t.select();
+  }
+  _initText($t, config);
+};
+
 function TextContentController() {
   // status content
   this.$textContent = $('#txtContent');
@@ -277,16 +452,17 @@ function TextContentController() {
   $('#show_status_input').on('click', { controller: this }, this.toggleTextInput);
 
   // reply
-  this.$replyText = $("#replyTextarea");
+  this.$replyText = $('#replyTextarea');
+
   this.$replyText.on('keydown', {
     controller: this,
     action: this.sendReply.bind(this),
     close: function () {
       $('.close_dialog:first').click();
     }
-  }, this.keypress)
-    .on('input focus', { controller: this }, this.count);
-  $("#replySubmit").click(this.sendReply.bind(this));
+  }, this.keypress).on('input focus', { controller: this }, this.count);
+
+  $('#replySubmit').click(this.sendReply.bind(this));
   $('.close_dialog').click(this.hideReply);
   this.$replyText[0].onpaste = this.pasteOnReply;
 
@@ -301,7 +477,7 @@ TextContentController.prototype.hideReply = function (event) {
   window.imgForUpload_reply = null;
   $('#upImgPreview_reply').hide().find('.img').html('');
   // 隐藏带上原评论选项
-  $("#chk_originalComment, #txt_originalComment").hide();
+  $('#chk_originalComment, #txt_originalComment').hide();
   cleanActionCache();
 };
 
@@ -1228,6 +1404,13 @@ CommentListController.prototype.showPage = function (wrap, action) {
       html += ui[buildMethod](user, items[i]);
     }
     list.html(html);
+    if (buildMethod === 'buildRepost') {
+      // cache them for repost
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        $('#tweet' + item.id).data('originalItem', item);
+      }
+    }
     nextBtn.show();
     preBtn.show();
     if (action === 'first') {
@@ -1669,42 +1852,30 @@ function sendRepost(msg, repostTweetId, notSendMord) {
   });
 };
 
-function sendComment(msg, sid, notSendMord) {
+function sendComment(msg, notSendMord) {
   var btn = $("#replySubmit");
   var txt = $("#replyTextarea");
   var cid = $('#commentCommentId').val();
   var user_id = $('#commentUserId').val();
-  sid = sid || $('#commentTweetId').val();
+  var sid = $('#commentTweetId').val();
   var user = getUser();
-  // var config = tapi.get_config(user);
-  // 判断评论是否需要用到原微博的user_id
-  // if (config.comment_need_user_id) {
-  //   data.user_id = user_id;
-  // }
-  // if (config.comments_need_status) {
-  //   data.status = ui.TWEETS[comment_id];
-  // }
-  btn.attr('disabled','true');
-  txt.attr('disabled','true');
-  var m = 'comment_create';
-  if (cid) { //如果是回复别人的微博
-    m = 'reply';
-    data.cid = cid;
-    // if (user.blogType !== 't163') { // 163不支持reply_user_id;
-    //   data.comment = data.comment.replace(i18n.get("msg_comment_reply_default").format({username:$('#replyUserName').val()}), '');
-    // }
-    var reply_user_id = $('#replyUserId').val();
-    data.reply_user_id = reply_user_id;
-  } 
-  tapi[m](user, sid, msg, function (err, result) {
+  btn.attr('disabled', true);
+  txt.attr('disabled', true);
+  var callback = function (err, result) {
+    txt.removeAttr('disabled');
+    btn.removeAttr('disabled');
     if (err) {
       return ui.showErrorTips(err);
     }
     $('.close_dialog:first').click();
-    txt.val('').removeAttr('disabled');
-    btn.removeAttr('disabled');
+    txt.val('');
     ui.showTips(i18n.get("msg_comment_success"));
-  });
+  }
+  if (cid) {
+    weibo.comment_reply(user, cid, sid, msg, callback);
+  } else {
+    weibo.comment_create(user, sid, msg, callback);
+  }
 
   if (!notSendMord) {
     if ($('#chk_sendOneMore').attr("checked") && $('#chk_sendOneMore').val()){
@@ -1771,137 +1942,6 @@ function doReply(ele, screen_name, tweetId, name) { // @回复
   $replyText.val('').focus().val(text);
   _initText($replyText);
   countReplyText();
-};
-
-/*
-    @ele: 触发该事件的元素
-    @userName: 当前微博的用户名
-    @tweetId: 微博的id
-    @rtUserName: 转发微博的用户名
-    @reTweetId: 转发的微薄id
-*/
-function doRepost(ele, userName, tweetId, rtUserName, reTweetId) { // 转发
-    ActionCache.set('doRepost', [ null, userName, tweetId, rtUserName, reTweetId ]);
-    var user = getUser();
-    var config = tapi.get_config(user);
-    $('#actionType').val('repost');
-    $('#repostTweetId').val(tweetId);
-    $('#replyUserName').val(userName);
-    $('#ye_dialog_title').html(i18n.get("msg_repost_who").format({username:userName}));
-    var support_comment = config.support_comment && user.blogType !== 'tqq';
-    if (support_comment) {
-        $('#chk_sendOneMore').attr("checked", false).val(tweetId).show();
-        $('#txt_sendOneMore').text(i18n.get("msg_comment_too")
-            .format({username:userName})).show();
-    } else { // 不支持repost，则屏蔽
-        $('#chk_sendOneMore').attr("checked", false).val('').hide();
-        $('#txt_sendOneMore').text('').hide();
-    }
-    if (support_comment && rtUserName && rtUserName != userName && reTweetId) {
-        $('#chk_sendOneMore2').attr("checked", false).val(reTweetId).show();
-        $('#txt_sendOneMore2').text(i18n.get("msg_comment_original_too")
-            .format({username:rtUserName})).show();
-    } else {
-        $('#chk_sendOneMore2').attr("checked", false).val('').hide();
-        $('#txt_sendOneMore2').text('').hide();
-    }
-
-    $('#ye_dialog_window').show();
-    var $t = $('#replyTextarea');
-    var value = $t.val() || '';
-    $t.focus().blur();
-    if (!value) {
-        if (reTweetId && ui.TWEETS[tweetId]) {
-            var rt = ui.TWEETS[tweetId];
-            if (user.blogType === 'tqq') {
-                userName = rt.user.name || userName;
-            }
-            if (user.blogType === 'renren') {
-                value = '//转' + userName + ':' + rt.text;
-            } else {
-                value = config.repost_delimiter + '@' + userName + ':' + rt.text;
-            }
-        } else {
-            value = i18n.get("comm_repost_default");
-        }
-    }
-    // 光标在前
-    $t.val(value).focus();
-    if (value === i18n.get("comm_repost_default")) {
-        $t.select();
-    }
-    _initText($t, config);
-    countReplyText();
-};
-
-/* 评论
- * cid: 回复的评论ID
- */
-function doComment(ele, userName, userId, tweetId, replyUserName, replyUserId, cid) {
-    if (typeof ele === 'string') {
-        ele = document.getElementById(ele);
-    }
-    ActionCache.set('doComment', [
-        $(ele).attr('id'), userName, userId, tweetId, 
-        replyUserName, replyUserId, cid
-    ]);
-    $('#actionType').val('comment');
-    $('#commentTweetId').val(tweetId);
-    $('#commentUserId').val(userId);
-    $('#replyUserName').val(replyUserName);
-    $('#replyUserId').val(replyUserId || '');
-    $('#commentCommentId').val(cid||'');
-    $('#ye_dialog_title').html(i18n.get("msg_comment_who").format({username:userName}));
-    $('#ye_dialog_window').show();
-    var _txt = $('#replyTextarea').val();
-    var _txtRep = '';
-    var user = getUser();
-    var config = tapi.get_config(user);
-    if (!_txt) {
-        _txt = replyUserName ? (i18n.get("msg_comment_reply_default").format({username:replyUserName})) : '';
-        var needOriginal = false;
-        if (cid) {
-            needOriginal = config.comment_reply_need_original || 
-                localStorage.getObject(INCLUDE_ORIGINAL_COMMENT) === 1;
-            // 带上原评论内容
-            window._currentCommentElement = ele; //搓劣的做法，赶时间，暂时这样了
-            $("#chk_originalComment, #txt_originalComment").show();
-            if (needOriginal) {
-                $("#chk_originalComment").attr("checked", true);
-            } else {
-                $("#chk_originalComment").removeAttr("checked");
-            }
-        }
-        // 回复是否带上原评论内容
-        if (needOriginal) {
-            //查看某条微博的评论列表里
-            _txtRep = $(ele).parent().find('.commentContent').text();
-            if (_txtRep) {
-                _txtRep = '//' + _txtRep;
-            } else {
-                // 我的评论列表
-                var _tmpP = $(ele).parents('.commentWrap');
-                if (_tmpP.length && _tmpP.eq(0).find('.msg .tweet .tweet_text').length) {
-                    _txtRep = '//@' + replyUserName + ':' + $.trim(_tmpP.eq(0).find('.msg .tweet .tweet_text').text());
-                }
-            }
-        }
-    }
-    
-    if (config.support_comment_repost) { // 支持repost才显示
-        $('#chk_sendOneMore').attr("checked", false).val(tweetId).show();
-        $('#txt_sendOneMore').text(i18n.get("msg_repost_too")).show();
-    } else {
-        $('#chk_sendOneMore').val('').hide();
-        $('#txt_sendOneMore').text('').hide();
-    }
-    $('#chk_sendOneMore2').val('').hide();
-    $('#txt_sendOneMore2').text('').hide();
-    
-    var $replyText = $('#replyTextarea');
-    $replyText.val('').focus().val(_txt).blur().val(_txt + _txtRep).focus();
-    _initText($replyText, config);
-    countReplyText();
 };
 
 function doNewMessage(ele, userName, toUserId){//悄悄话
@@ -2064,23 +2104,7 @@ function doDelTweet(tweetId, ele) {//删除自己的微博
     }
   });
 };
-function doDelComment(ele, screen_name, tweetId) {//删除评论
-  if (!tweetId) {
-    return;
-  }
-  showLoading();
-  var user = getUser();
-  var t = getCurrentTab().replace('#','').replace(/_timeline$/i,'');
-  tapi.comment_destroy({id: tweetId, user: user}, function (data, textStatus) {
-    if (textStatus != 'error' && data && !data.error) {
-      $(ele).closest('li').remove();
-      _delCache(tweetId, t, user.uniqueKey);
-      showMsg(i18n.get("msg_delete_success"));
-    } else {
-      showMsg(i18n.get("msg_delete_fail"));
-    }
-  });
-};
+
 function delDirectMsg(ele, screen_name, tweetId){//删除私信
     if(!tweetId){return;}
     showLoading();
@@ -3014,8 +3038,21 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   // var max_id = lastItem.attr('did');
   // var result = utils.filterDatasByMaxId(items, max_id, append);
   // items = result.news;
-  var htmls = dataType === 'status' ? buildStatusHtml(items, timeline) : buildUsersHtml(items, timeline);
+  var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline) : ui.buildUsersHtml(items, timeline);
   _ul[method](htmls.join(''));
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var id = '#tweet' + item.id;
+    $(id).data('originalItem', item);
+    if (item.retweeted_status) {
+      id = '#tweet' + item.retweeted_status.id;
+      $(id).data('originalItem', item.retweeted_status);
+      if (item.retweeted_status.retweeted_status) {
+        id = '#tweet' + item.retweeted_status.retweeted_status.id;
+        $(id).data('originalItem', item.retweeted_status.retweeted_status);
+      }
+    }
+  }
   stateManager.emit('show_statuses', user, items, timeline);
 };
 
@@ -3416,6 +3453,7 @@ $(function () {
   new StatusController();
   new StatusCounterController();
   new CommentListController();
+  new ToolbarController();
   console.log('controllers inited.');
 
   var currentUser = User.getUser();

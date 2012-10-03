@@ -292,7 +292,10 @@ var _u = {
 <!-- 模板选择 -->
 <script id="tp_time_line" type="text/template">
 
-<li class="tweetItem showCounts_#{tweet.id} <?js if (!tweet.readed) { ?>unread-item<?js } ?> <?js if (tweet.myTweet) { ?>myTweet<?js } ?> " id="tweet#{tweet.id}" data-id="#{tweet.id}" data-timestamp="#{tweet.timestamp || ''}">
+<li class="tweetItem showCounts_#{tweet.id} <?js if (!tweet.readed) { ?>unread-item<?js } ?> <?js if (tweet.myTweet) { ?>myTweet<?js } ?> " id="tweet#{tweet.id}"
+  data-id="#{tweet.id}" data-timestamp="#{tweet.timestamp || ''}"
+  data-uid="#{tweet.user.id}" data-screen_name="#{tweet.user.screen_name}">
+  
   <div class="li_wrap clearFix">
   <div class="usericon">
     <span class="showtip">
@@ -387,7 +390,7 @@ var _u = {
     </div>
     <div class="comments" data-id="#{tweet.id}">
       <p class="text_right">
-        <a href="javascript:void(0);" class="comment_hide_list_btn">#{_u.i18n("btn_hide_comments")}</a>
+        <a href="javascript:void(0);" class="comment_hide_list_btn">隐藏列表</a>
       </p>
       <ul class="comment_list"></ul>
       <div class="comment_paging">
@@ -432,7 +435,10 @@ var _u = {
 <script id="tp_time_line_rt" type="text/template">
 
 <div class="msg">
-  <div class="tweetItem retweeted commentWrap showCounts_#{tweet.retweeted_status.id} <?js if (is_rt_rt){ ?>rt_retweeted<?js } ?>" id="tweet#{tweet.retweeted_status.id}">
+  <div class="tweetItem retweeted commentWrap showCounts_#{tweet.retweeted_status.id} <?js if (is_rt_rt){ ?>rt_retweeted<?js } ?>" id="tweet#{tweet.retweeted_status.id}"
+    data-id="#{tweet.retweeted_status.id}" data-timestamp="#{tweet.retweeted_status.timestamp || ''}"
+    data-uid="#{tweet.retweeted_status.user.id}" data-screen_name="#{tweet.retweeted_status.user.screen_name}"  >
+
     <div class="userName">
       <?js if (is_rt_rt) { ?>
       <span class="showtip">
@@ -507,7 +513,7 @@ var _u = {
     <?js } ?>
 
     <div class="comments" data-id="#{tweet.retweeted_status.id}">
-      <p class="text_right"><a href="javascript:void(0);" class="comment_hide_list_btn">#{_u.i18n("btn_hide_comments")}</a></p>
+      <p class="text_right"><a href="javascript:void(0);" class="comment_hide_list_btn">隐藏列表</a></p>
       <ul class="comment_list"></ul>
       <div class="comment_paging">
         <a class="pre_page" href="javascript:void(0);">#{_u.i18n("btn_prev_page")}</a>

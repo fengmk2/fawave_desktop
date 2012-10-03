@@ -71,9 +71,20 @@ div.msgInfo {padding-top:3px;}
 .list li .commentCounts a, .list li .repostCounts a{padding:0;margin:0;font-weight:normal;}
 .readMore{display:none;text-align:center;background: #ccc; color:green; margin: 2px 0; padding:3px; border:solid 1px #ccc; font-size:14px;font-weight:bold;}
 .readMore:hover{text-decoration: none;}
-.list .comments{display:none;margin-top:3px;border-top:5px solid gainsboro;border-bottom:5px solid gainsboro;background: #F7FEFF;}
-.list .comments li{border-bottom: 1px dashed #EFAA00; padding:5px 2px;}
-.list .comments .replyComment{float:right;color:green;}
+.list .comments{
+	display: none;
+	margin-top: 3px;
+	border-top: 3px solid #eee;
+	/*border-bottom:5px solid #eee;*/
+	background: #F7FEFF;}
+.list .comments li{
+	border-bottom: 1px dashed #EFAA00;
+	padding: 5px 2px;
+}
+.list .comments .replyComment{
+	float:right;
+	color:green;
+}
 .list .comments .comment_paging a{color:green;}
 .list .comments .comment_paging .next_page{float:right;}
 
