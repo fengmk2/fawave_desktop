@@ -112,28 +112,28 @@ StatusController.prototype.previewImage = function (event) {
 };
 
 function initEvents() {
-  $(document).delegate('a', 'click', function (event) {
-    var $this = $(this);
-    var url = $this.attr('href');
-    var opened = openTab(url);
-    if (opened) {
-      event.preventDefault();
-      return false;
-    }
-  }).delegate('a', 'mousedown', function (event) {
-    if (event.which === 3) {
-      var $this = $(this);
-      var url = $this.attr('rhref') || $this.attr('href');
-      var opened = openTab(url);
-      if (opened) {
-        // 禁用右键菜单
-        this.oncontextmenu = function () {
-          return false;
-        };
-        return false;
-      }
-    }
-  });
+  // $(document).delegate('a', 'click', function (event) {
+  //   var $this = $(this);
+  //   var url = $this.attr('href');
+  //   var opened = openTab(url);
+  //   if (opened) {
+  //     event.preventDefault();
+  //     return false;
+  //   }
+  // }).delegate('a', 'mousedown', function (event) {
+  //   if (event.which === 3) {
+  //     var $this = $(this);
+  //     var url = $this.attr('rhref') || $this.attr('href');
+  //     var opened = openTab(url);
+  //     if (opened) {
+  //       // 禁用右键菜单
+  //       this.oncontextmenu = function () {
+  //         return false;
+  //       };
+  //       return false;
+  //     }
+  //   }
+  // });
 
   // 注册 查看原始围脖的按钮事件
   $(document).delegate('.show_source_status_btn', 'click', function (event) {
@@ -156,23 +156,6 @@ function initEvents() {
 }
 
 function init() {
-  var c_user = User.getUser();
-  if (!c_user) {
-    window.location = 'options.html#user_set';
-    // window.open('options.html#user_set', '_blank');
-    // window.open('options.html', '_blank');
-    // chrome.tabs.create({url: 'options.html#user_set'});
-    return;
-  }
-  
-  // initEvents();
-
-  // changeAlertMode(setting.getAlertMode());
-  // changeAutoInsertMode(setting.getAutoInsertMode());
-
-  // $('#ye_dialog_close').click(function () {
-  //   hideReplyInput();
-  // });
   
   // initTabs();
   // initTxtContentEven();
@@ -205,7 +188,7 @@ function init() {
   // adShow();
   
   // restoreActionCache();
-  
+
   // 绑定缩短网址事件
   // var $urlshorten_span = $("#urlShortenInp").parent();
   // if ($urlshorten_span.length > 0) {
@@ -240,17 +223,11 @@ function init() {
   //   initOnUnload();
   // }); 
   
-  //google map api，为了不卡，最后才载入
-  // var script = document.createElement("script"); 
-  // script.type = "text/javascript"; 
-  // script.src = "http://maps.google.com/maps/api/js?sensor=false&callback=initializeMap"; 
-  // document.body.appendChild(script);
 }
 
-var currentTab = '#friends_timeline_timeline';
-
 function _get_clipboard_file(e, callback) {
-  var f = null, items = e.clipboardData && e.clipboardData.items;
+  var f = null;
+  var items = e.clipboardData && e.clipboardData.items;
   items = items || [];
   for (var i = 0; i < items.length; i++) {
     if (items[i].kind === 'file') {
@@ -258,15 +235,15 @@ function _get_clipboard_file(e, callback) {
       break;
     }
   }
-  if (f) {
-    var reader = new FileReader();
-    reader.onload = function (event) {
-      callback(f, event.target.result);
-    };
-    reader.readAsDataURL(f);
-  } else {
-    callback();
+  if (!f) {
+    return callback();
   }
+
+  var reader = new FileReader();
+  reader.onload = function (event) {
+    callback(f, event.target.result);
+  };
+  reader.readAsDataURL(f);
 }
 
 function _init_image_preview(image_src, size, preview_id, btn_id, top_padding, left_padding) {
@@ -285,7 +262,13 @@ function _init_image_preview(image_src, size, preview_id, btn_id, top_padding, l
 function TextContentController() {
   // status content
   this.$textContent = $('#txtContent');
-  this.$textContent.on('keydown', { controller: this, action: this.send.bind(this) }, this.keypress)
+  this.$textContent.on('keydown', {
+    controller: this,
+    action: this.send.bind(this),
+    close: function () {
+      $('#show_status_input').click();
+    }
+  }, this.keypress)
     .on('input focus', { controller: this }, this.count);
   this.$textContent[0].onpaste = this.paste;
 
@@ -356,35 +339,34 @@ TextContentController.prototype.pasteOnReply = function (event) {
 
 TextContentController.prototype.toggleTextInput = function (event) {
   var self = event.data.controller;
+  var preview = $("#upImgPreview");
   if ($("#submitWarp").data('status') !== 'show') {
     self.showTextInput();
     if (window.imgForUpload) {
       setTimeout(function () {
-        $("#upImgPreview").show();
+        preview.show();
       }, 500);
     }
-  } else {
-    $("#upImgPreview").hide();
-    self.hideTextInput();
+    return;
   }
+  preview.hide();
+  self.hideTextInput();
 };
 
 TextContentController.prototype.showTextInput = function () {
-  var $submitWarp = $("#submitWarp");
+  var $submitWarp = $('#submitWarp');
   if ($submitWarp.data('status') !== 'show') {
     initSelectSendAccounts();
     var h_submitWrap = $submitWarp.find(".w").height();
     var h = window.innerHeight - 70 - h_submitWrap;
-    $(".list_warp").css('height', h);
+    $('.list_warp').css('height', h);
     $submitWarp.data('status', 'show').css('height', h_submitWrap);
-    $("#header .write").addClass('active').find('b').addClass('up');
-    $("#doing").appendTo('#doingWarp');
+    $('#header .write').addClass('active').find('b').addClass('up');
+    $('#doing').appendTo('#doingWarp');
     ActionCache.set('showMsgInput', []);
   }
-  var $text = $("#txtContent");
-  var value = $text.val();
-  $text.focus().val('').val(value); //光标在最后面
-  countInputText();
+  var value = this.$textContent.val();
+  this.$textContent.focus().val('').val(value); //光标在最后面
 };
 
 TextContentController.prototype.hideTextInput = function () {
@@ -427,21 +409,20 @@ TextContentController.prototype.keypress = function (event) {
 
 TextContentController.prototype.count = function (event) {
   var input = $(this);
+  var parent = input.parent();
   var value = input.val();
   var max_length = parseInt(input.data('max_text_length'), 10) || 140;
   var len = max_length - (input.data('support_double_char') ? value.len() : value.length);
   // return [value, len, max_length];
-
-  var values = _countText('txtContent', 'wordCount');
+  var sendBtn = parent.find('.send');
+  var wlength = max_length - value.len();
   if (len === max_length) {
-    $("#btnSend").attr('disabled', 'disabled');
+    sendBtn.attr('disabled', 'disabled');
   } else {
-    $("#btnSend").removeAttr('disabled');
+    sendBtn.removeAttr('disabled');
   }
-  var text = value;
-  var wlength = text.len();
-  $('#wordCount_double').html(140 - wlength);
-  $('#wordCount').html(values[1]);
+  parent.find('.wordCount_double').html(wlength);
+  parent.find('.wordCount').html(len);
 };
 
 function sendMsgByActionType(c) {
@@ -503,73 +484,45 @@ function __sendMsgByActionType(c) {
   }
 }
 
-// return text, left_length, max_length
-function _countText(text_id) {
-  var $text = $("#" + text_id);
-  var value = $text.val();
-  var max_length = parseInt($text.data('max_text_length'), 10) || 140;
-  var len = max_length - ($text.data('support_double_char') ? value.len() : value.length);
-  return [value, len, max_length];
-}
-
-function countReplyText(){
-    var values = _countText('replyTextarea'), len = values[1], html = null;
-    if (window.imgForUpload_reply) {
-        // 有图片，则自动增加20字符
-        len -= 20;
-    }
-    if(len > 0){
-        html = i18n.get("msg_word_count").format({len: len});
-    }else{
-        html = '(<em style="color:red;">'+ i18n.get("msg_word_overstep").format({len:len}) +'</em>)';
-    }
-    $('#replyInputCount').html(html);
-}
-
-
 // 封装重用的判断是否需要自动缩址的逻辑
 function _shortenUrl(longurl, settings, callback) {
-    if (longurl.indexOf('chrome-extension://') === 0) { // 插件地址就不处理了
-        return;
-    }
-    settings = settings || setting.Settings.get();
-    if (settings.isSharedUrlAutoShort && 
-        longurl.replace(/^https?:\/\//i, '').length > settings.sharedUrlAutoShortWordCount) {
-        ShortenUrl.short(longurl, callback);
-    }
+  if (longurl.indexOf('chrome-extension://') === 0) { // 插件地址就不处理了
+    return;
+  }
+  settings = setting.Settings.get();
+  if (settings.isSharedUrlAutoShort && 
+    longurl.replace(/^https?:\/\//i, '').length > settings.sharedUrlAutoShortWordCount) {
+    ShortenUrl.short(longurl, callback);
+  }
 }
 
 // 添加缩短url
 function addShortenUrl() {
-    var $btn = $("#urlShortenBtn");
-    var status = $btn.data('status');
-    switch (status) {
-        case 'shorting':
-            showMsg(i18n.get("msg_shorting_and_wait"));
-            break;
-        default:
-            var $text = $("#urlShortenInp");
-            var long_url = $text.addClass('long').val();
-            if(!long_url) {
-                $text.focus();
-                return;
-            }
-            $btn.data('status', 'shorting');
-            $text.val(i18n.get("msg_shorting")).attr('disabled', true);
-            ShortenUrl.short(long_url, function(shorturl){
-                if(shorturl){
-                    var $content = $("#txtContent");
-                    $content.val($content.val() + ' ' + shorturl + ' ');
-                    $text.val('');
-                }else{
-                    showMsg(i18n.get("msg_shorten_fail"));
-                    $text.val(long_url);
-                }
-                $btn.data('status', null);
-                $text.removeAttr('disabled');
-            });
-            break;
+  var $btn = $("#urlShortenBtn");
+  var status = $btn.data('status');
+  if (status === 'shorting') {
+    return showMsg(i18n.get("msg_shorting_and_wait"));
+  }
+  var $text = $("#urlShortenInp");
+  var long_url = $text.addClass('long').val();
+  if (!long_url) {
+    $text.focus();
+    return;
+  }
+  $btn.data('status', 'shorting');
+  $text.val(i18n.get("msg_shorting")).attr('disabled', true);
+  ShortenUrl.short(long_url, function (shorturl) {
+    if (shorturl) {
+      var $content = $("#txtContent");
+      $content.val($content.val() + ' ' + shorturl + ' ');
+      $text.val('');
+    } else {
+      showMsg(i18n.get("msg_shorten_fail"));
+      $text.val(long_url);
     }
+    $btn.data('status', null);
+    $text.removeAttr('disabled');
+  });
 }
 
 //我正在看
@@ -633,129 +586,129 @@ function getUserTimelineParams() {
 
 // 搜索
 var Search = {
-    current_search: '', // 默认当前搜索类型 search, search_user
-    current_keyword: '',
-    toggleInput: function(ele) {
-        $('.searchWrap').hide();
-        var $search_wrap = $(ele).nextAll('.searchWrap');
-        var search_type = $search_wrap.hasClass('searchUserWrap') ? 'search_user' : 'search';
-        if (search_type === Search.current_search) {
-            Search.current_search = '';
-            return;
-        }
-        Search.current_search = search_type;
-        $search_wrap.toggle();
-        var $text = $search_wrap.find(".txtSearch").focus().keyup(function (event) {
-            Search.current_keyword = $(this).val();
-            if (event.keyCode === 13) {
-                Search.search();
-            }
-        });
-        Search.current_keyword = $text.val();
-    },
-    search: function (read_more) {
-        var c_user = User.getUser();
-        var q = $.trim(Search.current_keyword);
-        if (!q) {
-            return;
-        }
-        // http://www.google.com/search?q=twitter&source=fawave&tbs=mbl:1
-        // if(c_user.blogType == 'twitter') {
-        //      chrome.tabs.create({url: 'http://www.google.com/search?q=' + q + '&source=fawave&tbs=mbl:1', selected: false});
-        //   return;
-        //  }
-        var $tab = $("#tl_tabs .tab-user_timeline");
-        $tab.attr('statusType', 'search');
+  current_search: '', // 默认当前搜索类型 search, search_user
+  current_keyword: '',
+  toggleInput: function (ele) {
+    $('.searchWrap').hide();
+    var $search_wrap = $(ele).nextAll('.searchWrap');
+    var search_type = $search_wrap.hasClass('searchUserWrap') ? 'search_user' : 'search';
+    if (search_type === Search.current_search) {
+      Search.current_search = '';
+      return;
+    }
+    Search.current_search = search_type;
+    $search_wrap.toggle();
+    var $text = $search_wrap.find(".txtSearch").focus().keyup(function (event) {
+      Search.current_keyword = $(this).val();
+      if (event.which === 13) {
+        Search.search();
+      }
+    });
+    Search.current_keyword = $text.val();
+  },
+  search: function (read_more) {
+    var c_user = User.getUser();
+    var q = Search.current_keyword.trim();
+    if (!q) {
+      return;
+    }
+    // http://www.google.com/search?q=twitter&source=fawave&tbs=mbl:1
+    // if(c_user.blogType == 'twitter') {
+    //      chrome.tabs.create({url: 'http://www.google.com/search?q=' + q + '&source=fawave&tbs=mbl:1', selected: false});
+    //   return;
+    //  }
+    var $tab = $("#tl_tabs .tab-user_timeline");
+    $tab.attr('statusType', 'search');
 
-        var $ul = $("#user_timeline_timeline ul.list");
-        var max_id = null;
-        var page = 1;
-        var cursor = null;
-        var config = tapi.get_config(c_user);
-        var support_search_max_id = config.support_search_max_id;
-        var support_cursor_only = config.support_cursor_only;
-        if (read_more) {
-            // 滚动的话，获取上次的参数
-            max_id = $tab.attr('max_id');
-            cursor = $tab.attr('cursor');
-            page = Number($tab.attr('page') || 1);
-        }  else {
-            // 第一次搜索
-            $ul.html('');
-        }
-        var params = { count: CONST.PAGE_SIZE, q: q, user: c_user };
-        if (support_cursor_only) { // 只支持cursor方式分页
-            if (cursor) {
-                params.cursor = cursor;
+    var $ul = $("#user_timeline_timeline ul.list");
+    var max_id = null;
+    var page = 1;
+    var cursor = null;
+    var config = tapi.get_config(c_user);
+    var support_search_max_id = config.support_search_max_id;
+    var support_cursor_only = config.support_cursor_only;
+    if (read_more) {
+      // 滚动的话，获取上次的参数
+      max_id = $tab.attr('max_id');
+      cursor = $tab.attr('cursor');
+      page = Number($tab.attr('page') || 1);
+    }  else {
+      // 第一次搜索
+      $ul.html('');
+    }
+    var params = { count: CONST.PAGE_SIZE, q: q, user: c_user };
+    if (support_cursor_only) { // 只支持cursor方式分页
+      if (cursor) {
+        params.cursor = cursor;
+      }
+    } else {
+        if (support_search_max_id) {
+            if (max_id) {
+                params.max_id = max_id;
             }
         } else {
-            if (support_search_max_id) {
-                if (max_id) {
-                    params.max_id = max_id;
-                }
-            } else {
-                params.page = page;
-            }
+            params.page = page;
         }
-        showLoading();
-        var timeline_type = 'user_timeline';
-        var method = 'search';
-        var data_type = 'status';
-        if (Search.current_search === 'search_user') {
-            method = 'user_search';
-            data_type = 'user';
-        }
-        setUserTimelineParams({
-            type: method,
-            q: q
-        });
-        hideReadMore(timeline_type);
-        tapi[method](params, function (data, textStatus) {
-            hideLoading();
-            hideReadMoreLoading(timeline_type);
-            // 如果用户已经切换，则不处理
-            var now_user = getUser();
-            if (now_user.uniqueKey !== c_user.uniqueKey) {
-                return;
-            }
-            var statuses = data.results || data.items || data;
-            if (!statuses) { // 异常
-                return;
-            }
-            if (data.next_cursor !== undefined) {
-                $tab.attr('cursor', data.next_cursor);
-            }
-            if (statuses.length > 0){
-                var c_tb = getCurrentTab();
-                var want_tab = "#" + timeline_type + "_timeline";
-                if (c_tb !== want_tab) {
-                    //添加当前激活的状态
-                    $tab.siblings().removeClass('active').end().addClass('active');
-                    //切换tab前先保护滚动条位置
-                    var old_t = c_tb.replace('#','').replace(/_timeline$/i,'');
-                    saveScrollTop(old_t);
-                    //切换tab
-                    $('.list_p').hide();
-                    
-                    $(want_tab).show();
-                    $ul.html('');
-
-                    currentTab = want_tab;
-                }
-                statuses = addPageMsgs(statuses, timeline_type, true, data_type);
-                // 保存数据，用于翻页
-                $tab.attr('page', page + 1);
-            }
-            if (statuses.length >= PAGE_SIZE / 2) {
-                max_id = data.max_id || String(statuses[statuses.length - 1].id);
-                $tab.attr('max_id', max_id);
-                showReadMore(timeline_type);
-            } else {
-                hideReadMore(timeline_type, true); //没有分页了
-            }
-            checkShowGototop();
-        });
     }
+    showLoading();
+    var timeline_type = 'user_timeline';
+    var method = 'search';
+    var data_type = 'status';
+    if (Search.current_search === 'search_user') {
+      method = 'user_search';
+      data_type = 'user';
+    }
+    setUserTimelineParams({
+      type: method,
+      q: q
+    });
+    hideReadMore(timeline_type);
+    tapi[method](params, function (data, textStatus) {
+      hideLoading();
+      hideReadMoreLoading(timeline_type);
+      // 如果用户已经切换，则不处理
+      var now_user = getUser();
+      if (now_user.uniqueKey !== c_user.uniqueKey) {
+          return;
+      }
+      var statuses = data.results || data.items || data;
+      if (!statuses) { // 异常
+          return;
+      }
+      if (data.next_cursor !== undefined) {
+          $tab.attr('cursor', data.next_cursor);
+      }
+      if (statuses.length > 0){
+          var c_tb = getCurrentTab();
+          var want_tab = "#" + timeline_type + "_timeline";
+          if (c_tb !== want_tab) {
+              //添加当前激活的状态
+              $tab.siblings().removeClass('active').end().addClass('active');
+              //切换tab前先保护滚动条位置
+              var old_t = c_tb.replace('#','').replace(/_timeline$/i,'');
+              saveScrollTop(old_t);
+              //切换tab
+              $('.list_p').hide();
+              
+              $(want_tab).show();
+              $ul.html('');
+
+              currentTab = want_tab;
+          }
+          statuses = addPageMsgs(statuses, timeline_type, true, data_type);
+          // 保存数据，用于翻页
+          $tab.attr('page', page + 1);
+      }
+      if (statuses.length >= PAGE_SIZE / 2) {
+          max_id = data.max_id || String(statuses[statuses.length - 1].id);
+          $tab.attr('max_id', max_id);
+          showReadMore(timeline_type);
+      } else {
+          hideReadMore(timeline_type, true); //没有分页了
+      }
+      checkShowGototop();
+    });
+  }
 };
 
 //隐藏那些不支持的Timeline Tab
@@ -857,66 +810,65 @@ function initSelectSendAccounts() {
 }
 
 function shineSelectedSendAccounts(sels) {
-    if (!sels){
-        sels = $("#accountsForSend li.sel");
-    }
-    sels.css('-webkit-transition', 'none').removeClass('sel');
-    function _highlightSels(){
-        sels.css('-webkit-transition', 'all 0.8s ease').addClass('sel');
-    }
-    setTimeout(_highlightSels, 150);
+  if (!sels){
+    sels = $("#accountsForSend li.sel");
+  }
+  sels.css('-webkit-transition', 'none').removeClass('sel');
+  function _highlightSels(){
+    sels.css('-webkit-transition', 'all 0.8s ease').addClass('sel');
+  }
+  setTimeout(_highlightSels, 150);
 }
 
-function toggleSelectSendAccount(ele){
-    var _t = $(ele);
-    var is_tsina = (_t.attr('blogType') || 'tsina') === 'tsina';
-    if(_t.hasClass('sel')){
-        _t.removeClass('sel');
-    }else{
-        var settings = setting.Settings.get();
-        if(false && settings.__allow_select_all !== true) {
-            if(is_tsina) {
-                _t.siblings().each(function() {
-                    var $this = $(this);
-                    if($this.attr('blogType') !== 'tsina') {
-                        $this.removeClass('sel');
-                    }
-                });
-             } else {
-                 _t.siblings().each(function() {
-                     var $this = $(this);
-                     if($this.attr('blogType') === 'tsina') {
-                         $this.removeClass('sel');
-                     }
-                 });
-             }
-        }
-        _t.addClass('sel');
-    }
+function toggleSelectSendAccount(ele) {
+  var _t = $(ele);
+  var is_tsina = (_t.attr('blogType') || 'tsina') === 'tsina';
+  if (_t.hasClass('sel')) {
+    return _t.removeClass('sel');
+  }
+
+  var settings = setting.Settings.get();
+  // if (false && settings.__allow_select_all !== true) {
+  //   if (is_tsina) {
+  //       _t.siblings().each(function() {
+  //           var $this = $(this);
+  //           if($this.attr('blogType') !== 'tsina') {
+  //               $this.removeClass('sel');
+  //           }
+  //       });
+  //    } else {
+  //        _t.siblings().each(function() {
+  //            var $this = $(this);
+  //            if($this.attr('blogType') === 'tsina') {
+  //                $this.removeClass('sel');
+  //            }
+  //        });
+  //    }
+  // }
+  _t.addClass('sel');
 }
 
 function toggleSelectAllSendAccount() {
-    var $selected = $("#accountsForSend .sel");
-    if($selected.length === 0) {
-        $selected = $("#accountsForSend li[uniqueKey=" + getUser().uniqueKey +"]");
+  var $selected = $("#accountsForSend .sel");
+  if ($selected.length === 0) {
+    $selected = $("#accountsForSend li[uniqueKey=" + getUser().uniqueKey +"]");
+  }
+  var $sinas = $('#accountsForSend li[blogType="tsina"]');
+  var $others = $('#accountsForSend li[blogType!="tsina"]');
+  var is_tsina = $selected.attr('blogType') === 'tsina';
+  if (is_tsina) {
+    if ($selected.length < $sinas.length) {
+      return $sinas.addClass('sel') && $others.removeClass('sel');
     }
-    var $sinas = $('#accountsForSend li[blogType="tsina"]');
-    var $others = $('#accountsForSend li[blogType!="tsina"]');
-    var is_tsina = $selected.attr('blogType') === 'tsina';
-    if(is_tsina) {
-        if($selected.length < $sinas.length) {
-            return $sinas.addClass('sel') && $others.removeClass('sel');
-        }
-        if($others.length > 0) {
-            return $sinas.removeClass('sel') && $others.addClass('sel');
-        }
+    if ($others.length > 0) {
+      return $sinas.removeClass('sel') && $others.addClass('sel');
     }
-    if($selected.length < $others.length) {
-        return $sinas.removeClass('sel') && $others.addClass('sel');
-    }
-    $("#accountsForSend li").removeClass('sel');
-    var c_user = getUser();
-    $("#accountsForSend li[uniqueKey=" + c_user.uniqueKey +"]").addClass('sel');
+  }
+  if ($selected.length < $others.length) {
+    return $sinas.removeClass('sel') && $others.addClass('sel');
+  }
+  $("#accountsForSend li").removeClass('sel');
+  $("#accountsForSend li[uniqueKey=" + getUser().uniqueKey +"]").addClass('sel');
 }
 // <<-- 多用户 END
 
@@ -2741,7 +2693,6 @@ function TimelineController() {
 
   this.lastTimelines = {}; // cache user last timeline type
   this.timelineScrolls = {};
-  this.cache = {}; // {uniqueKey: {}, ...}
   this.list = {}; // {uniqueKey: [], ...}
   this.favoritedCache = {}; // {uniqueKey: {}}
   this.unreadStatuses = {};
@@ -2808,17 +2759,6 @@ TimelineController.prototype.fillFavorited = function (user, statuses) {
   return statuses;
 };
 
-TimelineController.prototype.getCacheStatus = function (user, id) {
-  var uniqueKey = user.uniqueKey;
-  var cache = this.cache[uniqueKey];
-  if (!cache) {
-    cache = this.cache[uniqueKey] = {};
-    this.list[uniqueKey] = [];
-    return null;
-  }
-  return cache[id] || null;
-};
-
 TimelineController.prototype.getCacheStatuses = function (user, timeline) {
   var key = user.uniqueKey + ':' + timeline; 
   var list = this.list[key];
@@ -2828,25 +2768,13 @@ TimelineController.prototype.getCacheStatuses = function (user, timeline) {
 TimelineController.prototype.setCacheStatuses = function (user, timeline, items) {
   var key = user.uniqueKey + ':' + timeline; 
   delete this.list[key];
-  delete this.cache[user.uniqueKey];
   this.list[key] = items;
-  var cache = {};
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    cache[item.id] = item;
-  }
-  this.cache[user.uniqueKey] = cache;
 };
 
 TimelineController.prototype.cacheStatuses = function (user, timeline, statuses, append) {
   statuses = statuses || [];
   var key = user.uniqueKey + ':' + timeline; 
   var list = this.list[key] || [];
-  var cache = this.cache[user.uniqueKey] || {};
-  for (var i = 0; i < statuses.length; i++) {
-    var status = statuses[i];
-    cache[status.id] = status;
-  }
   console.log(key + ' before: ' + list.length);
   if (append) {
     list = list.concat(statuses);
@@ -2854,7 +2782,6 @@ TimelineController.prototype.cacheStatuses = function (user, timeline, statuses,
     // preppend
     list = statuses.concat(list);
   }
-  this.cache[user.uniqueKey] = cache;
   this.list[key] = list;
   console.log(key + ' after: ' + list.length);
   return list;
@@ -2875,7 +2802,7 @@ TimelineController.prototype.setScrollTop = function (user, timeline, top) {
 
 TimelineController.prototype.getScrollTop = function (user, timeline) {
   var key = user.uniqueKey + ':' + timeline;
-  return this.timelineScrolls[key]
+  return this.timelineScrolls[key];
 };
 
 TimelineController.prototype.changeUser = function (fromUser, toUser) {
@@ -2925,11 +2852,12 @@ TimelineController.prototype.showMore = function (tab) {
   var timeline = tab.data('type');
   var params = {};
   var warp = TimelineController.getWarp(timeline);
-  var max_id = warp.find('ul li:last').attr('did');
+  var li = warp.find('ul li:last');
+  var max_id = li.data('id');
+  var timestamp = li.data('timestamp');
   params.max_id = max_id;
-  var status = self.getCacheStatus(user, max_id);
-  if (status.timestamp) {
-    params.max_time = status.timestamp;
+  if (timestamp) {
+    params.max_time = timestamp;
   }
   console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
@@ -3359,7 +3287,8 @@ RefreshController.prototype.watch = function (user) {
           return ui.showErrorTips(err);
         }
         var items = result.items;
-        console.log(uniqueKey +' refresh ' + timeline + ' since_id ' + since_id + ': ' + items.length);
+        console.log(uniqueKey +' refresh ' + timeline +
+          ' since_id ' + JSON.stringify(since_id) + ': ' + items.length);
         if (items.length > 0) {
           stateManager.emit('new_statuses', {
             uniqueKey: uniqueKey,
@@ -3395,9 +3324,16 @@ StatusCounterController.prototype.showCounts = function (user, statuses, timelin
   var map = {};
   for (var i = 0; i < statuses.length; i++) {
     var status = statuses[i];
-    map[status.id] = status;
-    if (status.retweeted_status) {
-      map[status.retweeted_status.id] = status.retweeted_status;
+    if (timeline.indexOf('comment') < 0) {
+      // is comment
+      map[status.id] = status;
+    }
+    var rt = status.retweeted_status || status.status;
+    if (rt) {
+      map[status.retweeted_status.id] = rt;
+      if (rt.retweeted_status) {
+        map[rt.retweeted_status.id] = rt.retweeted_status;
+      }
     }
   }
   var ids = Object.keys(map);

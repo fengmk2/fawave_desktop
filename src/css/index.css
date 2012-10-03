@@ -40,18 +40,23 @@ textarea:focus{outline: none;}
 }
 /* 滚动条 END */
 
-#wrapper{border:none;margin:0;padding:0; position: relative;}
+#wrapper{
+  border: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
 
 /* 头部 */
 #submitWarp{
   height:0px;
   overflow:hidden;
   border-bottom:solid 1px #fff;
-  -webkit-transition: height .6s ease;
+  -webkit-transition: height .3s ease;
 }
 #submitWarp .ctr{margin-top:2px; position:relative;}
-#wordCount, #wordCount_double{font-size:13px;font-weight: bold; /*position:absolute; top:0; right:0;*/}
-#header{
+.wordCount, .wordCount_double{font-size:13px;font-weight: bold; /*position:absolute; top:0; right:0;*/}
+#header {
   font-size:12px;
   position: relative;
   border:solid 1px #ccc;
@@ -70,7 +75,7 @@ textarea:focus{outline: none;}
   margin-left:20px;
   border: solid 1px #BBB;
   border-top-color:#fff;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
   border-bottom-left-radius: 3px 3px;
   border-bottom-right-radius: 3px 3px;
   background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fff), to(#ddd));
@@ -614,11 +619,11 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 /* Dock */
 #accountListDock{position: absolute; bottom:0; width:100%; z-index:10;}
 #accountListDock ul {
-    text-align: center;
+  text-align: center;
   width:100%;
 }
 #accountListDock li {
-    display: inline-block;
+  display: inline-block;
   margin:0 3px;
   position:relative;
 }
@@ -686,13 +691,13 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 }
 
 /*上传图片预览*/
-.upload_image_preview{
+.upload_image_preview {
   display:none;
   background: white;
   position: absolute;
   top: 22px;
   z-index: 2;
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, .5);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .5);
   border-radius: 5px;
 }
 #upImgPreview_reply {
@@ -739,7 +744,7 @@ div.loading_bar span {
 #pb_map_canvas .map_user_icon{width:48px;height:48px;border:solid 1px #ccc; float:left;margin-right:5px;}
 /*浮动层*/
 #popup_box, #popup_box_overlay{display:none;}
-#popup_box canvas, .cur_min{cursor:url(../images/small.cur), auto;}
+#popup_box canvas, .cur_min{cursor:url(../images/small.gif), auto;}
 #popup_box{
   left:3px;
   background:#fff;

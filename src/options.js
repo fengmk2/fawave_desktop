@@ -931,32 +931,27 @@ function _verify_credentials(user) {
 //   - password: baseAuth认证的密码
 //   - oauth_token_key: oauth认证获取到的的key
 //   - oauth_token_secret: oAuth认证获取到的secret
-//   - blogType: 微博类型：tsina, t163, tsohu, twitter, digu
+//   - blogtype: 微博类型：tsina, t163, tsohu, twitter, digu
 //   - apiProxy: api代理, 目前twitter支持
 //   - disabled: 账号是否已停用
 function saveAccount() {
-  var userName = $.trim($("#account-name").val());
-  var pwd = $.trim($("#account-pwd").val());
-  var blogtype = $.trim($("#account-blogType").val()) || 'tsina'; //微博类型，兼容，默认tsina
-  var authtype = $.trim($("#account-authType").val()); //登录验证类型
-  var appkey = 'fawave', appkey_secret = null;
-//    if(!$('.account-appkey').is(':hidden')) {
-//        appkey = $.trim($('#account-appkey').val()) || 'fawave';
-//        if($('#account-appkey-diy').attr('checked')) {
-//            var diy_key = $('#account-appkey-diy-key').val();
-//            var diy_secret = $('#account-appkey-diy-secret').val();
-//            if(diy_key && diy_secret) {
-//                appkey = diy_key;
-//                appkey_secret = diy_secret;
-//            }
-//        }
-//    }
-  var pin = $.trim($('#account-pin').val()); // oauth pin码
-  var apiProxy = $.trim($('#account-proxy-api').val());
+  var userName = $("#account-name").val().trim();
+  var pwd = $("#account-pwd").val().trim();
+  var blogtype = $("#account-blogType").val().trim() || 'tsina'; //微博类型，兼容，默认tsina
+  var authtype = $("#account-authType").val().trim(); //登录验证类型
+  var appkey = 'fawave';
+  var appkey_secret = null;
+  // oauth pin
+  var pin = $('#account-pin').val().trim();
+  var apiProxy = $('#account-proxy-api').val().trim();
   var user = {
     blogtype: blogtype, 
     authtype: authtype
   };
+  if (blogtype === 'weibo') {
+    user.forcelogin = 'true';
+  }
+
   // 目前只允许twitter设置代理
   // if (blogtype === 'twitter' && apiProxy) {
   //   user.apiProxy = apiProxy;
@@ -969,33 +964,34 @@ function saveAccount() {
   //   }
   // }
 
-  if ((authtype === 'baseauth' || authtype === 'xauth') && userName && pwd) {
-    user.userName = userName;
-    user.password = pwd;
-    if (authType === 'xauth') {
-      tapi.get_access_token(user, function(auth_user) {
-        _verify_credentials(auth_user);
-        delete auth_user.userName;
-        delete auth_user.password;
-      });
-    } else {
-      _verify_credentials(user);
-    }
-    return;
-  }
+  // if ((authtype === 'baseauth' || authtype === 'xauth') && userName && pwd) {
+  //   user.userName = userName;
+  //   user.password = pwd;
+  //   if (authType === 'xauth') {
+  //     tapi.get_access_token(user, function(auth_user) {
+  //       _verify_credentials(auth_user);
+  //       delete auth_user.userName;
+  //       delete auth_user.password;
+  //     });
+  //   } else {
+  //     _verify_credentials(user);
+  //   }
+  //   return;
+  // }
   if (authtype !== 'oauth') {
     ui.showTips(i18n.get("msg_need_username_and_pwd"));
     return;
   }
   var request_token = $('#account-request-token-key').val();
   var request_token_secret = $('#account-request-token-secret').val();
-  if (pin && request_token && request_token_secret) {
+  if (pin) {
     user.oauth_pin = pin;
     // 设置request token
-    user.oauth_token = request_token;
-    user.oauth_token_secret = request_token_secret;
+    if (request_token) {
+      user.oauth_token = request_token;
+      user.oauth_token_secret = request_token_secret;
+    }
     $('#save-account').attr('disabled', true);
-    console.log(user)
     weibo.get_access_token(user, function (err, auth_user) {
       auth_user.blogType = auth_user.blogtype;
       auth_user.authType = auth_user.authtype;
@@ -1390,21 +1386,21 @@ function refreshAccountWarp(user, stat) {
 
 //清空本地缓存数据
 function cleanLocalStorageData() {
-    for (var key in localStorage) {
-        if (key.indexOf('idi') >- 1) {
-            if (key !== USER_LIST_KEY && key !== CURRENT_USER_KEY){
-                localStorage.removeItem(key);
-            }
-        }
-    }
-    var b_view = getBackgroundView();
-    if (b_view) {
-        b_view.tweets = {};
-        b_view.MAX_MSG_ID = {};
-        b_view.checking={};
-        b_view.paging={};
-        b_view.RefreshManager.restart();
-    }
+  for (var key in localStorage) {
+      if (key.indexOf('idi') >- 1) {
+          if (key !== USER_LIST_KEY && key !== CURRENT_USER_KEY){
+              localStorage.removeItem(key);
+          }
+      }
+  }
+  var b_view = getBackgroundView();
+  if (b_view) {
+      b_view.tweets = {};
+      b_view.MAX_MSG_ID = {};
+      b_view.checking={};
+      b_view.paging={};
+      b_view.RefreshManager.restart();
+  }
 }
 
 // 监控oauth callback url，获取认证码

@@ -122,16 +122,17 @@ function buildStatusHtml(statuses, t, c_user) {
   if (!c_user) {
     c_user = getUser();
   }
-  var TEMPLATE_RT_RT = null;
   var theme = Settings.get().theme;
   var rt_replace_pre = null, rt_rt_replace_pre = null;
-  if (theme === 'pip_io' || theme === 'work') {
-    rt_replace_pre = '<!-- {{retweeted_status_out}} -->';
-    rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_out}} -->';
-  } else {
-    rt_replace_pre = '<!-- {{retweeted_status_in}} -->';
-    rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_in}} -->';
-  }
+  rt_replace_pre = '<!-- {{retweeted_status_out}} -->';
+  rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_out}} -->';
+  // if (theme === 'pip_io' || theme === 'work') {
+  //   rt_replace_pre = '<!-- {{retweeted_status_out}} -->';
+  //   rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_out}} -->';
+  // } else {
+  //   rt_replace_pre = '<!-- {{retweeted_status_in}} -->';
+  //   rt_rt_replace_pre = '<!-- {{retweeted_retweeted_status_in}} -->';
+  // }
   
   var config = tapi.get_config(c_user);
   var support_do_comment = config.support_do_comment;
@@ -263,32 +264,22 @@ function buildStatusHtml(statuses, t, c_user) {
     var status = statuses[i];
     status.reposts_count = status.reposts_count || 0;
     status.user = status.user || status.sender || {};
+    var rt_status = status.retweeted_status = status.retweeted_status || status.status;
     if (status.retweeted_status) {
       status.retweeted_status.user = status.retweeted_status.user || {};
-      if (status.retweeted_status.retweeted_status) {
-        status.retweeted_status.retweeted_status.user = status.retweeted_status.retweeted_status.user;
-      }
     }
-    /*
-     * status.retweeted_status 转发
-     * status.status 评论
-     */
-    var rt_status = status.retweeted_status = status.retweeted_status || status.status;
     status.comments_count = status.comments_count || 0;
     var comments_btn = format(comments_count_tpl, status);
     status.comments_btn = comments_btn;
     status.rt_comments_count = status.rtrt_comments_count = '-';
     var rtrt_status = null;
-    if (rtrt_status && !rtrt_status.user) {
-      rtrt_status.user = {};
-    }
     if (rt_status && rt_status.user) {
       rt_status.reposts_count = rt_status.reposts_count || 0;
       rt_status.comments_count = rt_status.comments_count || 0;
       status.retweeted_status_screen_name = rt_status.user.screen_name;
       status.retweeted_status_id = rt_status.id;
       status.rt_comments_count = format(comments_count_tpl, rt_status);
-      rtrt_status = rt_status.retweeted_status = rt_status.retweeted_status || rt_status.status;
+      rtrt_status = rt_status.retweeted_status;
       if (rtrt_status && !rtrt_status.user) {
         rtrt_status.user = {};
       }
@@ -378,16 +369,12 @@ function buildStatusHtml(statuses, t, c_user) {
       if (rt_status) {
         rt_status.user = rt_status.user || {};
         html = html.replace(rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT, context));
-        // if (rtrt_status) {
-        //   if (!TEMPLATE_RT_RT) {
-        //     TEMPLATE_RT_RT = window.TEMPLATE_RT
-        //       .replace(/tweet\.retweeted_status/g, 'tweet.retweeted_status.retweeted_status')
-        //       .replace(/btn\.rt/g, 'btn.rtrt');
-        //   }
-        //   context.is_rt_rt = true;
-        //   context.retweeted_status_user = rt_status.user || {};
-        //   html = html.replace(rt_rt_replace_pre, Shotenjin.render(TEMPLATE_RT_RT, context));
-        // }
+        if (rt_status.retweeted_status) {
+          context.is_rt_rt = true;
+          context.retweeted_status_user = rt_status.user || {};
+          rt_status.retweeted_status.user = rt_status.retweeted_status.user || {};
+          html = html.replace(rt_rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT_RT, context));
+        }
       }
       htmls.push(html);
     } catch (err) {

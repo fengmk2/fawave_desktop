@@ -1,61 +1,61 @@
 html, body{ height:100%; }
 #msginfowarp { position: fixed; }
 #needUpdateChrome{
-	background-color: #FEFEB6;
-	border: 1px solid #D5B163;
-	line-height: 1.6em;
-	margin: 5px 10px;
-	padding: 8px;
-	color:red;
-	font-size:14px;
+  background-color: #FEFEB6;
+  border: 1px solid #D5B163;
+  line-height: 1.6em;
+  margin: 5px 10px;
+  padding: 8px;
+  color:red;
+  font-size:14px;
 }
 #needUpdateChrome a{
-	color:green;
-	font-weight: bold;
+  color:green;
+  font-weight: bold;
 }
 
 #submitWarp{
-	height:auto;
+  height:auto;
 }
 
 .fileSel{
-	margin-top:5px;
-	border: 1px solid #0E774A;
-	background-color: #E9F4E9;
-	height: 50px;
-	text-align:center;
-	color:#0C7823;
-	font-size: 20px;
-	font-weight: bold;
-	line-height:52px;
+  margin-top:5px;
+  border: 1px solid #0E774A;
+  background-color: #E9F4E9;
+  height: 50px;
+  text-align:center;
+  color:#0C7823;
+  font-size: 20px;
+  font-weight: bold;
+  line-height:52px;
 }
 
 .fileSel .selTip{
-	margin-top: -50px;
-	position: absolute;
-	width: 100%;
+  margin-top: -50px;
+  position: absolute;
+  width: 100%;
 }
 
 #imageFile{
-	opacity: 0;
-	position: absolute;
-	margin-top:-66px;
-	height: 56px;
-	width: 120%;
-	cursor: pointer;
+  opacity: 0;
+  position: absolute;
+  margin-top:-66px;
+  height: 56px;
+  width: 120%;
+  cursor: pointer;
 }
 
 #imgPreview{
 }
 
 #imgPreview img{
-	max-width:480px;
-	max-height:480px;
+  max-width:480px;
+  max-height:480px;
 }
 
 .pic {
-	-webkit-box-shadow: #AAA 0px 0px 5px;
-	padding: 3px;
+  -webkit-box-shadow: #AAA 0px 0px 5px;
+  padding: 3px;
 }
 
 .bar { 
@@ -75,7 +75,7 @@ html, body{ height:100%; }
     border-radius: 5px;          
 }
 .graph .bar{
-	height: 50px; 
+  height: 50px; 
     line-height: 50px;
 }
 
@@ -84,21 +84,21 @@ html, body{ height:100%; }
 #uploadinfo li:nth-child(odd){ background-color:#eee; }
 #uploadinfo li:nth-child(even){ background-color:#fff; }
 #uploadinfo li img{
-	height: 16px;
-	margin: 0px 1px;
-	vertical-align: top;
-	width: 16px;
+  height: 16px;
+  margin: 0px 1px;
+  vertical-align: top;
+  width: 16px;
 }
 #uploadinfo .barWrap{
-	width:80px;
-	display: inline-block;
-	border:solid 1px green;
-	padding:1px 2px;
+  width:80px;
+  display: inline-block;
+  border:solid 1px green;
+  padding:1px 2px;
 }
 #uploadinfo li.error .barWrap{ border:solid 1px red; }
 #uploadinfo .bar{
-	height:12px;
-	line-height:12px;
+  height:12px;
+  line-height:12px;
 }
 
 #progressInfo {margin-bottom:10px;}
@@ -120,11 +120,11 @@ html, body{ height:100%; }
 }
 
 .drag_on{
-	border:dotted 3px #900;
+  border:dotted 3px #900;
 }
 
 #success_close * {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 #imgFilterList canvas{
