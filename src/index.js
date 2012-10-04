@@ -3055,6 +3055,7 @@ TimelineController.prototype.refresh = function (tab) {
     count: unreadCount
   });
   if (unreadStatuses.length > 0) {
+    ui.showTips(unreadCount + '条新微博');
     self.mergeNew(tab, user, timeline, unreadStatuses);
     return;
   }
@@ -3078,7 +3079,7 @@ TimelineController.prototype.refresh = function (tab) {
     var items = data.items;
     var newCount = items.length;
     if (newCount === 0) {
-      ui.showTips('没有新内容');
+      ui.showTips(unreadCount ? unreadCount + '条新微博' : '没有新内容');
     } else {
       ui.showTips(newCount + '条新微博');
       stateManager.emit('read_statuses', {
