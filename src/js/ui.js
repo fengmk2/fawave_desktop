@@ -263,7 +263,7 @@ function buildStatusHtml(statuses, t, c_user) {
   var comments_count_tpl = '<a href="javascript:void(0);" title="' +
     i18n.get("btn_show_comments_title") + '"">{{comments_count}}</a>';
   var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
-  var isFavorited = t === 'favorites';
+  var isFavorited = t === 'favorites'; 
   for (var i = 0, len = statuses.length; i < len; i++) {
     var status = statuses[i];
     status.reposts_count = status.reposts_count || 0;
@@ -349,6 +349,7 @@ function buildStatusHtml(statuses, t, c_user) {
     if (need_set_readed) {
       status.readed = true;
     }
+
     var context = {
       provinces: provinces,
       tType: status_type,

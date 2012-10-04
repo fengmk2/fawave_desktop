@@ -12,6 +12,10 @@
 
 var CONST = require('./const');
 var weibo = require('weibo');
+var fs = require('fs');
+var path = require('path');
+
+var appkeyFile = path.join(path.dirname(__dirname), 'appkey.json');
 
 exports.apps = {
   weibo: {
@@ -25,6 +29,13 @@ exports.apps = {
     oauth_callback: 'http://nodeweibo.org/fawave/oauth/callback'
   }
 };
+
+if (fs.existsSync(appkeyFile)) {
+  var appkeys = require(appkeyFile);
+  for (var k in appkeys) {
+    exports.apps[k] = appkeys[k];
+  }
+}
 
 for (var blogtype in exports.apps) {
   // init appkey

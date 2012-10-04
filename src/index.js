@@ -2730,14 +2730,20 @@ function TimelineController() {
   this.unreadStatuses = {};
 
   var showUser = function (event) {
-    var uid = $(this).data('uid');
+    var link = $(this);
+    var uid = link.data('uid');
+    var screen_name = null;
     var self = event.data.controller;
-    self.showUserTimeline(uid);
+    if (!uid) {
+      screen_name = link.html().substring(1);
+    }
+    self.showUserTimeline(uid, screen_name);
+    return false;
   };
 
   this.events = [
     { events: 'click', selecter: '.timeline_tab', handler: this.click },
-    { events: 'click', selecter: '.user_link', handler: showUser }
+    { events: 'click', selecter: '.user_link, .at_user_link', handler: showUser }
   ];
 
   $(".list_warp").on('scrollstop', { controller: this }, this.checkScroll);
@@ -2929,9 +2935,14 @@ TimelineController.prototype.showMore = function (tab) {
       params.max_time = timestamp;
     }
   }
-  var uid = tab.data(user.uniqueKey + '_uid');
-  if (uid) {
-    params.uid = uid;
+  var key = user.uniqueKey + '_uid';
+  var userParams = tab.data(key);
+  if (userParams) {
+    if (userParams.uid) {
+      params.uid = userParams.uid;
+    } else if (userParams.screen_name) {
+      params.screen_name = userParams.screen_name;
+    }
   }
   console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
@@ -3017,18 +3028,19 @@ TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
   }
 }
 
-TimelineController.prototype.showUserTimeline = function (uid) {
+TimelineController.prototype.showUserTimeline = function (uid, screen_name) {
   var timeline = 'user_timeline';
   var self = this;
   var user = User.getUser();
 
   self.setCacheStatuses(user, timeline, []);
   
-  if (!uid) {
+  if (!uid && !screen_name) {
     uid = user.uid;
   }
   var tab = $('.tab-user_timeline');
-  tab.data(user.uniqueKey + '_uid', uid);
+  var key = user.uniqueKey + '_uid';
+  tab.data(key, {uid: uid, screen_name: screen_name});
   tab.click();
 };
 
@@ -3101,7 +3113,7 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   dataType = dataType || 'status';
   var method = append ? 'append' : 'prepend';
   var direct = append ? 'last' : 'first';
-  var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline) : ui.buildUsersHtml(items, timeline);
+  var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline, user) : ui.buildUsersHtml(items, timeline);
   
   if (timeline === 'user_timeline') {
     // 显示用户信息
@@ -3395,9 +3407,9 @@ RefreshController.prototype.watch = function (user) {
   var timers = this.timers[uniqueKey] || {};
   var timelines = [
     ['friends_timeline', 60000],
-    ['comments_timeline', 300000],
-    ['comments_mentions', 300000],
-    ['mentions', 300000],
+    ['comments_timeline', 60000],
+    ['comments_mentions', 60000],
+    ['mentions', 60000],
   ];
   timelines.forEach(function (item) {
     var timeline = item[0];

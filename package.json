@@ -8,7 +8,7 @@
   },
   "window": {
     "icon": "images/icon128.png",
-    "toolbar": true,
+    "toolbar": false,
     "width": 650,
     "height": 600,
     "position": "center",
