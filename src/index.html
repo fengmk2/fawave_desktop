@@ -401,11 +401,11 @@ var _u = {
     <?js if (tweet.created_at) { ?>
     <div class="msgInfo">
        <?js if (tweet.t_url) { ?>
-       <a href="#{tweet.t_url}" target="_blank">#{tweet.created_at.format("yyyy-MM-dd hh:mm:ss")}</a> 
+       <a data-href="#{tweet.t_url}">#{tweet.created_at.format("yyyy-MM-dd hh:mm:ss")}</a> 
        <?js } else { ?>
        #{tweet.created_at.format("yyyy-MM-dd hh:mm:ss")}
        <?js } ?>
-       #{_u.i18n('comm_post_by')} #{tweet.source || _u.i18n("comm_web_site")}
+       #{_u.i18n('comm_post_by')} #{(tweet.source || _u.i18n("comm_web_site")).replace('href=', 'data-href=')}
        <?js if (!tweet.retweeted_status && tweet.in_reply_to_status_id && tweet.in_reply_to_screen_name) { ?>
        <a href="javascript:void(0);" class="show_source_status_btn" status_id="#{tweet.in_reply_to_status_id}" 
            title="#{_u.i18n('comm_show_original_status')}">#{_u.i18n("btn_show_source_status", [tweet.in_reply_to_screen_name])}</a>
@@ -492,11 +492,11 @@ var _u = {
     <?js if (tweet.retweeted_status.created_at) { ?>
     <div class="msgInfo">
       <?js if (tweet.retweeted_status.t_url) { ?>
-      <a href="#{tweet.retweeted_status.t_url}" target="_blank">#{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
+      <a data-href="#{tweet.retweeted_status.t_url}">#{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
       <?js } else { ?>
       #{tweet.retweeted_status.created_at.format("yyyy-MM-dd hh:mm:ss")}
       <?js } ?>
-      #{_u.i18n('comm_post_by')} #{tweet.retweeted_status.source || _u.i18n("comm_web_site")}
+      #{_u.i18n('comm_post_by')} #{(tweet.retweeted_status.source || _u.i18n("comm_web_site")).replace('href=', 'data-href=')}
       <?js if (!tweet.retweeted_status.retweeted_status &&
                tweet.retweeted_status.in_reply_to_status_id &&
                tweet.retweeted_status.in_reply_to_screen_name) { ?>
@@ -592,7 +592,7 @@ var _u = {
   <div class="user_head"><img src="#{user.profile_image_url}" /></div>
   <div class="user_info">
     <div class="userName">
-      <a href="#{user.t_url}">#{user.screen_name}<?js if (user.verified) { ?><img title="#{_u.i18n('comm_verified')}" 
+      <a data-href="#{user.t_url}">#{user.screen_name}<?js if (user.verified) { ?><img title="#{_u.i18n('comm_verified')}" 
         src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?></a>
     <?js if (show_fullname) { ?><span class="fullname">#{user.name}</span> <?js } ?>
     <?js if (!user.is_me) { ?>
@@ -650,8 +650,8 @@ var _u = {
     &nbsp;&nbsp;#{_u.i18n("comm_favourite")}: <span>#{user.favourites_count}</span>
     <?js } ?>
     </p>
-    <?js if(user.url && user.url != 'http://1'){ ?>
-    <p>#{_u.i18n("comm_blog")}: <a href="#{user.url}">#{user.url}</a></p>
+    <?js if (user.url) { ?>
+    <p>#{_u.i18n("comm_blog")}: <a data-href="#{user.url}">#{user.url}</a></p>
     <?js } ?>
   </div>
   <div class="des">
@@ -659,10 +659,10 @@ var _u = {
   #{_u.i18n("comm_verified_reason")}：#{user.verified_reason}<br/>
   <?js } ?>
   <?js if (user.email) { ?>
-  #{_u.i18n("comm_email")}: <a href="mailto:${user.email}">${user.email}</a><br/>
+  #{_u.i18n("comm_email")}: <a data-href="mailto:${user.email}">${user.email}</a><br/>
   <?js } ?>
   <?js if (user.homepage) { ?>
-  #{_u.i18n("comm_homepage")}: <a href="${user.homepage}">${user.homepage}</a><br/>
+  #{_u.i18n("comm_homepage")}: <a data-href="${user.homepage}">${user.homepage}</a><br/>
   <?js } ?>
   <?js if (user.birthday) { ?>
   #{_u.i18n("comm_birthday")}: ${user.birthday}<br/>
@@ -677,7 +677,7 @@ var _u = {
   <?js if (user.tags) { ?>
     <div class="tags">#{_u.i18n("comm_tags")}: 
       <?js for(var i=0;i<user.tags.length;i++){ var tag = user.tags[i]; ?>
-      <a target="_blank" href="#{tag.url}">${tag.name}</a>
+      <a data-href="#{tag.url}">${tag.name}</a>
       <?js } ?>
     </div>
   <?js } ?>
@@ -691,24 +691,24 @@ var _u = {
 <div class="fans">
   <div class="user_head"><img src="#{user.profile_image_url}" /></div>
   <div class="user_info" did="#{user.id}">
-    <div class="userName"><a href="javascript:void(0);" data-uid="#{user.id}" class="user_link"
+    <div class="userName"><a data-uid="#{user.id}" class="user_link"
         rhref="#{user.t_url}">#{user.screen_name}<?js if(user.verified){ ?><img 
         title="#{_u.i18n('comm_verified')}" 
         src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?></a>
-      <a class="follow" href="javascript:" onclick="doReply(this, '#{user.screen_name}', '', '#{user.id}')">@</a>
-      <a class="follow" href="javascript:" onclick="doNewMessage(this, '#{user.screen_name}','#{user.id}')">#{_u.i18n("abb_direct_message")}</a>
+      <a class="follow" onclick="doReply(this, '#{user.screen_name}', '', '#{user.id}')">@</a>
+      <a class="follow" onclick="doNewMessage(this, '#{user.screen_name}','#{user.id}')">#{_u.i18n("abb_direct_message")}</a>
     <?js if(support_blocking) { ?>
-                  <a class="follow" href="javascript:;" title='#{_u.i18n("destroy_blocking_title")}' 
+                  <a class="follow" title='#{_u.i18n("destroy_blocking_title")}' 
                      style="#{user.blocking ? '' : 'display:none'}"
                      onclick="destroy_blocking(this, '#{user.id}');">#{_u.i18n("destroy_blocking")}</a>
-                  <a class="follow" href="javascript:;" title='#{_u.i18n("create_blocking_title")}' 
+                  <a class="follow" title='#{_u.i18n("create_blocking_title")}' 
                      style="#{user.blocking ? 'display:none' : ''}"
                      onclick="create_blocking(this, '#{user.id}');">#{_u.i18n("create_blocking")}</a>
               <?js } ?>
     <?js if (support_follow) { ?>
         <?js if (user.unfollow && user.followed_by !== true) { ?>
-            <a class="follow follow_button_destroy" style="display:none;" href="javascript:;" onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>
-            <a class="follow follow_button_create" href="javascript:;" onclick="f_create('#{user.id}', this, '#{user.screen_name}')"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
+            <a class="follow follow_button_destroy" style="display:none;" onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>
+            <a class="follow follow_button_create" onclick="f_create('#{user.id}', this, '#{user.screen_name}')"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
         <?js } else { ?>
             <a class="follow follow_button_destroy" <?js if(user.followed_by !== true && tType !== 'friends') { ?>style="display:none;"<?js } ?> href="javascript:;" onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>
             <a class="follow follow_button_create" <?js if(user.followed_by === true || tType === 'friends') { ?>style="display:none;"<?js } ?> href="javascript:;" onclick="f_create('#{user.id}', this, '#{user.screen_name}')"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
@@ -733,7 +733,7 @@ var _u = {
     <p>#{_u.i18n("comm_follow")}: <span><a href="javascript:showFollowers('friends', '#{user.screen_name}', '#{user.id}');">#{user.friends_count == undefined ? _u.i18n("comm_view"): user.friends_count}</a></span>
        &nbsp;&nbsp;#{_u.i18n("comm_fans")}: <span><a href="javascript:showFollowers('followers', '#{user.screen_name}', '#{user.id}');">#{user.followers_count == undefined ? _u.i18n("comm_view"): user.followers_count}</a></span>
        &nbsp;&nbsp;#{_u.i18n("comm_tweet")}:
-        <span><a href="javascript:void(0);" class="user_link" data-uid="#{user.id}">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
+        <span><a class="user_link" data-uid="#{user.id}">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
       <?js if (user.bi_followers_count !== undefined) { ?>
       &nbsp;&nbsp;#{_u.i18n("comm_bi_follower")}: <span>#{user.bi_followers_count}</span>
       <?js } ?>
@@ -741,8 +741,8 @@ var _u = {
       &nbsp;&nbsp;#{_u.i18n("comm_favourite")}: <span>#{user.favourites_count}</span>
       <?js } ?>
     </p>
-    <?js if(user.url && user.url !== 'http://1'){ ?>
-    <p>#{_u.i18n("comm_blog")}：<a href="#{user.url}">#{user.url}</a></p>
+    <?js if (user.url) { ?>
+    <p>#{_u.i18n("comm_blog")}：<a data-href="#{user.url}">#{user.url}</a></p>
     <?js } ?>
   </div>
   <div class="des">
@@ -750,10 +750,10 @@ var _u = {
   #{_u.i18n("comm_verified_reason")}：#{user.verified_reason}<br/>
   <?js } ?>
   <?js if (user.email) { ?>
-  #{_u.i18n("comm_email")}: <a href="mailto:${user.email}">${user.email}</a><br/>
+  #{_u.i18n("comm_email")}: <a data-href="mailto:${user.email}">${user.email}</a><br/>
   <?js } ?>
   <?js if (user.homepage) { ?>
-  #{_u.i18n("comm_homepage")}: <a href="${user.homepage}">${user.homepage}</a><br/>
+  #{_u.i18n("comm_homepage")}: <a data-href="${user.homepage}">${user.homepage}</a><br/>
   <?js } ?>
   <?js if (user.birthday) { ?>
   #{_u.i18n("comm_birthday")}: ${user.birthday}<br/>
@@ -767,18 +767,18 @@ var _u = {
   </div>
   <?js if (user.tags) { ?>
   <div class="tags">#{_u.i18n("comm_tags")}: 
-      <?js for(var i=0;i<user.tags.length;i++){ var tag = user.tags[i]; ?>
-      <a target="_blank" href="http://t.qq.com/search/tag.php?k=#{tag.name}">#{tag.name}</a>
-      <?js } ?>
+    <?js for(var i=0;i<user.tags.length;i++){ var tag = user.tags[i]; ?>
+    <a data-href="http://t.qq.com/search/tag.php?k=#{tag.name}">#{tag.name}</a>
+    <?js } ?>
   </div>
   <?js } ?>
-  <?js if(user.status && user.status.text) { ?>
+  <?js if (user.status && user.status.text) { ?>
   <br/>
   <div class="recent_tweet">#{_u.i18n("comm_recent_tweet")}: 
   ${user.status.text}
   |
   <?js if (user.status.t_url) { ?>
-  <a href="#{user.status.t_url}" target="_blank">#{user.status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
+  <a data-href="#{user.status.t_url}">#{user.status.created_at.format("yyyy-MM-dd hh:mm:ss")}</a>
   <?js } else { ?>
   #{user.status.created_at.format("yyyy-MM-dd hh:mm:ss")}
   <?js } ?>
@@ -792,18 +792,20 @@ var _u = {
 <script id="comment_item" type="text/template">
 <dl class="comment_item">
   <dt>
-    <a class="user_link" data-uid="#{item.user.id}" href="#{item.user.t_url}">
+    <a class="user_link" data-uid="#{item.user.id}" rhref="#{item.user.t_url}">
       <img src="#{item.user.profile_image_url}" width="30" height="30" alt="#{item.user.screen_name}">
     </a>
   </dt>
   <dd>
-    <a class="user_link" data-uid="#{item.user.id}" href="#{item.user.t_url}">@${item.user.screen_name}</a>#{verified}：
+    <a class="user_link" data-uid="#{item.user.id}" rhref="#{item.user.t_url}">@${item.user.screen_name}</a>#{verified}：
     <span class="text">#{text}</span>
     <?js if (isComment) { ?>
-    <span class="date">(#{created_at} #{_u.i18n("comm_post_by")} #{item.source})</span>
+    <span class="date">(#{created_at} #{_u.i18n("comm_post_by")} 
+      #{(item.source || _u.i18n("comm_web_site")).replace('href=', 'data-href=')})</span>
     <?js } else { ?>
-    <span class="date">(<a href="#{item.t_url}">#{created_at}</a> 
-      #{_u.i18n("comm_post_by")} #{item.source} #{_u.i18n("comm_repost")})</span>
+    <span class="date">(<a data-href="#{item.t_url}">#{created_at}</a> 
+      #{_u.i18n("comm_post_by")} 
+      #{(item.source || _u.i18n("comm_web_site")).replace('href=', 'data-href=')} #{_u.i18n("comm_repost")})</span>
     <?js } ?>
     <div class="info">
       <?js if (isComment) { ?>

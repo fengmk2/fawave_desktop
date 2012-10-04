@@ -94,7 +94,7 @@ var _BUTTON_TPLS = {
   rtCommentCounts: '<span class="commentCounts">({{rt_comments_count}})</span>',
   rtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.user.screen_name}}\',\'{{retweeted_status.id}}\');" title="' +
     i18n.get("btn_mention_title") + '">@</a>',
-  rtAddFavoritesMsgBtn: '<a class="add_favorite_btn" title="' +
+  rtAddFavoritesMsgBtn: '<a class="add_favorite_btn" data-id="{{retweeted_status.id}}" title="' +
     i18n.get("btn_add_favorites_title") + '"><img src="images/favorites_2.gif"/></a>',
   rtRepostCounts: '<span class="repostCounts">({{retweeted_status.reposts_count}})</span>',
     
@@ -112,8 +112,8 @@ var _BUTTON_TPLS = {
   rtrtCommentCounts: '<span class="commentCounts">({{rtrt_comments_count}})</span>',
   rtrtReplyBtn: '<a class="replytweet" href="javascript:void(0);" onclick="javascript:doReply(this,\'{{retweeted_status.retweeted_status.user.screen_name}}\',\'{{retweeted_status.retweeted_status.id}}\');" title="' +
     i18n.get("btn_mention_title") + '">@</a>',
-  rtrtAddFavoritesMsgBtn: '<a class="add_favorite_btn" title="' +
-    i18n.get("btn_add_favorites_title") + '"><img src="images/favorites_2.gif"/></a>',
+  rtrtAddFavoritesMsgBtn: '<a class="add_favorite_btn" data-id="{{retweeted_status.retweeted_status.id}}"' +
+    ' title="' + i18n.get("btn_add_favorites_title") + '"><img src="images/favorites_2.gif"/></a>',
   rtrtRepostCounts: '<span class="repostCounts">({{retweeted_status.retweeted_status.reposts_count}})</span>'
 };
 

@@ -20,7 +20,9 @@ var setting = require('./js/setting');
 var ui = require('./js/ui');
 var inherits = require('util').inherits;
 var format = require('weibo/lib/utils').format;
-var Nodebox = require('./js/service').Nodebox;
+var serveice = require('./js/service');
+var Nodebox = serveice.Nodebox;
+var ShortenUrl = serveice.ShortenUrl;
 
 // TODO: need to remove
 var getUser = User.getUser;
@@ -34,7 +36,6 @@ var T_LIST = CONST.T_LIST;
 var ActionCache = utils.ActionCache;
 var removeUnreadTimelineCount = User.removeUnreadTimelineCount;
 var buildStatusHtml = ui.buildStatusHtml;
-var ShortenUrl = utils.ShortenUrl;
 var showLoading = utils.showLoading;
 var hideLoading = utils.hideLoading;
 var popupBox = ui.popupBox;
@@ -67,15 +68,26 @@ function get_current_user_cache(cache, t) {
 // var isNewTabSelected = window.is_new_win_popup ? true : false; // 如果是弹出窗，则激活新打开的标签
 
 // selected => http://code.google.com/chrome/extensions/tabs.html#method-create
-function openTab(url) {
+function openNewWindow(url, specs) {
   if (url) {
     url = url.trim();
   }
   if (!url || url.indexOf('javascript') === 0) {
     return false;
   }
-  // window.open(url, '_blank');
-  return true;
+  specs = specs || {};
+  if (!specs.width) {
+    specs.width = window.screen.width * 0.9;
+  }
+  if (!specs.height) {
+    specs.height = window.screen.height;
+  }
+  var s = [];
+  for (var k in specs) {
+    s.push(k + '=' + specs[k]);
+  }
+  window.open(url, '_blank', s.join(','));
+  return false;
 }
 
 function StatusController() {
@@ -94,7 +106,7 @@ StatusController.prototype.previewImage = function (event) {
     return;
   }
   if (event.which === 3) { // 右键点击直接打开原图
-    openTab(originalURL);
+    openNewWindow(originalURL);
     this.oncontextmenu = function () { return false; };
     return false;
   } else if (event.which === 1) { // 左键点击查看图片
@@ -111,29 +123,7 @@ StatusController.prototype.previewImage = function (event) {
 };
 
 function initEvents() {
-  // $(document).delegate('a', 'click', function (event) {
-  //   var $this = $(this);
-  //   var url = $this.attr('href');
-  //   var opened = openTab(url);
-  //   if (opened) {
-  //     event.preventDefault();
-  //     return false;
-  //   }
-  // }).delegate('a', 'mousedown', function (event) {
-  //   if (event.which === 3) {
-  //     var $this = $(this);
-  //     var url = $this.attr('rhref') || $this.attr('href');
-  //     var opened = openTab(url);
-  //     if (opened) {
-  //       // 禁用右键菜单
-  //       this.oncontextmenu = function () {
-  //         return false;
-  //       };
-  //       return false;
-  //     }
-  //   }
-  // });
-
+  
   // 注册 查看原始围脖的按钮事件
   $(document).delegate('.show_source_status_btn', 'click', function (event) {
     var $this = $(this);
@@ -2532,14 +2522,6 @@ function read_later(ele, service_type) {
     }
 };
 
-// AD
-function adShow() {
-  // var ad = getBackgroundView().ADs.getNext();
-  // if (ad) {
-  //   $("#topAd").html('<a href="{{url}}" target="_blank" title="{{title}}">{{title}}</a>'.format(ad));
-  // }
-};
-
 var __action_names = ['doComment', 'doRepost', 'doNewMessage', 'doReply', 'showMsgInput'];
 
 function restoreActionCache() {
@@ -3006,7 +2988,6 @@ TimelineController.prototype.refreshUserTimeline = function (tab) {
     if (err) {
       return ui.showErrorTips(err);
     }
-    console.log(info)
     wrap.prepend(ui.buildUserInfo(info));
   });
 
@@ -3474,6 +3455,60 @@ StatusCounterController.prototype.showCounts = function (user, statuses, timelin
   });
 };
 
+function URLController() {
+  this.events = [
+    { events: 'click', selecter: 'a', handler: this.openLink },
+    { events: 'mousedown', selecter: 'a', handler: this.openRealLink },
+  ];
+
+  URLController.super_.call(this);
+
+  stateManager.on('show_statuses', this.checkLinks);
+};
+inherits(URLController, Controller);
+
+URLController.prototype.openRealLink = function (event) {
+  if (event.which === 3) {
+    var alink = $(this);
+    var url = alink.data('rhref') || alink.attr('rhref') || alink.attr('href');
+    console.log(url)
+    url && openNewWindow(url);
+    return false;
+  }
+};
+
+URLController.prototype.openLink = function (event) {
+  var alink = $(this);
+  var url = alink.data('href');
+  if (url && url.indexOf('http') === 0) {
+    openNewWindow(url);
+    return false;
+  }
+};
+
+URLController.prototype.checkLinks = function (user, items, timeline) {
+  var links = $("#" + timeline + "_timeline ul.list a.status_text_link");
+  console.log(links.length + ' links need to expand');
+  links.each(function () {
+    var link = $(this);
+    var url = link.attr('href');
+    ShortenUrl.expand(url, function (data) {
+      if (!data) {
+        return;
+      }
+      link.removeClass('status_text_link').addClass('status_text_link_expand');
+
+      var title = data.url;
+      if (data.title) {
+        title += ' (' + data.title + ')';
+      }
+      link.attr('title', title);
+      link.data('rhref', data.url);
+      var favicon = serveice.URLTool.getFavicon(data.url);
+      link.addClass('favicons_ico').css('background-image', 'url('+ favicon + ')');
+    });
+  });
+};
 
 
 $(function () {
@@ -3494,6 +3529,7 @@ $(function () {
   new StatusCounterController();
   new CommentListController();
   new ToolbarController();
+  new URLController();
   console.log('controllers inited.');
 
   var currentUser = User.getUser();
