@@ -2722,8 +2722,22 @@ Controller.prototype.bindEvents = function (events, selecter, handler) {
 };
 
 function TimelineController() {
+
+  this.lastTimelines = {}; // cache user last timeline type
+  this.timelineScrolls = {};
+  this.list = {}; // {uniqueKey: [], ...}
+  this.favoritedCache = {}; // {uniqueKey: {}}
+  this.unreadStatuses = {};
+
+  var showUser = function (event) {
+    var uid = $(this).data('uid');
+    var self = event.data.controller;
+    self.showUserTimeline(uid);
+  };
+
   this.events = [
-    { events: 'click', selecter: '.timeline_tab', handler: this.click }
+    { events: 'click', selecter: '.timeline_tab', handler: this.click },
+    { events: 'click', selecter: '.user_link', handler: showUser }
   ];
 
   $(".list_warp").on('scrollstop', { controller: this }, this.checkScroll);
@@ -2733,12 +2747,6 @@ function TimelineController() {
     var warp = TimelineController.getWarp(activeTimeline);
     warp.scrollTop(0);
   });
-
-  this.lastTimelines = {}; // cache user last timeline type
-  this.timelineScrolls = {};
-  this.list = {}; // {uniqueKey: [], ...}
-  this.favoritedCache = {}; // {uniqueKey: {}}
-  this.unreadStatuses = {};
 
   TimelineController.super_.call(this);
 
@@ -2828,6 +2836,7 @@ TimelineController.prototype.setCacheStatuses = function (user, timeline, items)
   var key = user.uniqueKey + ':' + timeline; 
   delete this.list[key];
   this.list[key] = items;
+  $("#" + timeline + "_timeline ul.list").html('');
 };
 
 TimelineController.prototype.cacheStatuses = function (user, timeline, statuses, append) {
@@ -2914,9 +2923,15 @@ TimelineController.prototype.showMore = function (tab) {
   var li = warp.find('ul li:last');
   var max_id = li.data('id');
   var timestamp = li.data('timestamp');
-  params.max_id = max_id;
-  if (timestamp) {
-    params.max_time = timestamp;
+  if (max_id) {
+    params.max_id = max_id;
+    if (timestamp) {
+      params.max_time = timestamp;
+    }
+  }
+  var uid = tab.data(user.uniqueKey + '_uid');
+  if (uid) {
+    params.uid = uid;
   }
   console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
@@ -2993,14 +3008,29 @@ TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
   if (items.length > 20) {
     items = items.slice(0, 20);
   }
-  // set cache
+  // set cache and empty the views
   self.setCacheStatuses(user, timeline, items);
-  $("#" + timeline + "_timeline ul.list").html('');
+
   self.showItems(user, items, timeline, false);
   if (items.length < 10) {
     self.showMore(tab);
   }
 }
+
+TimelineController.prototype.showUserTimeline = function (uid) {
+  var timeline = 'user_timeline';
+  var self = this;
+  var user = User.getUser();
+
+  self.setCacheStatuses(user, timeline, []);
+  
+  if (!uid) {
+    uid = user.uid;
+  }
+  var tab = $('.tab-user_timeline');
+  tab.data(user.uniqueKey + '_uid', uid);
+  tab.click();
+};
 
 TimelineController.prototype.refresh = function (tab) {
   if (tab.data('is_loading')) {
@@ -3009,7 +3039,13 @@ TimelineController.prototype.refresh = function (tab) {
   var self = this;
   var user = User.getUser();
   var timeline = tab.data('type');
+  if (timeline === 'user_timeline') {
+    self.setCacheStatuses(user, timeline, []);
+    return self.showMore(tab);
+  }
   var active = tab.hasClass('active');
+  var params = {};
+
   var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
   console.log('read statuses ' + timeline + ' :' + unreadCount);
   var unreadStatuses = self.readUnreadStatuses(user, timeline);
@@ -3023,7 +3059,7 @@ TimelineController.prototype.refresh = function (tab) {
     return;
   }
 
-  var params = {}; // self.getParams(tab);
+  
   var since_id = user.since_ids && user.since_ids[timeline];
   if (since_id) {
     params.since_id = since_id.id;
@@ -3064,26 +3100,23 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   dataType = dataType || 'status';
   var method = append ? 'append' : 'prepend';
   var direct = append ? 'last' : 'first';
-  // var lastItem;
-  // if (dataType === 'status') {
-  //   lastItem = $("#" + timeline + "_timeline ul.list li.tweetItem:" + direct);
-  // } else {
-  //   lastItem = $("#" + timeline + "_timeline ul.list div.user_info:" + direct);
-  // }
-  // var max_id = lastItem.attr('did');
-  // var result = utils.filterDatasByMaxId(items, max_id, append);
-  // items = result.news;
   var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline) : ui.buildUsersHtml(items, timeline);
+  
+  if (timeline === 'user_timeline') {
+    // 显示用户信息
+    var warp = TimelineController.getWarp(timeline);
+    var isEmpty = warp.find('ul li:first').length === 0;
+    if (isEmpty) {
+      var userInfo = ui.buildUserInfo(items[0].user);
+      warp.find('ul').prepend(userInfo);
+    }
+  }
   _ul[method](htmls.join(''));
+
   if (dataType === 'status') {
     ViewCache.setItems(items);
   }
   stateManager.emit('show_statuses', user, items, timeline);
-};
-
-TimelineController.prototype.getParams = function (tab) {
-  var params = tab.data('cursor') || {};
-  return params;
 };
 
 TimelineController.prototype.fetch = function (user, timeline, params, callback) {

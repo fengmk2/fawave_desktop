@@ -295,12 +295,11 @@ var _u = {
 <li class="tweetItem showCounts_#{tweet.id} <?js if (!tweet.readed) { ?>unread-item<?js } ?> <?js if (tweet.myTweet) { ?>myTweet<?js } ?> " id="tweet#{tweet.id}"
   data-id="#{tweet.id}" data-timestamp="#{tweet.timestamp || ''}"
   data-uid="#{tweet.user.id}" data-screen_name="#{tweet.user.screen_name}">
-  
+
   <div class="li_wrap clearFix">
   <div class="usericon">
     <span class="showtip">
-    <a class="user_head" target="_blank" 
-      href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');" 
+    <a class="user_head user_link" data-uid="#{user.id}"
       rhref="#{user.t_url}">
       <img src="#{ user.profile_image_url ? user.profile_image_url.replace('24x24', '48x48') : 'http://tp3.sinaimg.cn/1710476902/50/5606660547/1' }" />
     </a>
@@ -310,7 +309,7 @@ var _u = {
   <div class="mainContent commentWrap">
     <span class="arrow_r"></span>
     <div class="userName">
-      <a target="_blank" user_id="#{user.id}" user_screen_name="#{user.screen_name}" href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');" rhref="#{user.t_url}" title="#{getUserCountsInfo(user)}">
+      <a class="user_link" data-uid="#{user.id}" rhref="#{user.t_url}" title="#{getUserCountsInfo(user)}">
         #{user.screen_name}<?js if (user.verified) { ?><img title="#{_u.i18n('comm_verified')}" 
         src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
       </a>
@@ -364,8 +363,7 @@ var _u = {
 
         <?js if (tweet.retweet_me || tweet.retweet_user) { ?>
         <div class="retweet_info">#{_u.i18n("comm_retweet_by_before")} <?js if(tweet.retweet_me){ ?>
-          <a target="_blank" 
-            href="javascript:getUserTimeline('#{tweet.retweet_me.screen_name}', '#{tweet.retweet_me.id}');" 
+          <a target="_blank" data-uid="#{tweet.retweet_me.id}" class="user_link"
             rhref="#{tweet.retweet_me.t_url}">
             #{tweet.retweet_me.screen_name}<?js if (tweet.retweet_me.verified) { ?><img title="#{_u.i18n('comm_verified')}" src="images/verified#{tweet.retweet_me.verified_type && tweet.retweet_me.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
           </a>
@@ -373,9 +371,8 @@ var _u = {
         <?js } ?>
            <?js if (tweet.retweet_user) { ?>
             <?js if (tweet.retweet_me) { ?>、<?js } ?>
-            <a target="_blank" 
-            href="javascript:getUserTimeline('#{tweet.retweet_user.screen_name}', '#{tweet.retweet_user.id}');" 
-            rhref="#{tweet.retweet_user.t_url}">
+            <a target="_blank" data-uid="#{tweet.retweet_user.id}" class="user_link"
+              rhref="#{tweet.retweet_user.t_url}">
             #{tweet.retweet_user.screen_name}<?js if (tweet.retweet_user.verified) { ?><img title="#{_u.i18n('comm_verified')}" src="images/verified#{tweet.retweet_user.verified_type && tweet.retweet_user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
           </a>
           <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweet_user.name}</span> <?js } ?>
@@ -436,16 +433,14 @@ var _u = {
 
 <div class="msg">
   <div class="tweetItem retweeted commentWrap showCounts_#{tweet.retweeted_status.id} <?js if (is_rt_rt){ ?>rt_retweeted<?js } ?>" id="tweet#{tweet.retweeted_status.id}"
-    data-id="#{tweet.retweeted_status.id}" data-timestamp="#{tweet.retweeted_status.timestamp || ''}"
-    data-uid="#{tweet.retweeted_status.user.id}" data-screen_name="#{tweet.retweeted_status.user.screen_name}"  >
+    data-id="#{tweet.retweeted_status.id}" data-timestamp="#{tweet.retweeted_status.timestamp || ''}">
 
     <div class="userName">
       <?js if (is_rt_rt) { ?>
       <span class="showtip">
-      <a user_id="#{retweeted_status_user.id}" user_screen_name="#{retweeted_status_user.screen_name}" 
-        href="javascript:getUserTimeline('#{retweeted_status_user.screen_name}', '#{retweeted_status_user.id}');">@#{retweeted_status_user.screen_name}</a>
-      <?js if (show_fullname) { ?><span class="fullname">#{retweeted_status_user.name}</span> <?js } ?>
-      #{buildTipboxUserInfo(retweeted_status_user, show_fullname)}
+      <a class="user_link" data-uid="#{tweet.retweeted_status.user.id}">@#{tweet.retweeted_status.user.screen_name}</a>
+      <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweeted_status.user.name}</span> <?js } ?>
+      #{buildTipboxUserInfo(tweet.retweeted_status.user, show_fullname)}
       </span>
       <?js } ?>
       <?js if ((tType === 'comments_timeline' || tType === 'comments_mentions') && !is_rt_rt) { ?> 
@@ -454,8 +449,7 @@ var _u = {
         #{_u.i18n('comm_repost_to_before')}
       <?js } ?>
       <span class="showtip">
-        <a target="_blank" 
-          href="javascript:getUserTimeline('#{tweet.retweeted_status.user.screen_name}', '#{tweet.retweeted_status.user.id}');" 
+        <a target="_blank" data-uid="#{tweet.retweeted_status.user.id}" class="user_link"
           rhref="#{tweet.retweeted_status.user.t_url}">
           @#{tweet.retweeted_status.user.screen_name}<?js if(tweet.retweeted_status.user.verified){ ?><img title="#{_u.i18n('comm_verified')}" src="images/verified#{tweet.retweeted_status.user.verified_type && tweet.retweeted_status.user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
         </a>
@@ -537,7 +531,7 @@ var _u = {
   <div>
     <div class="user_head"><img src="#{user.profile_image_url}" /></div>
     <div class="user_info">
-      <p><a href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');" 
+      <p><a class="user_link" data-uid="#{user.id}" 
         rhref="#{user.t_url}">#{user.screen_name}
         <?js if(user.verified){ ?><img title="#{_u.i18n('comm_verified')}" 
         src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?>
@@ -557,7 +551,8 @@ var _u = {
       &nbsp;&nbsp;&nbsp;&nbsp;#{_u.i18n("comm_bi_follower")}: <span>#{user.bi_followers_count}</span>
       <?js } ?>
       </p>
-      <p>#{_u.i18n("comm_tweet")}: <span><a href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
+      <p>#{_u.i18n("comm_tweet")}:
+        <span><a href="javascript:void(0);" class="user_link" data-uid="#{user.id}">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
       <?js if (user.favourites_count !== undefined) { ?>
       &nbsp;&nbsp;&nbsp;#{_u.i18n("comm_favourite")}: <span>#{user.favourites_count}</span>
       <?js } ?>
@@ -637,7 +632,8 @@ var _u = {
             </p>
     <p>#{_u.i18n("comm_follow")}: <span><a href="javascript:showFollowers('friends', '#{user.screen_name}', '#{user.id}');">#{user.friends_count == undefined ? _u.i18n("comm_view"): user.friends_count}</a></span>
     &nbsp;&nbsp;#{_u.i18n("comm_fans")}: <span><a href="javascript:showFollowers('followers', '#{user.screen_name}', '#{user.id}');">#{user.followers_count == undefined ? _u.i18n("comm_view"): user.followers_count}</a></span>
-    &nbsp;&nbsp;#{_u.i18n("comm_tweet")}: <span><a href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
+    &nbsp;&nbsp;#{_u.i18n("comm_tweet")}:
+      <span><a href="javascript:void(0);" class="user_link" data-uid="#{user.id}">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
 
     <?js if (user.bi_followers_count !== undefined) { ?>
     &nbsp;&nbsp;#{_u.i18n("comm_bi_follower")}: <span>#{user.bi_followers_count}</span>
@@ -688,7 +684,7 @@ var _u = {
 <div class="fans">
   <div class="user_head"><img src="#{user.profile_image_url}" /></div>
   <div class="user_info" did="#{user.id}">
-    <div class="userName"><a href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');" 
+    <div class="userName"><a href="javascript:void(0);" data-uid="#{user.id}" class="user_link"
         rhref="#{user.t_url}">#{user.screen_name}<?js if(user.verified){ ?><img 
         title="#{_u.i18n('comm_verified')}" 
         src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?></a>
@@ -729,7 +725,8 @@ var _u = {
     </p>
     <p>#{_u.i18n("comm_follow")}: <span><a href="javascript:showFollowers('friends', '#{user.screen_name}', '#{user.id}');">#{user.friends_count == undefined ? _u.i18n("comm_view"): user.friends_count}</a></span>
        &nbsp;&nbsp;#{_u.i18n("comm_fans")}: <span><a href="javascript:showFollowers('followers', '#{user.screen_name}', '#{user.id}');">#{user.followers_count == undefined ? _u.i18n("comm_view"): user.followers_count}</a></span>
-       &nbsp;&nbsp;#{_u.i18n("comm_tweet")}: <span><a href="javascript:getUserTimeline('#{user.screen_name}', '#{user.id}');">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
+       &nbsp;&nbsp;#{_u.i18n("comm_tweet")}:
+        <span><a href="javascript:void(0);" class="user_link" data-uid="#{user.id}">#{user.statuses_count == undefined ? _u.i18n("comm_view"): user.statuses_count}</a></span>
       <?js if (user.bi_followers_count !== undefined) { ?>
       &nbsp;&nbsp;#{_u.i18n("comm_bi_follower")}: <span>#{user.bi_followers_count}</span>
       <?js } ?>
