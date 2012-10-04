@@ -571,8 +571,8 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 }
 .user_head img{
   max-width:48px; max-height:48px;
-  -webkit-border-radius: 4px;
-    -webkit-box-shadow: 0 0 3px #aaa;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 0 3px #aaa;
 }
 .tipbox .user_info img{border:none; -webkit-box-shadow: none;}
 .tipbox .user_info, 
@@ -584,10 +584,10 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 
 /* userinfo_detail */
 .userinfo_detail, .fans{
-  margin:6px 3px;
-  padding:6px;
-  -webkit-border-radius:3px;
-  -webkit-box-shadow:0 0 5px #888;
+  margin: 6px 3px;
+  padding: 6px 15px 6px 6px;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 0 5px #888;
 }
 .userinfo_detail p, .fans p{margin:3px 0;}
 .userinfo_detail .follow, .fans .follow, .userinfo_detail .followed, .fans .followed{

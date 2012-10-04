@@ -457,7 +457,7 @@ function buildFansLi(user, t) {
     getUserCountsInfo: getUserCountsInfo,
     user: user
   };
-  return Shotenjin.render(TEMPLATE_FANS, context);
+  return Shotenjin.render(window.TEMPLATE_FANS, context);
 }
 exports.buildFansLi = buildFansLi;
 

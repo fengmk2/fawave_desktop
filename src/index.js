@@ -3001,7 +3001,11 @@ TimelineController.prototype.click = function (event) {
   
   // 刷新条件: 当前是 active 或者 没有任何内容, 并且 warp scroll 在顶部 <= 100
   if (needRefresh) {
-    self.refresh(tab);
+    if (timeline === 'user_timeline') {
+      self.refreshUserTimeline(tab);
+    } else {
+      self.refresh(tab);
+    }
     scrollTop = 0;
   }
 
@@ -3052,6 +3056,33 @@ TimelineController.prototype.showUserTimeline = function (uid, screen_name) {
   tab.click();
 };
 
+TimelineController.prototype.refreshUserTimeline = function (tab) {
+  var self = this;
+  var timeline = 'user_timeline';
+  var user = User.getUser();
+  var wrap = $("#" + timeline + "_timeline ul.list");
+
+  self.setCacheStatuses(user, timeline, []);
+  wrap.html('');
+
+  var key = user.uniqueKey + '_uid';
+  var userParams = tab.data(key) || {};
+  if (!userParams.uid && !userParams.screen_name) {
+    userParams.uid = user.uid;
+  }
+  console.log('user show ' + JSON.stringify(userParams))
+  weibo.user_show(user, userParams.uid, userParams.screen_name, function (err, info) {
+    if (err) {
+      return ui.showErrorTips(err);
+    }
+    console.log(info)
+    wrap.prepend(ui.buildUserInfo(info));
+  });
+
+  // load statuses
+  self.showMore(tab);
+};
+
 TimelineController.prototype.refresh = function (tab) {
   if (tab.data('is_loading')) {
     return;
@@ -3059,10 +3090,6 @@ TimelineController.prototype.refresh = function (tab) {
   var self = this;
   var user = User.getUser();
   var timeline = tab.data('type');
-  if (timeline === 'user_timeline') {
-    self.setCacheStatuses(user, timeline, []);
-    return self.showMore(tab);
-  }
   var active = tab.hasClass('active');
   var params = {};
 
@@ -3074,13 +3101,13 @@ TimelineController.prototype.refresh = function (tab) {
     timeline: timeline,
     count: unreadCount
   });
+
   if (unreadStatuses.length > 0) {
     ui.showTips(unreadCount + '条新微博');
     self.mergeNew(tab, user, timeline, unreadStatuses);
     return;
   }
 
-  
   var since_id = user.since_ids && user.since_ids[timeline];
   if (since_id) {
     params.since_id = since_id.id;
@@ -3123,15 +3150,6 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   var direct = append ? 'last' : 'first';
   var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline, user) : ui.buildUsersHtml(items, timeline);
   
-  if (timeline === 'user_timeline') {
-    // 显示用户信息
-    var warp = TimelineController.getWarp(timeline);
-    var isEmpty = warp.find('ul li:first').length === 0;
-    if (isEmpty) {
-      var userInfo = ui.buildUserInfo(items[0].user);
-      warp.find('ul').prepend(userInfo);
-    }
-  }
   _ul[method](htmls.join(''));
 
   if (dataType === 'status') {

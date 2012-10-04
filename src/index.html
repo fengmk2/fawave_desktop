@@ -209,23 +209,23 @@ var _u = {
   </div><!-- div.wrap END -->
   
   <!-- 表情选择 -->
-    <div id="face_box" class="layerBox" style="display:none;">
-        <div class="layerBoxCon1">
-            <div class="faceItem clearFix">
-                <div class="layerArrow"></div>
-                <div class="face_tab tab2">
-                    <p>
-                        <a id="btnFaceBoxClose" class="close" href="javascript:void(fawave.face.hide())"></a>
-                        <script>_u.wia('#btnFaceBoxClose','title','comm_close');</script>
-                    </p>
-                </div>
-                <div class="faceItemPicbg">
-                </div>
-            </div>
-        </div>
-    </div>
-    <input id="face_box_target_id" type="hidden" value="" />
-    <!-- 表情选择 End -->
+  <div id="face_box" class="layerBox" style="display:none;">
+      <div class="layerBoxCon1">
+          <div class="faceItem clearFix">
+              <div class="layerArrow"></div>
+              <div class="face_tab tab2">
+                  <p>
+                      <a id="btnFaceBoxClose" class="close" href="javascript:void(fawave.face.hide())"></a>
+                      <script>_u.wia('#btnFaceBoxClose','title','comm_close');</script>
+                  </p>
+              </div>
+              <div class="faceItemPicbg">
+              </div>
+          </div>
+      </div>
+  </div>
+  <input id="face_box_target_id" type="hidden" value="" />
+  <!-- 表情选择 End -->
 </div><!-- wrapper END -->
 
 <div id="ye_dialog_window" >
@@ -528,7 +528,7 @@ var _u = {
 
 <!-- 用户信息tipbox模板 -->
 <script id="tp_tipbox_user_info" type="text/template">
-  
+
 <div class="tipbox">
   <div>
     <div class="user_head"><img src="#{user.profile_image_url}" /></div>
@@ -591,42 +591,45 @@ var _u = {
 <div class="userinfo_detail">
   <div class="user_head"><img src="#{user.profile_image_url}" /></div>
   <div class="user_info">
-    <div class="userName"><a href="#{user.t_url}">#{user.screen_name}<?js if(user.verified){ ?><img title="#{_u.i18n('comm_verified')}" 
-      src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?></a>
-    <?js if(show_fullname) { ?><span class="fullname">#{user.name}</span> <?js } ?>
-    <?js if(!user.is_me){ ?>
-        <a class="follow" href="javascript:" onclick="doReply(this, '#{user.screen_name}', '', '#{user.id}')">@</a>
-                  <a class="follow" href="javascript:" onclick="doNewMessage(this, '#{user.screen_name}','#{user.id}')">#{_u.i18n("abb_direct_message")}</a>
-        <?js if(support_blocking) { ?>
-            <a class="follow" href="javascript:;" title='#{_u.i18n("destroy_blocking_title")}' 
-               style="#{user.blocking ? '' : 'display:none'}"
-               onclick="destroy_blocking(this, '#{user.id}');">#{_u.i18n("destroy_blocking")}</a>
-          <a class="follow" href="javascript:;" title='#{_u.i18n("create_blocking_title")}' 
-             style="#{user.blocking ? 'display:none' : ''}"
-             onclick="create_blocking(this, '#{user.id}');">#{_u.i18n("create_blocking")}</a>
+    <div class="userName">
+      <a href="#{user.t_url}">#{user.screen_name}<?js if (user.verified) { ?><img title="#{_u.i18n('comm_verified')}" 
+        src="images/verified#{user.verified_type && user.verified_type > 0 ? '_blue.png' : '.gif'}" /><?js } ?></a>
+    <?js if (show_fullname) { ?><span class="fullname">#{user.name}</span> <?js } ?>
+    <?js if (!user.is_me) { ?>
+      <a class="follow" 
+        onclick="doReply(this, '#{user.screen_name}', '', '#{user.id}')">@#{user.gender === 'f' ? '她' : '他'}</a>
+      <a class="follow" onclick="doNewMessage(this, '#{user.screen_name}','#{user.id}')">#{_u.i18n("abb_direct_message")}</a>
+      <?js if (support_blocking) { ?>
+      <a class="follow" title='#{_u.i18n("destroy_blocking_title")}' 
+        style="#{user.blocking ? '' : 'display:none'}"
+        onclick="destroy_blocking(this, '#{user.id}');">#{_u.i18n("destroy_blocking")}</a>
+      <a class="follow" title='#{_u.i18n("create_blocking_title")}' 
+        style="#{user.blocking ? 'display:none' : ''}"
+        onclick="create_blocking(this, '#{user.id}');">#{_u.i18n("create_blocking")}</a>
       <?js } ?>
-      <?js if(support_follow) { ?>
-        <a class="follow follow_button_destroy" <?js if(user.followed_by === false) { ?>style="display:none;"<?js } ?> href="javascript:;" onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>
-        <a class="follow follow_button_create" <?js if(user.followed_by === true) { ?>style="display:none;"<?js } ?> href="javascript:;" onclick="f_create('#{user.id}', this, '#{user.screen_name}')"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
-        <?js if(user.followed_by === true) { ?>
-        <span class="followed">
-            <?js if(user.following === true) { ?>
-            #{_u.i18n("comm_f_followed_by_and_following")}
-            <?js } else { ?>
-            #{_u.i18n("comm_f_followed_by")}
-            <?js } ?>
-        </span>
-        <?js } else if(user.following === true) { ?>
-        <span class="followed">#{_u.i18n("comm_f_following")}</span>
+      <?js if (support_follow) { ?>
+      <a class="follow follow_button_destroy" <?js if (!user.following) { ?>style="display:none;"<?js } ?> onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>
+      <a class="follow follow_button_create" <?js if (user.following) { ?>style="display:none;"<?js } ?> onclick="f_create('#{user.id}', this, '#{user.screen_name}')"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
+      <?js if (user.following) { ?>
+      <span class="followed">
+        <?js if (user.follow_me) { ?>
+        #{_u.i18n("comm_f_followed_by_and_following")}
+        <?js } else { ?>
+        #{_u.i18n("comm_f_followed_by")}
         <?js } ?>
+      </span>
+      <?js } else if (user.follow_me) { ?>
+      <span class="followed">#{_u.i18n("comm_f_following")}</span>
+      <?js } ?>
     <?js } ?>
-    <?js } else if(support_blocking){ ?>
-    <a class="follow" href="javascript:;" title='#{_u.i18n("showblocking_title")}' onclick="showblocking(false);">#{_u.i18n("showblocking")}</a>
+    <?js } else if (support_blocking) { ?>
+    <a class="follow" title='#{_u.i18n("showblocking_title")}' 
+      onclick="showblocking(false);">#{_u.i18n("showblocking")}</a>
     <?js } ?>
     </div>
     <p>
-      <img class="small_icon sicon_gender_#{user.gender}" src="images/transparent.gif" 
-        title="<?js if(user.gender == 'm'){ ?> #{_u.i18n('comm_man')} <?js }else if(user.gender == 'f'){ ?> #{_u.i18n('comm_female')} <?js }else{ ?> #{_u.i18n('comm_gender_unknow')} <?js } ?>" />
+    <img class="small_icon sicon_gender_#{user.gender}" src="images/transparent.gif" 
+      title="<?js if(user.gender == 'm'){ ?> #{_u.i18n('comm_man')} <?js }else if(user.gender == 'f'){ ?> #{_u.i18n('comm_female')} <?js }else{ ?> #{_u.i18n('comm_gender_unknow')} <?js } ?>" />
           <?js if(user.province){ ?>
                   #{provinces[user.province] ? provinces[user.province].name : user.province}, 
                   #{provinces[user.province] ? provinces[user.province]["citys"][user.city] : user.city}
