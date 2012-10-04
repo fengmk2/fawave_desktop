@@ -58,7 +58,16 @@ div.msgInfo {padding-top:3px;}
 	word-wrap:break-word;
 }
 .list li div.retweeted .userName{color:green;font-weight:normal;}
-.list li div.retweeted .edit a{color:green;font-weight:bold;}
+.list li div.retweeted .edit a{
+	color:green;font-weight:bold;
+}
+.edit a {
+	vertical-align: middle;
+	display: inline-block;
+}
+.edit a img{
+	vertical-align: middle;
+}
 .list li div.retweeted .commentCounts a, .list li div.retweeted .repostCounts a{color:green;font-weight:normal;}
 .list li div.retweeted.rt_retweeted{margin-left: 35px;}
 .list_p{ margin:0;padding:0; background: -webkit-gradient(linear,left bottom,left top,from(#CDD2E0),to(#fff), color-stop(02,#fff));}

@@ -863,3 +863,7 @@ div.loading_bar span {
   color: green;
 }
 
+.hide {
+  display: none;
+}
+

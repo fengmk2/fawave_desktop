@@ -608,8 +608,10 @@ var _u = {
         onclick="create_blocking(this, '#{user.id}');">#{_u.i18n("create_blocking")}</a>
       <?js } ?>
       <?js if (support_follow) { ?>
-      <a class="follow follow_button_destroy" <?js if (!user.following) { ?>style="display:none;"<?js } ?> onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>
-      <a class="follow follow_button_create" <?js if (user.following) { ?>style="display:none;"<?js } ?> onclick="f_create('#{user.id}', this, '#{user.screen_name}')"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
+      <a class="follow unfollow_btn #{user.following ? '' : 'hide'}" 
+         data-uid="#{user.id}" data-screen_name="#{user.screen_name}">#{_u.i18n("comm_f_destroy")}</a>
+      <a class="follow follow_btn #{user.following ? 'hide' : ''}" 
+        data-uid="#{user.id}" data-screen_name="#{user.screen_name}"><span class="plus">+</span>#{_u.i18n("comm_f_create")}</a>
       <?js if (user.following) { ?>
       <span class="followed">
         <?js if (user.follow_me) { ?>

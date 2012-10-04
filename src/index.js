@@ -264,15 +264,60 @@ function ToolbarController() {
     { events: 'click', selecter: '.commenttweet', handler: this.showCommentDialog },
     { events: 'click', selecter: '.delcommenttweet', handler: this.destroyComment },
     { events: 'click', selecter: '.deltweet', handler: this.destroyStatus },
+    { events: 'click', selecter: '.follow_btn', handler: this.follow },
+    { events: 'click', selecter: '.unfollow_btn', handler: this.unfollow },
   ];
 
   ToolbarController.super_.call(this);
 }
 inherits(ToolbarController, Controller);
 
+ToolbarController.prototype.follow = function (event) {
+  var self = event.data.controller;
+  var btn = $(this);
+  var uid = btn.data('uid');
+  var screen_name = btn.data('screen_name');
+  var user = User.getUser();
+  var loading = $('#loading').show();
+  btn.hide();
+  weibo.friendship_create(user, uid, function (err, result) {
+    loading.hide();
+    if (err) {
+      btn.show();
+      var message = i18n.get("msg_f_create_fail").format({name: screen_name});
+      err.message += ', ' + message;
+      return ui.showErrorTips(err);
+    }
+    var msg = i18n.get("msg_f_create_success").format({name: screen_name});
+    ui.showTips(msg);
+    btn.parent().find('.unfollow_btn').show();
+  });
+};
+
+ToolbarController.prototype.unfollow = function (event) {
+  var self = event.data.controller;
+  var btn = $(this);
+  var uid = btn.data('uid');
+  var screen_name = btn.data('screen_name');
+  var user = User.getUser();
+  var loading = $('#loading').show();
+  btn.hide();
+
+  weibo.friendship_destroy(user, uid, function (err, result) {
+    loading.hide();
+    if (err) {
+      btn.show();
+      return ui.showErrorTips(err);
+    }
+    ui.showTips(i18n.get("msg_f_destroy_success").format({name: screen_name}));
+    btn.hide();
+    btn.parent().find('.follow_btn').show();
+  });
+};
+
 ToolbarController.prototype.destroy = function (btn, method, id) {
   var timeline = $('#tl_tabs .active').data('type');
-  var user = getUser();
+  var user = User.getUser();
   var loading = $('#loading').show();
   tapi[method](user, id, function (err, result) {
     loading.hide();
@@ -1070,38 +1115,6 @@ function toggleSelectAllSendAccount() {
 }
 // <<-- 多用户 END
 
-// 用户关系：跟随、取消跟随
-function f_create(user_id, ele, screen_name) {
-  var $ele = $(ele);
-  $ele.hide();
-  showLoading();
-  var b_view = getBackgroundView();
-  b_view.friendships.create(user_id, screen_name, function (user_info, textStatus, statuCode) {
-    if (!user_info){
-      $ele.show();
-    } else {
-      $ele.parent().find('.follow_button_destroy').show();
-    }
-  });
-}
-
-function f_destroy(user_id, ele, screen_name) {
-  var $ele = $(ele);
-  $ele.hide();
-  showLoading();
-  var b_view = getBackgroundView();
-  b_view.friendships.destroy(user_id, screen_name, function (user_info, textStatus, statuCode) {
-    if (!user_info){
-      $ele.show();
-    } else {
-      var $parent = $ele.parent();
-      $parent.find('.followed').hide();
-      $parent.find('.follow_button_create').show();
-    }
-  });
-}
-//====>>>>>>>>>>>>>>>>>>>>>>
-
 // 显示粉丝列表
 function showFollowers(to_t, screen_name, user_id) {
   //添加当前激活的状态
@@ -1250,88 +1263,6 @@ function _getFansList(to_t, read_more) {
         }
         $to_t.removeAttr('loading');
     });
-}
-
-// 获取用户收藏
-var FAVORITE_HTML_CACHE = {};
-function getFavorites(is_click) {
-  var c_user = getUser();
-  if (!c_user) {
-    return;
-  }
-  var list = $("#favorites_timeline .list");
-  var cursor = list.attr('cursor');
-  var max_id = list.attr('max_id');
-  var page = list.attr('page');
-  var t = 'favorites';
-  var user_cache = get_current_user_cache();
-  var config = tapi.get_config(c_user);
-  var support_cursor_only = config.support_cursor_only; // 只支持游标方式翻页
-  if (!is_click) {
-    is_click = support_cursor_only ? !cursor : !page;
-  }
-  if (is_click) { // 点击或第一次加载
-    if (user_cache[t]) {
-      list.html(user_cache[t]);
-      return;
-    } else {
-      list.html('');
-      page = 1;
-    }
-  }
-  var params = {count: CONST.PAGE_SIZE};
-  var support_favorites_max_id = config.support_favorites_max_id; // 支持max_id方式翻页
-  if (!is_click) {
-    if (support_cursor_only) {
-      if (String(cursor) === '0') {
-        return;
-      }
-      if (cursor) {
-        params.cursor = cursor;
-      }
-    } else if (support_favorites_max_id) { // 163
-      if (max_id) {
-        params.max_id = max_id;
-      }
-    } else {
-      if (page) {
-        params.page = page;
-      }
-    }
-  }
-  showLoading();
-  hideReadMore(t);
-  tapi[t](c_user, params, function (err, result) {
-    if (err) {
-      console.error(err);
-      showReadMore(t);
-      return;
-    }
-    if (c_user.uniqueKey !== getUser().uniqueKey) {
-      showReadMore(t);
-      return;
-    }
-    var favorites = result.items;
-    var statuses = [];
-    for (var i = 0; i < favorites.length; i++) {
-      var item = favorites[i];
-      item.status.favorited_at = item.created_at;
-      statuses.push(item.status);
-    }
-    // if (data.next_cursor >= 0) {
-    //   list.attr('cursor', data.next_cursor);
-    // }
-    list.attr('page', Number(page) + 1);
-    statuses = addPageMsgs(statuses, t, true);
-    if (statuses.length > 0){
-      var index = statuses.length - 1;
-      list.attr('max_id', statuses[index].id);
-      showReadMore(t);
-      user_cache[t] = list.html();
-    } else {
-      hideReadMore(t, true);
-    }
-  });
 }
 
 function CommentListController() {
