@@ -24,6 +24,10 @@
         "message": "Repost",
         "description": "转发"
     },
+    "comm_comment": {
+        "message": "Comment",
+        "description": "转发"
+    },
     "comm_blog": {
         "message": "Blog",
         "description": "博客"

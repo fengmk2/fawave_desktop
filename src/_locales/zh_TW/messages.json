@@ -16,7 +16,6 @@
         "description": "该插件的简单描述"
     },
 
-    //通用的
     "comm_add": {
         "message": "添加",
         "description": "添加"
@@ -24,6 +23,10 @@
     "comm_repost": {
         "message": "轉發",
         "description": "转发"
+    },
+    "comm_comment": {
+        "message": "评论",
+        "description": "评论"
     },
     "comm_blog": {
         "message": "博客",
@@ -1320,7 +1323,7 @@
         "description": "评论@{{username}} 的信息"
     },
     "msg_comment_reply_default": {
-        "message": "回复 @{{username}}:",
+        "message": "回复@{{username}}:",
         "description": "回复评论的时候，输入框默认的文字"
     },
     "msg_comment_too": {

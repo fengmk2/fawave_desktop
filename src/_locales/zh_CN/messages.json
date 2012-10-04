@@ -293,6 +293,10 @@
         "message": "回复",
         "description": "回复"
     },
+    "comm_comment": {
+        "message": "评论",
+        "description": "评论"
+    },
     "comm_repost_default": {
         "message": "转发微博.",
         "description": "转发微博的时候在输入框的默认文字"
@@ -1329,7 +1333,7 @@
         "description": "评论@{{username}} 的信息"
     },
     "msg_comment_reply_default": {
-        "message": "回复 @{{username}}:",
+        "message": "回复@{{username}}:",
         "description": "回复评论的时候，输入框默认的文字"
     },
     "msg_comment_too": {

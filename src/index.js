@@ -347,7 +347,7 @@ ToolbarController.prototype.showCommentDialog = function (event) {
     // 回复是否带上原评论内容
     if (needOriginal) {
       // 查看某条微博的评论列表里
-      _txtRep = btn.parent().find('.commentContent').text();
+      _txtRep = btn.parents('.comment_item').find('.text').text();
       if (_txtRep) {
         _txtRep = '//' + _txtRep;
       } else {

@@ -389,7 +389,9 @@ var _u = {
       <p class="text_right">
         <a href="javascript:void(0);" class="comment_hide_list_btn">隐藏列表</a>
       </p>
-      <ul class="comment_list"></ul>
+      <ul class="comment_list">
+
+      </ul>
       <div class="comment_paging">
         <a class="pre_page" href="javascript:void(0);">#{_u.i18n("btn_prev_page")}</a>
         <a class="next_page" href="javascript:void(0);">#{_u.i18n("btn_next_page")}</a>
@@ -782,6 +784,40 @@ var _u = {
 
 </script>
 
+<script id="comment_item" type="text/template">
+<dl class="comment_item">
+  <dt>
+    <a class="user_link" data-uid="#{item.user.id}" href="#{item.user.t_url}">
+      <img src="#{item.user.profile_image_url}" width="30" height="30" alt="#{item.user.screen_name}">
+    </a>
+  </dt>
+  <dd>
+    <a class="user_link" data-uid="#{item.user.id}" href="#{item.user.t_url}">@${item.user.screen_name}</a>#{verified}：
+    <span class="text">#{text}</span>
+    <?js if (isComment) { ?>
+    <span class="date">(#{created_at} #{_u.i18n("comm_post_by")} #{item.source})</span>
+    <?js } else { ?>
+    <span class="date">(<a href="#{item.t_url}">#{created_at}</a> 
+      #{_u.i18n("comm_post_by")} #{item.source} #{_u.i18n("comm_repost")})</span>
+    <?js } ?>
+    <div class="info">
+      <?js if (isComment) { ?>
+      <a class="commenttweet" 
+        data-id="#{item.status.id}" data-uid="#{item.status.user.id}" data-screen_name="${item.status.user.screen_name}" 
+        data-cid="#{item.id}" data-cuid="#{item.user.id}" data-csn="${item.user.screen_name}"
+        title="#{_u.i18n('btn_reply_comment_title')}">#{_u.i18n("comm_reply")}</a>
+      <?js } else { ?>
+      <a class="reposttweet" data-id="#{item.id}" data-uid="#{item.user.id}" data-screen_name="${item.user.screen_name}" 
+        title="#{_u.i18n('btn_repost_title')}">#{_u.i18n("comm_repost")}</a>
+      <i>|</i>
+      <a class="commenttweet" data-id="#{item.id}" data-uid="#{item.user.id}" data-screen_name="${item.user.screen_name}"
+        title="#{_u.i18n('btn_comment_title')}">#{_u.i18n("comm_comment")}</a>
+      <?js } ?>
+    </div>
+  </dd>
+</dl>
+</script>
+
 <script>
 var TEMPLATE = $("#tp_time_line").html();
 var TEMPLATE_RT = $("#tp_time_line_rt").html();
@@ -791,6 +827,7 @@ var TEMPLATE_RT_RT = TEMPLATE_RT
 var TEMPLATE_USER_INFO = $("#tp_user_info").html();
 var TEMPLATE_TIPBOX_USER_INFO = $("#tp_tipbox_user_info").html();
 var TEMPLATE_FANS = $("#tp_fans").html();
+var TEMPLATE_COMMENT_ITEM = $('#comment_item').html();
 </script>
 
 </body>

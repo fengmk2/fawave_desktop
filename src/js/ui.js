@@ -461,56 +461,27 @@ function buildFansLi(user, t) {
 }
 exports.buildFansLi = buildFansLi;
 
-/**
- * 生成评论列表 / 转发列表
- * timeline_type: repost, comment
- */
-function buildComment(user, comment) {
-  var datetime = moment(comment.created_at).format("YYYY-MM-DD HH:mm:ss");
-  var comment_btn = format('<a class="commenttweet replyComment" href="javascript:void(0);" title="' +
-    i18n.get("btn_reply_comment_title") + '" ' +
-    ' data-id="{{status.id}}" data-uid="{{status.user.id}}" data-screen_name="{{status.user.screen_name}}" ' +
-    ' data-cid="{{id}}" data.cuid="{{user.id}}" data-csn="{{user.screen_name}}" ' + '>' +
-    i18n.get("abb_reply") + '</a>', comment);
-  if (comment.user.verified) {
-    comment.user.verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
-      (comment.user.verified_type && comment.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
-  } else {
-    comment.user.verified = '';
+function buildItem(user, item, isComment) {
+  var verified = '';
+  if (item.user.verified) {
+    verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
+      (item.user.verified_type && item.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
   }
-  var reply_user = format('<a target="_blank" title="' + i18n.get("btn_show_user_title") +
-    '">@{{screen_name}}{{verified}}</a>', comment.user);
-  return '<li><span class="commentContent">' +
-    reply_user + ': ' + tapi.process_text(user, comment) +
-    '</span><span class="msgInfo">(' + datetime + ')</span>' +
-    comment_btn + '</li>';
+  return Shotenjin.render(window.TEMPLATE_COMMENT_ITEM, {
+    item: item,
+    isComment: isComment,
+    verified: verified,
+    text: tapi.process_text(user, item),
+    created_at: moment(item.created_at).format("YYYY-MM-DD HH:mm:ss")
+  });
 }
-exports.buildComment = buildComment;
 
-exports.buildRepost = function (user, status) {
-  var datetime = moment(status.created_at).format("YYYY-MM-DD HH:mm:ss");
-  var repost_btn = format('<a class="reposttweet replyComment" href="javascript:void(0);" ' +
-    ' data-id="{{id}}" data-uid="{{user.id}}" data-screen_name="{{user.screen_name}}" ' +
-    ' title="' + i18n.get("btn_repost_title") + '">' + i18n.get("abb_repost") + '</a>', status);
-  var btns = format('<a class="commenttweet replyComment" href="javascript:void(0);" ' +
-    ' data-id="{{id}}" data-uid="{{user.id}}" data-screen_name="{{user.screen_name}}" ' +
-    ' title="' + i18n.get("btn_comment_title") + '">&nbsp;&nbsp;' +    
-    i18n.get("abb_comment") + '</a>', status);
-  btns += repost_btn;
-  datetime = '<a href="' + status.t_url + '">' + datetime + '</a> ' + i18n.get('comm_post_by') +
-    ' ' + status.source + ' ' + i18n.get('comm_repost');
-  if (status.user.verified) {
-    status.user.verified = '<img title="' + i18n.get("comm_verified") + '" src="images/verified' +
-      (status.user.verified_type && status.user.verified_type > 0 ? '_blue.png' : '.gif') + '" />';
-  } else {
-    status.user.verified = '';
-  }
-  var reply_user = format('<a target="_blank" title="' + i18n.get("btn_show_user_title") +
-    '">@{{screen_name}}{{verified}}</a>', status.user);
-  return '<li id="tweet' + status.id + '"><span class="commentContent">' +
-    reply_user + ': ' + tapi.process_text(user, status) +
-    '</span><span class="msgInfo">(' + datetime + ')</span>' +
-    btns + '</li><div class="clearFix"/>';
+exports.buildComment = function (user, item) {
+  return buildItem(user, item, true);
+};
+
+exports.buildRepost = function (user, item) {
+  return buildItem(user, item, false);
 };
 
 function getUserCountsInfo(user) {
