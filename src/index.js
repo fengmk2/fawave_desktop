@@ -2976,10 +2976,18 @@ TimelineController.prototype.click = function (event) {
   var isEmpty = warp.find('ul li:first').length === 0;
   var timelineScrollTop = self.getScrollTop(currentUser, timeline) || 0;
   var scrollTop = active ? 0 : timelineScrollTop;
-  var needRefresh = (active || isEmpty) && warp.scrollTop() <= 100;
+  var needRefresh = (active || isEmpty) && warp.scrollTop() <= 200;
 
+  if (!needRefresh) {
+    var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
+    // 有新消息则直接刷新
+    if (unreadCount > 0) {
+      needRefresh = true;
+    }
+  }
+
+  // 判断是否不同用户之间的tab切换，如果是，则不做刷新操作
   if (isEmpty) {
-    
     // 判断是否有缓存，有则加载，并恢复 scroll
     var list = self.getCacheStatuses(currentUser, timeline);
     if (list && list.length) {
