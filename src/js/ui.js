@@ -269,9 +269,9 @@ function buildStatusHtml(statuses, t, c_user) {
   var isFavorited = t === 'favorites'; 
   for (var i = 0, len = statuses.length; i < len; i++) {
     var status = statuses[i];
-    status.is_me = status.user.id === c_user.id;
     status.reposts_count = status.reposts_count || 0;
     status.user = status.user || status.sender || {};
+    status.is_me = status.user.id === c_user.id;
     var rt_status = status.retweeted_status = status.retweeted_status || status.status;
     if (status.retweeted_status) {
       status.retweeted_status.user = status.retweeted_status.user || {};

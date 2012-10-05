@@ -2689,7 +2689,7 @@ TimelineController.prototype.refresh = function (tab) {
       params.since_time = since_id.timestamp;
     }
   }
-  console.log(timeline + ' refreshing... since_id: ' + JSON.stringify(since_id));
+  console.log(timeline + ' refreshing... since_id: ' + JSON.stringify(params));
   tab.data('is_loading', true);
   self.fetch(user, timeline, params, function (err, data) {
     tab.data('is_loading', false);

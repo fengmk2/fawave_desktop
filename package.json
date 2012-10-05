@@ -4,7 +4,7 @@
   "main": "src/index.html",
   "dependencies": {
     "moment": ">=1.7.0",
-    "weibo": ">=0.6.3"
+    "weibo": ">=0.6.4"
   },
   "window": {
     "icon": "images/icon128.png",
