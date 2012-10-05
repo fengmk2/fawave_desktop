@@ -46,7 +46,7 @@ exports = module.exports = {
 
 exports.TIMELINE_LIST = [
   'friends_timeline', 'mentions', 'comments_mentions', 'comments_timeline',
-  'direct_messages', 'favorites',
+  'direct_messages_both', 'favorites',
 ];
 
 //需要不停检查更新的timeline的分类列表

@@ -133,7 +133,7 @@ var _u = {
       <li class="tab-mentions timeline_tab" data-type="mentions" href="#mentions_timeline"><script>_u.wi('comm_TabName_mentions')</script><span class="unreadCount"></span></li>
       <li class="tab-comments_mentions timeline_tab" data-type="comments_mentions" href="#comments_mentions_timeline"><script>_u.wi('comm_TabName_comments_mentions')</script><span class="unreadCount"></span></li>
       <li class="tab-comments_timeline timeline_tab" data-type="comments_timeline" href="#comments_timeline_timeline"><script>_u.wi('comm_TabName_comments_timeline')</script><span class="unreadCount"></span></li>
-      <li class="tab-direct_messages timeline_tab" data-type="direct_messages" href="#direct_messages_timeline"><script>_u.wi('comm_TabName_direct_messages')</script><span class="unreadCount"></span></li>
+      <li class="tab-direct_messages_both timeline_tab" data-type="direct_messages_both" href="#direct_messages_both_timeline"><script>_u.wi('comm_TabName_direct_messages')</script><span class="unreadCount"></span></li>
       <li class="tab-favorites only_click timeline_tab" data-type="favorites" href="#favorites_timeline"><script>_u.wi('comm_TabName_favorites')</script><span class="unreadCount"></span></li>
       <li class="tab-followers only_click timeline_tab" data-type="followers" href="#followers_timeline"><script>_u.wi('comm_TabName_followers')</script><span class="unreadCount"></span></li>
       <li class="tab-user_timeline only_click timeline_tab" data-type="user_timeline" href="#user_timeline_timeline"><script>_u.wi('comm_TabName_user_timeline')</script><span class="unreadCount"></span></li>
@@ -165,13 +165,13 @@ var _u = {
       <div id="comments_timeline_rm_loading" class="readmore_loading"><img src="images/loading_s.gif" /></div>
     </div>
     </div>
-    <div id="direct_messages_timeline" class="list_p" style="display:none;">
+    <div id="direct_messages_both_timeline" class="list_p" style="display:none;">
     <div class="list_warp">
         <div style="padding: 2px 0 0 10px;">
             <script>_u.wi('abb_send_direct_message_to_user')</script> @<input type="text" class="txtSearch" id="direct_message_user" />
         </div>
       <ul class="list"></ul>
-      <div id="direct_messages_rm_loading" class="readmore_loading"><img src="images/loading_s.gif" /></div>
+      <div id="direct_messages_both_rm_loading" class="readmore_loading"><img src="images/loading_s.gif" /></div>
     </div>
     </div>
     <div id='favorites_timeline' class="list_p" style="display:none;">
@@ -296,7 +296,7 @@ var _u = {
   data-id="#{tweet.id}" data-timestamp="#{tweet.timestamp || ''}"
   data-uid="#{tweet.user.id}" data-screen_name="#{tweet.user.screen_name}">
 
-  <div class="li_wrap clearFix">
+  <div class="li_wrap clearFix #{tweet.is_me ? 'li_wrap_is_me' : ''}">
   <div class="usericon">
     <span class="showtip">
     <a class="user_head user_link" data-uid="#{user.id}"
@@ -585,7 +585,7 @@ var _u = {
 </script>
 <!-- 用户信息tipbox模板 END -->
 
-<!-- 用户信息模板(查看用户微博tab用) -->
+<!-- 用户信息模板(user_timeline) -->
 <script id="tp_user_info" type="text/template">
 
 <div class="userinfo_detail">
@@ -698,13 +698,13 @@ var _u = {
       <a class="follow" onclick="doReply(this, '#{user.screen_name}', '', '#{user.id}')">@</a>
       <a class="follow" onclick="doNewMessage(this, '#{user.screen_name}','#{user.id}')">#{_u.i18n("abb_direct_message")}</a>
     <?js if(support_blocking) { ?>
-                  <a class="follow" title='#{_u.i18n("destroy_blocking_title")}' 
-                     style="#{user.blocking ? '' : 'display:none'}"
-                     onclick="destroy_blocking(this, '#{user.id}');">#{_u.i18n("destroy_blocking")}</a>
-                  <a class="follow" title='#{_u.i18n("create_blocking_title")}' 
-                     style="#{user.blocking ? 'display:none' : ''}"
-                     onclick="create_blocking(this, '#{user.id}');">#{_u.i18n("create_blocking")}</a>
-              <?js } ?>
+      <a class="follow" title='#{_u.i18n("destroy_blocking_title")}' 
+         style="#{user.blocking ? '' : 'display:none'}"
+         onclick="destroy_blocking(this, '#{user.id}');">#{_u.i18n("destroy_blocking")}</a>
+      <a class="follow" title='#{_u.i18n("create_blocking_title")}' 
+         style="#{user.blocking ? 'display:none' : ''}"
+         onclick="create_blocking(this, '#{user.id}');">#{_u.i18n("create_blocking")}</a>
+    <?js } ?>
     <?js if (support_follow) { ?>
         <?js if (user.unfollow && user.followed_by !== true) { ?>
             <a class="follow follow_button_destroy" style="display:none;" onclick="f_destroy('#{user.id}', this, '#{user.screen_name}')">#{_u.i18n("comm_f_destroy")}</a>

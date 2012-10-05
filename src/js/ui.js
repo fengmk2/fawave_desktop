@@ -140,7 +140,7 @@ function buildStatusHtml(statuses, t, c_user) {
   var config = tapi.get_config(c_user);
   var support_do_comment = config.support_do_comment;
   var support_do_favorite = config.support_do_favorite;
-  var show_fullname = config.show_fullname;
+  var show_fullname = needFullname(c_user);
   var need_set_readed = false; // 必须设置为已读
   // if (t === 'user_timeline' || t === 'favorites') {
   //   need_set_readed = true;
@@ -269,6 +269,7 @@ function buildStatusHtml(statuses, t, c_user) {
   var isFavorited = t === 'favorites'; 
   for (var i = 0, len = statuses.length; i < len; i++) {
     var status = statuses[i];
+    status.is_me = status.user.id === c_user.id;
     status.reposts_count = status.reposts_count || 0;
     status.user = status.user || status.sender || {};
     var rt_status = status.retweeted_status = status.retweeted_status || status.status;
@@ -440,17 +441,22 @@ function buildTipboxUserInfo(user, show_fullname) {
   return Shotenjin.render(window.TEMPLATE_TIPBOX_USER_INFO, context);
 }
 
+function  needFullname(user) {
+  return user.blogtype === 'tqq' || user.blogtype === 'twitter';
+}
+
 // 生成用户信息
 function buildUserInfo(user) {
   var c_user = getUser();
-  var config = tapi.get_config(c_user);
+  var show_fullname = needFullname(c_user);
+  var support_follow = !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
   var context = {
     provinces: provinces,
     getUserCountsInfo: getUserCountsInfo,
     user: user,
-    show_fullname: config.show_fullname,
-    support_blocking: config.support_blocking,
-    support_follow: !user.blocking && c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren'
+    show_fullname: show_fullname,
+    support_blocking: false,
+    support_follow: support_follow
   };
   return Shotenjin.render(window.TEMPLATE_USER_INFO, context);
 }
@@ -533,7 +539,7 @@ function getPageHeight() {
 
 var popupBox = exports.popupBox = {
   tp: '<div id="popup_box">' +
-    '<div class="pb_title clearFix"><span class="t"></span><a href="javascript:" onclick="popupBox.close()" class="pb_close">' +
+    '<div class="pb_title clearFix"><span class="t"></span><a class="pb_close">' +
     i18n.get("comm_close") + '</a></div>' +
     '<div class="pb_content"></div>' +
   '</div>' +
@@ -548,10 +554,22 @@ var popupBox = exports.popupBox = {
       $(document).on('click', '.left_rotate_btn', function () {
         $('#facebox_see_img').rotateLeft(90);
         popupBox.show();
+        return false;
       });
       $(document).on('click', '.right_rotate_btn', function () {
         $('#facebox_see_img').rotateRight(90);
         popupBox.show();
+        return false;
+      });
+      // 右键点击图片，打开大图
+      $(document).on('mousedown', '.cur_min', function (event) {
+        if (event.which === 3) {
+          popupBox.box.find('.pb_title .show_original').click();
+          return false;
+        }
+      });
+      $(document).on('click', '.pb_close', function () {
+        popupBox.close();
       });
     }
     this.overlay = $("#popup_box_overlay ");
@@ -589,16 +607,16 @@ var popupBox = exports.popupBox = {
       popupBox.showOverlay();
       if (original) {
         popupBox.box.find('.pb_title .t, .pb_footer .t')
-        .html('<a target="_blank" href="' + original + '">' + i18n.get("comm_show_original_pic") + '</a>');
+        .html('<a data-href="' + original + '" class="show_original">' + i18n.get("comm_show_original_pic") + '</a>');
       } else {
         popupBox.box.find('.pb_title .t, .pb_footer .t').html('');
       }
       popupBox.box.find('.pb_content')
       .html('<div class="image"><span class="rotate_btn"> \
-        <a class="left_rotate_btn" href="javascript:void(0);"><img src="images/rotate_l.png"></a> \
-        <a class="right_rotate_btn" href="javascript:void(0);" style="margin-left:10px;"><img src="images/rotate_r.png"></a></span>' +
-        '<img id="facebox_see_img" src="' + image.attr('src') +
-        '" class="cur_min" onclick="popupBox.close()" /></div>');
+        <a class="left_rotate_btn"><img src="images/rotate_l.png"></a> \
+        <a class="right_rotate_btn" style="margin-left:10px;"><img src="images/rotate_r.png"></a></span>' +
+        '<img id="facebox_see_img" ' +
+        ' src="' + image.attr('src') + '" class="cur_min pb_close" /></div>');
       popupBox.show(image.width(), image.height());
       image = null;
       callbackFn && callbackFn('success');

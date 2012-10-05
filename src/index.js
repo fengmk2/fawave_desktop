@@ -25,49 +25,10 @@ var Nodebox = serveice.Nodebox;
 var ShortenUrl = serveice.ShortenUrl;
 
 // TODO: need to remove
-var getUser = User.getUser;
-var setUser = User.setUser;
-var getUserList = User.getUserList;
-var getUnreadTimelineCount = User.getUnreadTimelineCount;
-var getUserByUniqueKey = User.getUserByUniqueKey;
 var tapi = weibo;
-var PAGE_SIZE = CONST.PAGE_SIZE;
-var T_LIST = CONST.T_LIST;
-var ActionCache = utils.ActionCache;
-var removeUnreadTimelineCount = User.removeUnreadTimelineCount;
-var buildStatusHtml = ui.buildStatusHtml;
-var showLoading = utils.showLoading;
-var hideLoading = utils.hideLoading;
-var popupBox = ui.popupBox;
-var display_size = utils.display_size;
 
 var fawave = {};
-function getTimelineOffset(t) {
-  return $("#" + t + "_timeline ul.list > li").length;
-}
 
-var POPUP_CACHE = {};
-// 方便根据不同用户获取缓存数据的方法
-function get_current_user_cache(cache, t) {
-  var c_user = User.getUser();
-  var key = c_user.uniqueKey;
-  if (t) {
-    key += '_' + t;
-  }
-  if (!cache) {
-    cache = POPUP_CACHE;
-  }
-  var _cache = cache[key];
-  if (!_cache) {
-    _cache = {};
-    cache[key] = _cache;
-  }
-  return _cache;
-}
-
-// var isNewTabSelected = window.is_new_win_popup ? true : false; // 如果是弹出窗，则激活新打开的标签
-
-// selected => http://code.google.com/chrome/extensions/tabs.html#method-create
 function openNewWindow(url, specs) {
   if (url) {
     url = url.trim();
@@ -105,17 +66,16 @@ StatusController.prototype.previewImage = function (event) {
   if (!originalURL) {
     return;
   }
-  if (event.which === 3) { // 右键点击直接打开原图
+  if (event.which === 3) {
     openNewWindow(originalURL);
-    this.oncontextmenu = function () { return false; };
     return false;
-  } else if (event.which === 1) { // 左键点击查看图片
+  } else if (event.which === 1) {
     if (img.find('.img_loading').length === 0) {
       img.append('<img class="img_loading" src="images/loading.gif" />');
     } else {
       img.find('.img_loading').show();
     }
-    popupBox.showImg(img.attr('bmiddle'), originalURL, function () {
+    ui.popupBox.showImg(img.attr('bmiddle'), originalURL, function () {
       img.find('.img_loading').hide();
     });
     return false;
@@ -245,7 +205,7 @@ function _init_image_preview(image_src, size, preview_id, btn_id, top_padding, l
     top: offset.top + top_padding
   }).show()
   .find('.loading_bar div').css({'border-left-width': '0px'})
-  .find('span').html(display_size(size));
+  .find('span').html(utils.display_size(size));
 }
 
 function ToolbarController() {
@@ -362,7 +322,7 @@ ToolbarController.prototype.showCommentDialog = function (event) {
 
   var value = $('#replyTextarea').removeAttr('disabled').val();
   var _txtRep = '';
-  var user = getUser();
+  var user = User.getUser();
   var config = tapi.get_config(user);
   if (!value) {
     value = comment_screen_name ? (i18n.get("msg_comment_reply_default").format({username: comment_screen_name})) : '';
@@ -419,7 +379,7 @@ ToolbarController.prototype.showRepostDialog = function (event) {
   var screen_name = status.user.screen_name;
 
   // ActionCache.set('doRepost', [ null, userName, tweetId, rtUserName, reTweetId ]);
-  var user = getUser();
+  var user = User.getUser();
   var config = tapi.get_config(user);
   $('#actionType').val('repost');
   $('#repostTweetId').val(status.id);
@@ -535,7 +495,7 @@ TextContentController.prototype.hideReply = function (event) {
   $('#upImgPreview_reply').hide().find('.img').html('');
   // 隐藏带上原评论选项
   $('#chk_originalComment, #txt_originalComment').hide();
-  cleanActionCache();
+  // cleanActionCache();
 };
 
 TextContentController.prototype.loadStates = function () {
@@ -596,7 +556,7 @@ TextContentController.prototype.showTextInput = function () {
     $submitWarp.data('status', 'show').css('height', h_submitWrap);
     $('#header .write').addClass('active').find('b').addClass('up');
     $('#doing').appendTo('#doingWarp');
-    ActionCache.set('showMsgInput', []);
+    // ActionCache.set('showMsgInput', []);
   }
   var value = this.$textContent.val();
   this.$textContent.focus().val('').val(value); //光标在最后面
@@ -609,7 +569,7 @@ TextContentController.prototype.hideTextInput = function () {
   $("#submitWarp").data('status', 'hide').css('height', 0);
   $("#header .write").removeClass('active').find('b').removeClass('up');
   $("#doing").prependTo('#tl_tabs .btns');
-  ActionCache.set('showMsgInput', null);
+  // ActionCache.set('showMsgInput', null);
 };
 
 TextContentController.prototype.send = function () {
@@ -685,7 +645,7 @@ function sendMsgByActionType(c) {
     }, function (rpe) {
       // progress
       var $loading_bar = $('#upImgPreview_reply .loading_bar');
-      var html = display_size(rpe.loaded) + "/" + display_size(rpe.total);
+      var html = utils.display_size(rpe.loaded) + "/" + utils.display_size(rpe.total);
       var width = parseInt((rpe.loaded / rpe.total) * $loading_bar.width(), 10);
       $loading_bar.find('div').css({'border-left-width': width + 'px'}).find('span').html(html);
     });
@@ -801,20 +761,6 @@ function initIamDoing() {
     $("#doing").click(shareDoing(false));
     // 分享正在查看，并带上截图
     $("#doingWithCapture").click(shareDoing(true));
-}
-
-function setUserTimelineParams(params) {
-  var user = User.getUser();
-  // var bg = getBackgroundView();
-  var key = '__LastUserTimelineParams_' + user.blogType;
-  // bg[key] = params;
-}
-
-function getUserTimelineParams() {
-  var user = User.getUser();
-  // var bg = getBackgroundView();
-  var key = '__LastUserTimelineParams_' + user.blogType;
-  // return bg[key];
 }
 
 // 搜索
@@ -944,46 +890,11 @@ var Search = {
   }
 };
 
-//隐藏那些不支持的Timeline Tab
-function checkSupportedTabs(user) {
-  if (!user) {
-    user = getUser();
-  }
-  var config = tapi.get_config(user);
-  var checks = {
-    support_comment: ['#tl_tabs .tab-comments_timeline, #comments_timeline_timeline', // 需要隐藏的
-                      '#tl_tabs .tab-comments_timeline'], // 需要显示的
-    support_favorites: ['#tl_tabs .tab-favorites, #favorites_timeline',
-                        '#tl_tabs .tab-favorites'],
-    support_direct_messages: ['#tl_tabs .tab-direct_messages, #direct_messages_timeline',
-                        '#tl_tabs .tab-direct_messages'],
-    support_mentions: ['#tl_tabs .tab-mentions, #mentions_timeline',
-                        '#tl_tabs .tab-mentions'],
-    support_comments_mentions: ['#tl_tabs .tab-comments_mentions, #comments_mentions_timeline',
-                        '#tl_tabs .tab-comments_mentions'],
-    support_search: ['.search_span', '.search_span'],
-    support_user_search: ['.user_search_span', '.user_search_span'],
-    support_followers: ['#tl_tabs .tab-followers, #followers_timeline',
-                        '#tl_tabs .tab-followers'],
-  };
-  for (var key in checks) {
-    if (!config[key]) {
-      $(checks[key][0]).hide();
-    } else {
-      $(checks[key][1]).show();
-    }
-  }
-  // 如果是buzz，则隐藏评论tab，但是它可以评论
-  if (user.blogType === 'buzz') {
-    $('#tl_tabs .tab-comments_timeline, #comments_timeline_timeline').hide();
-  }
-}
-
 // 初始化用户选择视图
 function initSelectSendAccounts() {
     var settings = setting.Settings.get();
     var afs = $("#accountsForSend");
-    var c_user = getUser();
+    var c_user = User.getUser();
     if (afs.data('inited')) {
         if(settings.sendAccountsDefaultSelected === 'current' && afs.find('li.sel').length < 2){
             afs.find('li').removeClass('sel');
@@ -992,7 +903,7 @@ function initSelectSendAccounts() {
         shineSelectedSendAccounts(afs.find('li.sel'));
         return;
     }
-    var userList = getUserList('send');
+    var userList = User.getUserList('send');
     if (userList.length < 2) { return; } //多个用户才显示
     var li_tpl = '<li class="{{sel}}" uniqueKey="{{uniqueKey}}" blogType="{{blogType}}" onclick="toggleSelectSendAccount(this)">' +
         '<img src="{{profile_image_url}}" />' +
@@ -1084,7 +995,7 @@ function toggleSelectSendAccount(ele) {
 function toggleSelectAllSendAccount() {
   var $selected = $("#accountsForSend .sel");
   if ($selected.length === 0) {
-    $selected = $("#accountsForSend li[uniqueKey=" + getUser().uniqueKey +"]");
+    $selected = $("#accountsForSend li[uniqueKey=" + User.getUser().uniqueKey +"]");
   }
   var $sinas = $('#accountsForSend li[blogType="tsina"]');
   var $others = $('#accountsForSend li[blogType!="tsina"]');
@@ -1101,7 +1012,7 @@ function toggleSelectAllSendAccount() {
     return $sinas.removeClass('sel') && $others.addClass('sel');
   }
   $("#accountsForSend li").removeClass('sel');
-  $("#accountsForSend li[uniqueKey=" + getUser().uniqueKey +"]").addClass('sel');
+  $("#accountsForSend li[uniqueKey=" + User.getUser().uniqueKey +"]").addClass('sel');
 }
 // <<-- 多用户 END
 
@@ -1370,126 +1281,12 @@ CommentListController.prototype.showPage = function (wrap, action) {
   });
 }
 
-//======>>>>>>> 查看评论 / 转发列表 <<<<<<<
-//@ele: 触发该事件的元素, 如果ele的timeline_type == 'repost'，则代表是转发列表
-//@tweetId: 微博ID
-//@page: 分页
-//@notHide: 不要隐藏评论列表
-function showComments(ele, tweetId, page, notHide, page_params){
-  if (!tweetId) {
-    return;
-  }
-  var $ele = $(ele);
-  // 获取status的screen_name
-  var comment_p = $ele.closest('.commentWrap');
-  var $user_info = comment_p.find('.userName a:first');
-  var screen_name = $user_info.attr('user_screen_name');
-  var user_id = $user_info.attr('user_id');
-  
-  var commentWrap = comment_p.children('.comments');
-  var $comment_list = commentWrap.children('.comment_list');
-  var current_type = comment_p.attr('timeline_type') || 'comment';
-  var timeline_type = $ele.attr('timeline_type') || current_type;
-  if (current_type !== timeline_type) {
-      // 切换，清空目前的数据
-      commentWrap.hide();
-      $comment_list.html('');
-      comment_p.attr('timeline_type', timeline_type);
-  }
-  if (!notHide && commentWrap.css('display') !== 'none'){
-      commentWrap.hide();
-      return;
-  } else if(!notHide && $comment_list.html()){
-      commentWrap.show();
-      return;
-  }
-  var hide_btn_text = timeline_type === 'comment' ? 
-    i18n.get("btn_hide_comments") : i18n.get("btn_hide_repost_timeline");
-  commentWrap.find('.comment_hide_list_btn').html(hide_btn_text);
-  showLoading();
-  var user = getUser();
-  var params = {id:tweetId, count:CONST.COMMENT_PAGE_SIZE, user:user};
-  if(page) {
-      if(page_params) {
-          for(var k in page_params) {
-              params[k] = page_params[k];
-          }
-      } else {
-          params.page = page;
-      }
-  } else {
-      page = 1;
-  }
-  var config = tapi.get_config(user);
-  if(config.comments_need_status) {
-      var sid = $ele.closest('li').attr('did');
-      params.status = ui.TWEETS[sid];
-  }
-  var method = timeline_type === 'comment' ? 'comments' : 'repost_timeline';
-  tapi[method](params, function(data, textStatus){
-      data = data || {};
-      var comments = data.items || data;
-      if(comments){
-          if(comments.length && comments.length>0){
-              
-          } else {
-              if (page===1){
-                  commentWrap.find('.comment_paging').hide();
-              }else{
-                  commentWrap.find('.comment_paging a:eq(1)').hide();
-              }
-          }
-      }
-      if (!comments || !comments.length) {
-          $ele.parent().html('(0)');
-      }
-      hideLoading();
-  });
-}
-
-function commentPage(ele, tweetId, is_pre){
-    var $this = $(ele);
-    var page_wrap = $this.parent();
-    var page = Number(page_wrap.attr('page'));
-    if (isNaN(page)){
-        page = 1;
-    }
-    if (page === 1 && is_pre) {
-        $this.hide();
-        return;
-    }
-    page = is_pre ? page - 1 : page + 1;
-    page_wrap.hide();
-    var user = getUser();
-    var page_params = null;
-    if (page) {
-        if (user.blogType === 't163') {
-            // 163只支持 since_id和max_id翻页
-            if(is_pre) {
-                page_params = {since_id: page_wrap.attr('first_id')};
-            } else {
-                page_params = {max_id: page_wrap.attr('last_id')};
-            }
-        } else if (user.blogType === 'tqq') {
-            // PageFlag：（根据dwTime），0：第一页，1：向下翻页，2向上翻页；
-            // tqq: TwitterId: 第一页 时填0,继续向下翻页，填上一次请求返回的最后一条记录ID，翻页用
-            if (is_pre) {
-                // 必须+1，否则会带上第一天记录
-                page_params = { since_id: parseInt(page_wrap.attr('first_id'), 10) + 1};
-            } else {
-                page_params = {max_id: page_wrap.attr('last_id')};
-            }
-        }
-    }
-    showComments(ele, tweetId, page, true, page_params);
-}
-
 //发送 @回复
 function sendReplyMsg(msg) {
     var btn = $("#replySubmit");
     var txt = $("#replyTextarea");
     var screen_name = $("#ye_dialog_title").text();
-    var user = getUser();
+    var user = User.getUser();
     var config = tapi.get_config(user);
     var tweetId = $("#replyTweetId").val();
     // 判断是否需要填充 @screen_name
@@ -1534,11 +1331,11 @@ function sendMsg(msg){
     btn.attr('disabled','true');
     txt.attr('disabled','true');
     
-    var users = [], selLi = $("#accountsForSend .sel"), current_user = getUser();
+    var users = [], selLi = $("#accountsForSend .sel"), current_user = User.getUser();
     if(selLi.length){
         selLi.each(function(){
             var uniqueKey = $(this).attr('uniqueKey');
-            var _user = getUserByUniqueKey(uniqueKey, 'send');
+            var _user = User.getUserByUniqueKey(uniqueKey, 'send');
             if(_user){
                 users.push(_user);
             }
@@ -1607,7 +1404,7 @@ function _get_image_url(stat, callback, onprogress, context) {
             if($loading_bar.length > 0) {
                 onprogress = function(rpe) {
                     // progress
-                    var html = display_size(rpe.loaded) + "/" + display_size(rpe.total);
+                    var html = utils.display_size(rpe.loaded) + "/" + utils.display_size(rpe.total);
                     var width = parseInt((rpe.loaded / rpe.total) * $loading_bar.width());
                     $loading_bar.find('div').css({'border-left-width': width + 'px'}).find('span').html(html);
                 };
@@ -1716,7 +1513,7 @@ function _sendMsgWraper(msg, user, stat, selLi, pic) {
       $loading_bar.data('uploading', true);
       onprogress = function (rpe) {
         // progress
-        var html = display_size(rpe.loaded) + "/" + display_size(rpe.total);
+        var html = utils.display_size(rpe.loaded) + "/" + utils.display_size(rpe.total);
         var width = parseInt((rpe.loaded / rpe.total) * $loading_bar.width());
         $loading_bar.find('div').css({'border-left-width': width + 'px'}).find('span').html(html);
       };
@@ -1734,7 +1531,7 @@ function sendWhisper(msg){
   var txt = $("#replyTextarea");
   var toUserId = $('#whisperToUserId').val();
   var data = {text: msg, id: toUserId};
-  var user = getUser();
+  var user = User.getUser();
   data['user'] = user;
   btn.attr('disabled','true');
   txt.attr('disabled','true');
@@ -1757,7 +1554,7 @@ function sendRepost(msg, repostTweetId, notSendMord) {
   var $btn = $("#replySubmit");
   var $txt = $("#replyTextarea");
   var sid = sid || $('#repostTweetId').val();
-  var user = getUser();
+  var user = User.getUser();
   // var config = tapi.get_config(user);
   $btn.attr('disabled','true');
   $txt.attr('disabled','true');
@@ -1807,7 +1604,7 @@ function sendComment(msg, notSendMord) {
   var cid = $('#commentCommentId').val();
   var user_id = $('#commentUserId').val();
   var sid = $('#commentTweetId').val();
-  var user = getUser();
+  var user = User.getUser();
   btn.attr('disabled', true);
   txt.attr('disabled', true);
   var callback = function (err, result) {
@@ -1857,11 +1654,11 @@ function _initText($text, config) {
 }
 
 function doReply(ele, screen_name, tweetId, name) { // @回复
-  ActionCache.set('doReply', [null, screen_name, tweetId, name]);
+  // ActionCache.set('doReply', [null, screen_name, tweetId, name]);
   $('#actionType').val('reply');
   $('#replyTweetId').val(tweetId || '');
   $('#replyUserName').val(name);
-  var user = getUser();
+  var user = User.getUser();
   if (user.blogType === 'renren') {
     screen_name += '(' + name + ')';
   }
@@ -1894,7 +1691,7 @@ function doReply(ele, screen_name, tweetId, name) { // @回复
 };
 
 function doNewMessage(ele, userName, toUserId){//悄悄话
-    ActionCache.set('doNewMessage', [null, userName, toUserId]);
+    // ActionCache.set('doNewMessage', [null, userName, toUserId]);
     $('#actionType').val('newmsg');
     $('#whisperToUserId').val(toUserId);
     $('#replyUserName').val(userName);
@@ -1929,7 +1726,7 @@ function doRT(ele, is_rt, is_rt_rt) {
         data = data.retweeted_status.retweeted_status;
     }
     var _msg_user = data.user;
-    var cuser = getUser();
+    var cuser = User.getUser();
     var config = tapi.get_config(cuser);
     var repost_pre = config.repost_pre;
     var need_processMsg = config.need_processMsg;
@@ -2036,115 +1833,6 @@ function _delCache(id, t, unique_key) {
   }
 };
 
-function doDelTweet(tweetId, ele) {//删除自己的微博
-  if (!tweetId) {
-    return;
-  }
-  showLoading();
-  var user = getUser();
-  var t = getCurrentTab().replace('#','').replace(/_timeline$/i,'');
-  tapi.destroy({id: tweetId, user: user}, function (data, textStatus) {
-    if (textStatus != 'error' && data && !data.error) {
-      $(ele).closest('li').remove();
-      _delCache(tweetId, t, user.uniqueKey);
-      showMsg(i18n.get("msg_delete_success"));
-    } else {
-      showMsg(i18n.get("msg_delete_fail"));
-    }
-  });
-};
-
-function delDirectMsg(ele, screen_name, tweetId){//删除私信
-    if(!tweetId){return;}
-    showLoading();
-    var user = getUser();
-    var t = getCurrentTab().replace('#','').replace(/_timeline$/i,'');
-    tapi.destroy_msg({id:tweetId, user:user}, function(data, textStatus){
-        if(textStatus != 'error' && data && !data.error){
-            $(ele).closest('li').remove();
-            _delCache(tweetId, t, user.uniqueKey);
-            showMsg(i18n.get("msg_delete_success"));
-        }else{
-            showMsg(i18n.get("msg_delete_fail"));
-        }
-    });
-}
-
-function addFavorites(ele, screen_name, tweetId) {
-  showLoading();
-  var _a = $(ele);
-  var _aHtml = _a[0].outerHTML;
-  _a.hide();
-  var user = getUser();
-  var config = tapi.get_config(user);
-  // var t = getCurrentTab().replace('#', '').replace(/_timeline$/i, '');
-  // var params = { id: tweetId, user: user };
-  // if (config.favorite_need_status) {
-  //   params.status = ui.TWEETS[tweetId];
-  // }
-  tapi.favorite_create(user, tweetId, function (err, result) {
-    if (err) {
-      console.error(err);
-      ui.showErrorTips(err);
-      _a.show();
-      return;
-    }
-    _a.after(_aHtml.replace('addFavorites','delFavorites')
-      .replace('favorites_2.gif','favorites.gif')
-      .replace(i18n.get("btn_add_favorites_title"), i18n.get("btn_del_favorites_title")));
-    _a.remove();
-    // var cacheKey = user.uniqueKey + t + '_tweets';
-    // var b_view = getBackgroundView();
-    // if (b_view && b_view.tweets[cacheKey]) {
-    //   var cache = b_view.tweets[cacheKey];
-    //   for (var k in cache){
-    //     if (cache[k].id === tweetId) {
-    //       cache[k].favorited = true;
-    //       break;
-    //     }
-    //   }
-    // }
-    ui.showTips(i18n.get("msg_add_favorites_success"));
-  });
-}
-
-function delFavorites(ele, screen_name, tweetId) {
-  showLoading();
-  var _a = $(ele);
-  var _aHtml = _a[0].outerHTML;
-  _a.hide();
-  var user = getUser();
-  // var config = tapi.get_config(user);
-  // var params = { id: tweetId, user: user };
-  // if (config.favorite_need_status) {
-  //   params.status = ui.TWEETS[tweetId];
-  // }
-  var t = getCurrentTab().replace('#','').replace(/_timeline$/i,'');
-  tapi.favorite_destroy(user, tweetId, function (err, result) {
-    if (err) {
-      ui.showErrorTips(err);
-      _a.show();
-      return;
-    }
-    _a.after(_aHtml.replace('delFavorites','addFavorites')
-      .replace('favorites.gif','favorites_2.gif')
-      .replace(i18n.get("btn_del_favorites_title"), i18n.get("btn_add_favorites_title")));
-    _a.remove();
-    // var cacheKey = user.uniqueKey + t + '_tweets';
-    // var b_view = getBackgroundView();
-    // if (b_view && b_view.tweets[cacheKey]) {
-    //   var cache = b_view.tweets[cacheKey];
-    //   for (var k in cache) {
-    //     if (cache[k].id === tweetId) {
-    //       cache[k].favorited = false;
-    //       break;
-    //     }
-    //   }
-    // }
-    ui.showTips(i18n.get("msg_del_favorites_success"));
-  });
-}
-
 function sendOretweet(ele, screen_name, tweetId) {//twitter锐推
     if (!tweetId) {
         return;
@@ -2199,41 +1887,6 @@ function showGeoMap(user_img, latitude, longitude){
   }
 };
 
-// 获取弹出窗口的基本参数
-function _get_open_window_args(width, height) {
-  width = width || 520;
-  height = height || 600;
-  var left = (window.screen.availWidth - width) / 2;
-  var win_args = {
-    width: width, 
-    height: height, 
-    left: left, 
-    top: 30, 
-    toolbar: 'no', 
-    menubar: 'no', 
-    location: 'no', 
-    resizable: 'no',
-    scrollbars: 'yes', 
-    status: 'yes'
-  };
-  var args_str = '';
-  for (var k in win_args) {
-    args_str += k + '=' + win_args[k] + ',';
-  }
-  return args_str.substring(0, args_str.length - 1);
-}
-
-function _getWindowId(callback) {
-  var params = decodeForm(window.location.search);
-  if (params.windowId) {
-    callback(params.windowId);
-  } else {
-    chrome.tabs.getSelected(null, function (tab) {
-      callback(tab.windowId);
-    });
-  }
-}
-
 //打开上传图片窗口
 function openUploadImage(tabId, image_url, image_source_link, image_need_source_link){
     var args_str = _get_open_window_args();
@@ -2276,19 +1929,6 @@ function openPopupInNewWin(windowId) {
         getBackgroundView().new_win_popup.window = window.open(url, 'FaWave', args_str);
     });
 }
-
-//新消息提示模式：提示模式、免打扰模式
-function changeAlertMode(to_mode){
-    var btn = $("#btnAlertMode");
-    if(!to_mode){
-        var mode = btn.attr('mode');
-        to_mode = (mode == 'alert') ? 'dnd' : 'alert';
-    }
-    setting.setAlertMode(to_mode);
-    var tip = (to_mode=='alert') ? i18n.get("btn_alert_mode_title") : i18n.get("btn_dnd_mode_title");
-    btn.attr('mode', to_mode).attr('title', tip).find('img').attr('src', 'images/' + to_mode + '_mode.png');
-    User.setUnreadTimelineCount(0, 'friends_timeline');
-};
 
 //新消息是否自动插入：自动插入、仅提示新消息数
 function changeAutoInsertMode(to_mode){
@@ -3307,7 +2947,7 @@ AccountController.prototype.change = function (event) {
     return;
   }
   
-  var currentUser = getUser();
+  var currentUser = User.getUser();
   // 获取当前的tab
   var currentTab = $(".tabs li.active");
   if (currentTab.length === 0) {
@@ -3493,7 +3133,6 @@ URLController.prototype.openRealLink = function (event) {
   if (event.which === 3) {
     var alink = $(this);
     var url = alink.data('rhref') || alink.attr('rhref') || alink.attr('href');
-    console.log(url)
     url && openNewWindow(url);
     return false;
   }
