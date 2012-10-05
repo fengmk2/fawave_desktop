@@ -2465,7 +2465,7 @@ TimelineController.prototype.changeUser = function (fromUser, toUser) {
 
   // 切换会上次用户正在查看的状态
   var lastTimeline = self.getLastTimeline(toUser);
-  $('.tab-' + lastTimeline).addClass('active').click();
+  $('.tab-' + lastTimeline).click();
 };
 
 TimelineController.prototype.checkScroll = function (event) {
@@ -2539,7 +2539,7 @@ TimelineController.getWrap = function (timeline) {
 TimelineController.prototype.click = function (event) {
   // detech refresh or go to the top
   var tab = $(this);
-  var active = tab.hasClass('active');
+  var active = tab.hasClass('active'); // 是否当前tab
   var self = event.data.controller;
   var timeline = tab.data('type');
   var currentUser = User.getUser();
@@ -2547,19 +2547,35 @@ TimelineController.prototype.click = function (event) {
   var isEmpty = warp.find('ul li:first').length === 0;
   var timelineScrollTop = self.getScrollTop(currentUser, timeline) || 0;
   var scrollTop = active ? 0 : timelineScrollTop;
+  // 1. 当前tab是正在查看的，并且在滚动条在顶部
+  // 2. 将要查看的tab是第一次加载的
   var needRefresh = (active || isEmpty) && warp.scrollTop() <= 200;
+
+  /**
+   * 下面几种状态都需要刷新:
+   * 1. 当前tab是正在查看的，并且在滚动条在顶部
+   * 2. 将要查看的tab是第一次加载的
+   * 3. 当前tab是正在查看的，并且有未读信息（这表明用户主动想获取新内容）
+   * 4. 将要查看的tab的滚动条在前两条status view内，并且有未读信息（证明加载新内容不影响用户上次的查看）
+   */
 
   if (!needRefresh) {
     // 有新消息并且scroll 前两个status view 高度, 则直接刷新
     var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
     if (unreadCount) {
-      var top2 = warp.find('ul li:lt(2)');
-      var limit = 0;
-      top2.each(function () {
-        limit += $(this).height();
-      });
-      if (warp.scrollTop() <= limit) {
+      if (active) {
+        // 3. 当前tab是正在查看的，并且有未读信息（这表明用户主动想获取新内容）
         needRefresh = true;
+      } else {
+        var top2 = warp.find('ul li:lt(2)');
+        var limit = 0;
+        top2.each(function () {
+          limit += $(this).height();
+        });
+        if (warp.scrollTop() <= limit) {
+          // 4. 将要查看的tab的滚动条在前两条status view内，并且有未读信息（证明加载新内容不影响用户上次的查看）
+          needRefresh = true;
+        }
       }
     }
   }
