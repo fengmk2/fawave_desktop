@@ -867,3 +867,8 @@ div.loading_bar span {
   display: none;
 }
 
+.small_head {
+  width: 30px;
+  height: 30px;
+}
+

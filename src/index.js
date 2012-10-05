@@ -23,6 +23,7 @@ var format = require('weibo/lib/utils').format;
 var serveice = require('./js/service');
 var Nodebox = serveice.Nodebox;
 var ShortenUrl = serveice.ShortenUrl;
+var shell = require('./js/shell');
 
 // TODO: need to remove
 var tapi = weibo;
@@ -49,6 +50,10 @@ function openNewWindow(url, specs) {
   }
   window.open(url, '_blank', s.join(','));
   return false;
+}
+
+function openOnBrowser(url) {
+  shell.open(url);
 }
 
 function StatusController() {
@@ -3133,16 +3138,16 @@ URLController.prototype.openRealLink = function (event) {
   if (event.which === 3) {
     var alink = $(this);
     var url = alink.data('rhref') || alink.attr('rhref') || alink.attr('href');
-    url && openNewWindow(url);
+    url && openOnBrowser(url);
     return false;
   }
 };
 
 URLController.prototype.openLink = function (event) {
   var alink = $(this);
-  var url = alink.data('href');
+  var url = alink.data('href') || alink.attr('href');;
   if (url && url.indexOf('http') === 0) {
-    openNewWindow(url);
+    openOnBrowser(url);
     return false;
   }
 };

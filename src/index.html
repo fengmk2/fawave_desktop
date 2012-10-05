@@ -301,7 +301,7 @@ var _u = {
     <span class="showtip">
     <a class="user_head user_link" data-uid="#{user.id}"
       rhref="#{user.t_url}">
-      <img src="#{ user.profile_image_url ? user.profile_image_url.replace('24x24', '48x48') : 'http://tp3.sinaimg.cn/1710476902/50/5606660547/1' }" />
+      <img src="#{ user.profile_image_url }" />
     </a>
     #{buildTipboxUserInfo(user, show_fullname)}
     </span>
@@ -440,7 +440,11 @@ var _u = {
     <div class="userName">
       <?js if (is_rt_rt) { ?>
       <span class="showtip">
-      <a class="user_link" data-uid="#{tweet.retweeted_status.user.id}">@#{tweet.retweeted_status.user.screen_name}</a>
+      <a class="user_link" data-uid="#{tweet.retweeted_status.user.id}">
+        <img class="small_head" src="#{tweet.retweeted_status.user.profile_image_url}" 
+          alt="#{tweet.retweeted_status.user.screen_name}" />
+        @#{tweet.retweeted_status.user.screen_name}
+      </a>
       <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweeted_status.user.name}</span> <?js } ?>
       #{buildTipboxUserInfo(tweet.retweeted_status.user, show_fullname)}
       </span>
@@ -793,7 +797,7 @@ var _u = {
 <dl class="comment_item">
   <dt>
     <a class="user_link" data-uid="#{item.user.id}" rhref="#{item.user.t_url}">
-      <img src="#{item.user.profile_image_url}" width="30" height="30" alt="#{item.user.screen_name}">
+      <img class="small_head" src="#{item.user.profile_image_url}" alt="#{item.user.screen_name}" />
     </a>
   </dt>
   <dd>
