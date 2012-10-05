@@ -1,5 +1,5 @@
 /*!
- * fawave - main.js
+ * fawave - index.js
  * Copyright(c) 2012 fengmk2 <fengmk2@gmail.com>
  * MIT Licensed
  */
@@ -25,10 +25,10 @@ var Nodebox = serveice.Nodebox;
 var ShortenUrl = serveice.ShortenUrl;
 var shell = require('./js/shell');
 
+var FACE_TYPES = require('weibo/lib/emotional').faces;
+
 // TODO: need to remove
 var tapi = weibo;
-
-var fawave = {};
 
 function openNewWindow(url, specs) {
   if (url) {
@@ -502,7 +502,7 @@ function TextContentController() {
 
 TextContentController.prototype.hideReply = function (event) {
   var dialog = $('#ye_dialog_window');
-  fawave.face.hide();
+  $('#btnFaceBoxClose').click();
   dialog.hide();
   dialog.find('input[type="hidden"], input[type="checkbox"], textarea').val('');
   window.imgForUpload_reply = null;
@@ -577,7 +577,7 @@ TextContentController.prototype.showTextInput = function () {
 };
 
 TextContentController.prototype.hideTextInput = function () {
-  fawave.face.hide();
+  $('#btnFaceBoxClose').click();
   var h = window.innerHeight - 70;
   $(".list_warp").css('height', h);
   $("#submitWarp").data('status', 'hide').css('height', 0);
@@ -1646,7 +1646,7 @@ function sendComment(msg, notSendMord) {
   }
 };
 
-function resizeFawave(w, h) {
+function resizeWindow(w, h) {
   if (!w) {
     w = window.innerWidth;
   }
@@ -1931,128 +1931,123 @@ function openLongText() {
     });
 };
 
-// 在新窗口打开popup页
-function openPopupInNewWin(windowId) {
-    _getWindowId(function(windowId) {
-        initOnUnload();
-        var settings = setting.Settings.get();
-        var args_str = _get_open_window_args(settings.popupWidth, settings.popupHeight);
-        window.theViewName = 'not_popup';
-        var url = 'popup.html?is_new_win=true';
-        if(windowId) {
-            url += '&windowId=' + windowId;
-        }
-        getBackgroundView().new_win_popup.window = window.open(url, 'FaWave', args_str);
-    });
+function EmotionController() {
+  this.events = [
+    { events: 'click', selecter: '#face_box .face_item', handler: this.insert },
+    { events: 'click', selecter: '#btnAddEmotional, #btnAddReplyEmotional', handler: this.show },
+    { events: 'click', selecter: '#btnFaceBoxClose', handler: this.hide },
+  ];
+  EmotionController.super_.call(this);
 }
+inherits(EmotionController, Controller);
 
-//新消息是否自动插入：自动插入、仅提示新消息数
-function changeAutoInsertMode(to_mode){
-    var btn = $("#btnAutoInsert");
-    if(!to_mode){
-        var mode = btn.attr('mode');
-        to_mode = mode === 'notautoinsert' ? 'autoinsert' : 'notautoinsert';
-    }
-    setting.setAutoInsertMode(to_mode);
-    var tip = to_mode === 'notautoinsert' ? i18n.get("btn_not_auto_insert_title") : i18n.get("btn_auto_insert_title");
-    btn.attr('mode', to_mode).attr('title', tip).find('img').attr('src', 'images/' + to_mode + '.png');
+EmotionController.prototype.show = function (event) {
+  var self = event.data.controller;
+  var btn = $(this);
+  var target_id = btn.data('target');
+  var f = $("#face_box");
+  if (!f.is(':hidden') && $("#face_box_target_id").val() === target_id) {
+    f.hide();
+    return;
+  }
+  // 初始化表情
+  if ($('#face_box .faceItemPicbg .face_icons').length === 0) {
+    self.initBox();
+  }
+  $("#face_box_target_id").val(target_id);
+  var offset = btn.offset();
+  var left = offset.left - 40;
+  var arrow_left = 40;
+  if ($('#replyTextarea').length > 0 && !$('#replyTextarea').is(':hidden')) {
+    left = $('#ye_dialog_window').position().left;
+    arrow_left = 120;
+  }
+  f.css({top: offset.top + 20, left: left}).show();
+  f.find('.layerArrow').css({left: arrow_left});
 };
 
-//表情添加
-fawave.face = {
-    show: function(ele, target_id) {
-        var f = $("#face_box");
-        if(f.css('display') !== 'none' && $("#face_box_target_id").val() === target_id) {
-            f.hide();
-            return;
-        }
-        // 初始化表情
-        if ($('#face_box .faceItemPicbg .face_icons').length === 0) {
-            var userList = User.getUserList('send');
-            var blogTypes = { yanwenzi: 1 };
-            for(var i = 0, len = userList.length; i < len; i++) {
-                blogTypes[userList[i].blogType] = 1;
-            }
-            // FACE_TYPES   [typename, faces, url_pre, tpl, type_title]
-            for(var i = 0, len = FACE_TYPES.length; i < len; i++) {
-                var face_type = FACE_TYPES[i];
-                if(!blogTypes[face_type[0]]) {
-                    // 未绑定的微博类型，无需显示表情
-                    continue;
-                }
-                var $face_tab = $('<span face_type="' + face_type[0] + '">' + face_type[4] + '</span>');
-                $face_tab.click(function() {
-                    var $this = $(this);
-                    if(!$this.hasClass('active')) {
-                        $('.face_tab span').removeClass('active');
-                        $('#face_box .faceItemPicbg .face_icons').hide();
-                        $('#face_box .faceItemPicbg .' + $this.attr('face_type') + '_faces').show();
-                        $this.addClass('active');
-                    }
-                });
-                var $face_icons = $('<div style="display:none;" class="face_icons ' + face_type[0] + '_faces"></div>');
-                $('#face_box .face_tab p').append($face_tab);
-                $('#face_box .faceItemPicbg').append($face_icons);
-                var exists = {};
-                $('#face_icons li a').each(function() {
-                    exists[$(this).attr('title')] = true;
-                });
-                var face_tpl = face_type[3];
-                var faces = face_type[1];
-                if(face_tpl) {
-                    var tpl = '<li><a href="javascript:void(0)" onclick="fawave.face.insert(this)"' 
-                        + ' value="' + face_tpl + '" title="{{name}}"><img src="{{url}}" alt="{{name}}"></a></li>';
-                    var url_pre = face_type[2];
-                    for(var name in faces) {
-                        if(exists[name]) continue;
-                        $face_icons.append(tpl.format({'name': name, 'url': url_pre + faces[name]}));
-                        exists[name] = true;
-                    }
-                } else {
-                    var tpl = '<li class="yanwenzi"><a href="javascript:void(0)" onclick="fawave.face.insert(this)"' 
-                        + ' value="{{name}}" title="{{title}}">{{name}}</a></li>';
-                    for(var name in faces) {
-                        $face_icons.append(tpl.format({'name': name, 'title': faces[name]}));
-                    }
-                }
-            }
-            var current_blogtype = User.getUser().blogType;
-            var $selected = $("#accountsForSend li.sel");
-            if($selected.length > 1) {
-                current_blogtype = 'yanwenzi';
-            } else if($selected.length === 1) {
-                current_blogtype = $selected.attr('blogType');
-            }
-            var $face_type_tab = $('#face_box .face_tab span[face_type="' + current_blogtype + '"]');
-            if($face_type_tab.length === 0) {
-                $face_type_tab = $('#face_box .face_tab span[face_type="yanwenzi"]');
-            }
-            $face_type_tab.click();
-        }
-        $("#face_box_target_id").val(target_id);
-        var offset = $(ele).offset(), left = offset.left - 40, arrow_left = 40;
-        if($('#replyTextarea').length > 0 && !$('#replyTextarea').is(':hidden')) {
-            left = $('#ye_dialog_window').position().left;
-            arrow_left = 120;
-        }
-        f.css({top: offset.top+20, left: left}).show();
-        f.find('.layerArrow').css({left: arrow_left});
-    },
-    hide: function() {
-        $("#face_box").hide();
-        $("#face_box_target_id").val('');
-    },
-    insert: function(ele) {
-        var $target_textbox = $("#" + $("#face_box_target_id").val());
-        if($target_textbox.length === 1) {
-            var tb = $target_textbox[0], str = $(ele).attr('value');
-            var newstart = tb.selectionStart+str.length;
-            tb.value=tb.value.substr(0, tb.selectionStart) + str + tb.value.substring(tb.selectionEnd);
-            tb.selectionStart = newstart;
-            tb.selectionEnd = newstart;
-        }
-        this.hide();
+EmotionController.prototype.hide = function () {
+  $("#face_box").hide();
+  $("#face_box_target_id").val('');
+};
+
+EmotionController.prototype.insert = function (event) {
+  var self = event.data.controller;
+  var btn = $(this);
+  var $target_textbox = $("#" + $("#face_box_target_id").val());
+  if ($target_textbox.length === 1) {
+    var tb = $target_textbox[0];
+    var str = btn.attr('value');
+    var newstart = tb.selectionStart + str.length;
+    tb.value = tb.value.substr(0, tb.selectionStart) + str + tb.value.substring(tb.selectionEnd);
+    tb.selectionStart = newstart;
+    tb.selectionEnd = newstart;
+  }
+  self.hide();
+};
+
+EmotionController.prototype.initBox = function () {
+  var users = User.getUserList('send');
+  var blogtypes = { yanwenzi: 1 };
+  for (var i = 0; i < users.length; i++) {
+    blogtypes[users[i].blogtype] = 1;
+  }
+  // FACE_TYPES  key: [faces, url_pre, tpl, type_title]
+  for (var k in FACE_TYPES) {
+    if (!blogtypes[k]) {
+      // 未绑定的微博类型，无需显示表情
+      continue;
     }
+    var face_type = FACE_TYPES[k];
+    var $face_tab = $('<span face_type="' + k + '">' + face_type[3] + '</span>');
+    $face_tab.click(function () {
+      var $this = $(this);
+      if (!$this.hasClass('active')) {
+        $('.face_tab span').removeClass('active');
+        $('#face_box .faceItemPicbg .face_icons').hide();
+        $('#face_box .faceItemPicbg .' + $this.attr('face_type') + '_faces').show();
+        $this.addClass('active');
+      }
+    });
+    var $face_icons = $('<div style="display:none;" class="face_icons ' + k + '_faces"></div>');
+    $('#face_box .face_tab p').append($face_tab);
+    $('#face_box .faceItemPicbg').append($face_icons);
+    var exists = {};
+    $('#face_icons li a').each(function() {
+      exists[$(this).attr('title')] = true;
+    });
+    var face_tpl = face_type[2];
+    var faces = face_type[0];
+    if (face_tpl) {
+      var tpl = '<li><a href="javascript:;" class="face_item" value="' + face_tpl +
+        '" title="{{name}}"><img src="{{url}}" alt="{{name}}"></a></li>';
+      var url_pre = face_type[1];
+      for (var name in faces) {
+        if (exists[name]) {
+          continue;
+        }
+        $face_icons.append(tpl.format({'name': name, 'url': url_pre + faces[name]}));
+        exists[name] = true;
+      }
+    } else {
+      var tpl = '<li class="yanwenzi"><a href="javascript:;" class="face_item" value="{{name}}" title="{{title}}">{{name}}</a></li>';
+      for (var name in faces) {
+        $face_icons.append(tpl.format({'name': name, 'title': faces[name]}));
+      }
+    }
+  }
+  var blogtype = User.getUser().blogtype;
+  var $selected = $("#accountsForSend li.sel");
+  if ($selected.length > 1) {
+    blogtype = 'yanwenzi';
+  } else if ($selected.length === 1) {
+    blogtype = $selected.attr('blogType');
+  }
+  var $face_type_tab = $('#face_box .face_tab span[face_type="' + blogtype + '"]');
+  if ($face_type_tab.length === 0) {
+    $face_type_tab = $('#face_box .face_tab span[face_type="yanwenzi"]');
+  }
+  $face_type_tab.click();
 };
 
 //平滑滚动
@@ -3219,10 +3214,8 @@ URLController.prototype.checkLinks = function (user, items, timeline) {
 
 
 $(function () {
-  resizeFawave();
-  $(window).resize(function () {
-    resizeFawave();
-  });
+  resizeWindow();
+  $(window).resize(resizeWindow);
 
   console.log('controllers init...');
   new RefreshController();
@@ -3232,6 +3225,8 @@ $(function () {
   new FavoriteController();
 
   new TextContentController();
+  new EmotionController();
+
   new StatusController();
   new StatusCounterController();
   new CommentListController();

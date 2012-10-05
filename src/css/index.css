@@ -528,9 +528,13 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 .faceItem{ padding: 8px; position:relative;}
 .faceItem .layerArrow{ left:40px;}
 .faceItem .faceItemPicbg{ width:450px;}
-.faceItem .faceItemPicbg li{ list-style:none; float:left; height:28px; width:28px;padding:1px;}
-.faceItem .faceItemPicbg li.yanwenzi{ height:22px; width:87px; padding:1px;}
-.faceItem .faceItemPicbg li a:link,.faceItem .faceItemPicbg li a:visited{ width:26px; height:26px; text-align:center; display:block; border:1px solid #ddd;}
+.faceItem .faceItemPicbg li{ list-style:none; float:left; padding:1px;}
+.faceItem .faceItemPicbg li.yanwenzi{ width:87px; padding:1px;}
+.faceItem .faceItemPicbg li a:link,.faceItem .faceItemPicbg li a:visited{
+  width:26px; height:26px; 
+  text-align:center; display:block; border:1px solid #ddd;
+  padding-top: 2px;
+}
 .faceItem .faceItemPicbg li a:hover{ border:1px dashed #999; text-decoration:none;}
 .faceItem .faceItemPicbg li.yanwenzi a:link,.faceItem .faceItemPicbg li.yanwenzi a:visited{ width:85px; height:20px;}
 .faceItem .faceItemPicbg li img{ max-height: 24px;}
