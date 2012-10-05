@@ -331,33 +331,32 @@ ToolbarController.prototype.showCommentDialog = function (event) {
   var config = tapi.get_config(user);
   if (!value) {
     value = comment_screen_name ? (i18n.get("msg_comment_reply_default").format({username: comment_screen_name})) : '';
-    var needOriginal = true;
+    // var needOriginal = false;
     if (cid) {
-      // needOriginal = config.comment_reply_need_original || 
-      //   localStorage.getObject(INCLUDE_ORIGINAL_COMMENT) === 1;
-      // 带上原评论内容
-      // window._currentCommentElement = ele; //搓劣的做法，赶时间，暂时这样了
-      $("#chk_originalComment, #txt_originalComment").show();
-      if (needOriginal) {
-        $("#chk_originalComment").attr("checked", true);
-      } else {
-        $("#chk_originalComment").removeAttr("checked");
-      }
+      // 如果是回复，带上原始评论
+      var comment = ViewCache.getComment(cid);
+      _txtRep = config.repost_delimiter + '@' + comment.user.screen_name + ':' + comment.text;
+      // $("#chk_originalComment, #txt_originalComment").show();
+      // if (needOriginal) {
+      //   $("#chk_originalComment").attr("checked", true);
+      // } else {
+      //   $("#chk_originalComment").removeAttr("checked");
+      // }
     }
     // 回复是否带上原评论内容
-    if (needOriginal) {
-      // 查看某条微博的评论列表里
-      _txtRep = btn.parents('.comment_item').find('.text').text();
-      if (_txtRep) {
-        _txtRep = '//' + _txtRep;
-      } else {
-        // 我的评论列表
-        var _tmpP = btn.parents('.commentWrap');
-        if (_tmpP.length && _tmpP.eq(0).find('.msg .tweet .tweet_text').length) {
-          _txtRep = '//@' + comment_screen_name + ':' + _tmpP.eq(0).find('.msg .tweet .tweet_text').text().trim();
-        }
-      }
-    }
+    // if (needOriginal) {
+    //   // 查看某条微博的评论列表里
+    //   _txtRep = btn.parents('.comment_item').find('.text').text();
+    //   if (_txtRep) {
+    //     _txtRep = '//' + _txtRep;
+    //   } else {
+    //     // 我的评论列表
+    //     var _tmpP = btn.parents('.commentWrap');
+    //     if (_tmpP.length && _tmpP.eq(0).find('.msg .tweet .tweet_text').length) {
+    //       _txtRep = '//@' + comment_screen_name + ':' + _tmpP.eq(0).find('.msg .tweet .tweet_text').text().trim();
+    //     }
+    //   }
+    // }
   }
   
   // if (config.support_comment_repost) { // 支持repost才显示
@@ -380,7 +379,7 @@ ToolbarController.prototype.showRepostDialog = function (event) {
   var self = event.data.controller;
 
   var sid = btn.data('id');
-  var status = ViewCache.get(sid);
+  var status = ViewCache.get(sid) || ViewCache.getComment(sid);
   var screen_name = status.user.screen_name;
 
   // ActionCache.set('doRepost', [ null, userName, tweetId, rtUserName, reTweetId ]);
@@ -451,9 +450,19 @@ var ViewCache = {
       }
     }
   },
+  setCommentItems: function (items) {
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var id = '#comment_' + item.id;
+      $(id).data('originalItem', item);
+    }
+  },
   get: function (id) {
     return $('#tweet' + id).data('originalItem');
-  }
+  },
+  getComment: function (cid) {
+    return $('#comment_' + cid).data('originalItem') || this.get(cid);
+  },
 };
 
 function TextContentController() {
@@ -1263,6 +1272,8 @@ CommentListController.prototype.showPage = function (wrap, action) {
       html += ui[buildMethod](user, items[i]);
     }
     list.html(html);
+    // set comment_#id data
+    ViewCache.setCommentItems(items);
     if (buildMethod === 'buildRepost') {
       // cache them for repost
       ViewCache.setItems(items);
