@@ -10,7 +10,9 @@
  * Module dependencies.
  */
 
-var ImageService = exports.ImageService = {
+var Nodebox = require('./service').Nodebox;
+
+var ImageService = module.exports = {
   services: {
     SinaImage: SinaImage,
     QQImage: QQImage,

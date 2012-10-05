@@ -608,10 +608,6 @@ TextContentController.prototype.keypress = function (event) {
     event.data.action();
     return false;
   }
-  if (event.which === 27) {
-    // esc, close
-    event.data.close && event.data.close();
-  }
 };
 
 TextContentController.prototype.count = function (event) {
@@ -3211,7 +3207,6 @@ URLController.prototype.checkLinks = function (user, items, timeline) {
     });
   });
 };
-
 
 $(function () {
   resizeWindow();

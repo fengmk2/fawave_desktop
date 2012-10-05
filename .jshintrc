@@ -17,7 +17,7 @@
     "chrome",
     "localStorage",
     "document",
-    "getUser"
+    "keypress",
   ],
 
   "node" : true,

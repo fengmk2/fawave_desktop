@@ -5,9 +5,14 @@ var utils = require('./js/utils');
 var setting = require('./js/setting');
 var weibo = require('weibo');
 var urlparse = require('url').parse;
+var CONST = require('./js/const');
+var ui = require('./js/ui');
 
-var T_LIST = utils.T_LIST;
-var tabDes = utils.tabDes;
+var ShortenUrl = require('./js/service').ShortenUrl;
+var Nodebox = require('./js/service').Nodebox;
+var ImageService = require('./js/image_service');
+var T_LIST = CONST.T_LIST;
+var tabDes = CONST.tabDes;
 
 var KEYCODE_MAP = {
   8:"BackSpace", 9:"Tab", 12:"Clear", 13:"Enter", 16:"Shift", 17:"Ctrl", 18:"Alt", 19:"Pause", 
@@ -189,7 +194,7 @@ $(function () {
     
     // 显示语言选项
     var tanslate_options = '';
-    var Languages = utils.Languages;
+    var Languages = CONST.Languages;
     for (var k in Languages) {
         tanslate_options += '<option value="{{value}}">{{name}}</option>'.format({name: k, value: Languages[k]});
     }
@@ -198,7 +203,6 @@ $(function () {
     
     // 缩址服务选择
     var shorturls_options = '';
-    var ShortenUrl = utils.ShortenUrl;
     for (var k in ShortenUrl.services) {
         shorturls_options += '<option value="{{value}}">{{name}}</option>'.format({name: k, value: k});
     }
@@ -207,13 +211,12 @@ $(function () {
     
     // 图片服务选择
     var image_service_options = '';
-    var ImageService = utils.ImageService;
-    for (var k in ImageService.services) {
-        var service = ImageService.services[k];
-        if (service.upload) {
-            image_service_options += '<option value="{{value}}">{{name}}</option>'.format({name: service.host, value: k});
-        }
-    }
+    // for (var k in ImageService.services) {
+    //     var service = ImageService.services[k];
+    //     if (service.upload) {
+    //         image_service_options += '<option value="{{value}}">{{name}}</option>'.format({name: service.host, value: k});
+    //     }
+    // }
     var settings = setting.Settings.get();
     $('#image_service').html(image_service_options).val(settings.image_service);
     if (settings.enable_image_service) {
@@ -262,7 +265,7 @@ $(function () {
                 var settings = setting.Settings.get();
                 settings[st + '_user'] = user;
                 Settings.save();
-                _showMsg(i18n.get("msg_save_success"));
+                ui.showTips(i18n.get("msg_save_success"));
                 $('#delete_' + st + '_account_btn').show();
             };
             if (service_type === 'vdisk') {
@@ -271,7 +274,7 @@ $(function () {
                 }
                 service.get_token(user, function(err, result) {
                     if(err) {
-                        _showMsg(err.message || i18n.get("msg_wrong_name_or_pwd"));
+                        ui.showTips(err.message || i18n.get("msg_wrong_name_or_pwd"));
                     } else {
                         save_user(service_type, user);
                     }
@@ -281,7 +284,7 @@ $(function () {
                     if(result) {
                         save_user(service_type, user);
                     } else {
-                        _showMsg(i18n.get("msg_wrong_name_or_pwd"));
+                        ui.showTips(i18n.get("msg_wrong_name_or_pwd"));
                     }
                 });
             }
@@ -300,7 +303,7 @@ $(function () {
 
 //统计全局的刷新间隔设置产生的请求次数
 function calculateGlobalRefreshTimeHits() {
-  var T_LIST = utils.T_LIST;
+  var T_LIST = CONST.T_LIST;
     var total = 0, refTime = 0, refTimeInp = null, timelimes = T_LIST.all;
     for(var i in timelimes){
         refTimeInp = $("#gRefreshTime_" + timelimes[i]);
@@ -373,7 +376,7 @@ function checkUserRefreshTimeHitsAndSave(inp) {
     if (b_view) {
         b_view.RefreshManager.restart();
     }
-    _showMsg(i18n.get("msg_interval_update_success"));
+    ui.showTips(i18n.get("msg_interval_update_success"));
 }
 
 var curthas = checkUserRefreshTimeHitsAndSave;
@@ -414,7 +417,7 @@ function showDndAccountList(bindDnd) {
             if (!user.uniqueKey){ //兼容单微博版本
                 needRefresh = true;
             } else {
-                user.blogTypeName = utils.T_NAMES[user.blogType];
+                user.blogTypeName = CONST.T_NAMES[user.blogType];
                 user.statName = user.disabled ? _u.i18n("comm_disabled") : (user.only_for_send ? i18n.get("comm_send_only") : i18n.get("comm_enabled"));
                 user.stat = user.disabled ? 'disabled' : (user.only_for_send ? 'onlysend' : 'enabled');
                 
@@ -425,7 +428,7 @@ function showDndAccountList(bindDnd) {
                   if (c_html) {
                     c_html += ', ';
                   }
-                  c_html += utils.tabDes[timelineType];
+                  c_html += CONST.tabDes[timelineType];
 
                   c_html += '('+ (setting.Settings.get().globalRefreshTime[timelineType] || 120) +')';
                   if (user.refreshTime && user.refreshTime[timelineType]) {
@@ -462,8 +465,8 @@ function showDndAccountList(bindDnd) {
     var blogtype_options = '';
     var settings = setting.Settings.get();
     var k;
-    for (k in utils.T_NAMES) {
-      blogtype_options += '<option value="{{value}}">{{name}}</option>'.format({ name: utils.T_NAMES[k], value: k });
+    for (k in CONST.T_NAMES) {
+      blogtype_options += '<option value="{{value}}">{{name}}</option>'.format({ name: CONST.T_NAMES[k], value: k });
     }
     $('#account-blogType').html(blogtype_options);
     showSupportAuthTypes($('#account-blogType').val());
@@ -496,7 +499,7 @@ function saveDndSortList() {
         });
     });
     User.saveUserList(new_list);
-    _showMsg('帐号排序已保存');
+    ui.showTips('帐号排序已保存');
 }
 
 // 修改帐号的启用状态
@@ -545,7 +548,7 @@ function changeAccountStatus(uniqueKey, stat) {
     //     b_view.RefreshManager.restart();
     // }
     var statName = user.disabled ? i18n.get("comm_disabled") : (user.only_for_send ? i18n.get("comm_send_only") : i18n.get("comm_enabled"));
-    _showMsg(i18n.get("msg_stat_change_success").format({ username: user.screen_name, stat: statName }));
+    ui.showTips(i18n.get("msg_stat_change_success").format({ username: user.screen_name, stat: statName }));
     _li.removeClass(_li.attr('stat')).addClass(stat).attr('stat', stat);
     _li.find('.detail .stat .statName').html(statName);
 }
@@ -555,14 +558,14 @@ function showMyGeo() {
     if (geoPosition) {
         popupBox.showMap('icons/icon48.png', geoPosition.latitude, geoPosition.longitude, geoPosition);
     } else {
-        _showMsg(i18n.get("msg_no_geo_info"));
+        ui.showTips(i18n.get("msg_no_geo_info"));
     }
 }
 
 function init() {
     var settings = setting.Settings.get();
 
-    var T_LIST = utils.T_LIST;
+    var T_LIST = CONST.T_LIST;
     //初始化全局信息刷新时间
     for (var i in T_LIST.all) {
         $("#gRefreshTime_" + T_LIST.all[i]).val(settings.globalRefreshTime[T_LIST.all[i]]);
@@ -611,12 +614,12 @@ function init() {
                 $("#btnShowMyGeo").show();
             }, function (msg) {
                 //error
-                _showMsg(i18n.get("msg_enabled_geo_false") + (typeof msg === 'string' ? msg : ""));
+                ui.showTips(i18n.get("msg_enabled_geo_false") + (typeof msg === 'string' ? msg : ""));
                 $("#save-all").removeAttr('disabled');
                 $("#isGeoEnabled").attr('checked', false);
             });
         } else {
-            _showMsg(i18n.get("msg_not_support_geo"));
+            ui.showTips(i18n.get("msg_not_support_geo"));
         }
     });
     
@@ -634,7 +637,7 @@ function init() {
                 $('#isGeoEnabled').data('position', geo);
                 $("#btnShowMyGeo").show();
             } else {
-                _showMsg(i18n.get("msg_enabled_geo_false") + ' ' + error);
+                ui.showTips(i18n.get("msg_enabled_geo_false") + ' ' + error);
                 $("#isGeoEnabledUseIP").attr('checked', false);
             }
             $("#save-all").removeAttr('disabled');
@@ -761,7 +764,7 @@ function importSettings(){
     try{
         s = JSON.parse(s);
     }catch(err){
-        _showMsg('Import Error: ' + err);
+        ui.showTips('Import Error: ' + err);
         s = null;
     }
     if(s){
@@ -838,7 +841,7 @@ function initQuickSendHotKey(){
 
 function _verify_credentials(user) {
   if (!user) {
-    _showMsg(i18n.get("msg_wrong_name_or_pwd"));
+    ui.showTips(i18n.get("msg_wrong_name_or_pwd"));
     $('#save-account').removeAttr('disabled');
     return;
   }
@@ -846,13 +849,13 @@ function _verify_credentials(user) {
     $('#save-account').removeAttr('disabled');
     if (err) {
       if (errorCode === 400 ||errorCode === 401 || errorCode === 403) {
-          _showMsg(i18n.get("msg_wrong_name_or_pwd"));
+          ui.showTips(i18n.get("msg_wrong_name_or_pwd"));
       } else {
           var err_msg = '';
           if (data.error) {
               err_msg = 'error: ' + data.error;
           }
-          _showMsg(i18n.get("msg_user_save_error") + err_msg);
+          ui.showTips(i18n.get("msg_user_save_error") + err_msg);
       }
       var params = { blogtype: user.blogtype, authtype: user.authtype };
       if (errorCode) {
@@ -899,7 +902,7 @@ function _verify_credentials(user) {
     $("#account-name").val('');
     $("#account-pwd").val('');
     $("#account-pin").val('');
-    // _showMsg(i18n.get("msg_edit_user_success").format({
+    // ui.showTips(i18n.get("msg_edit_user_success").format({
     //   edit: btnVal, 
     //   username: data.screen_name
     // }));
@@ -1040,7 +1043,7 @@ function onSelBlogTypeChange() {
 function showSupportAuthTypes(blogType, authType) {
     var types = SUPPORT_AUTH_TYPES[blogType];
     if(!types){
-        _showMsg('没有"' + blogType + '"支持的验证类型');
+        ui.showTips('没有"' + blogType + '"支持的验证类型');
         return;
     }
     var selAT = $("#account-authType");
@@ -1123,8 +1126,8 @@ function delAccount(uniqueKey) {
     if (b_view) {
         b_view.RefreshManager.restart();
     }
-    _showMsg(i18n.get("msg_del_account_success").format({
-        blogname: utils.T_NAMES[delete_user.blogtype], 
+    ui.showTips(i18n.get("msg_del_account_success").format({
+        blogname: CONST.T_NAMES[delete_user.blogtype], 
         username: delete_user.screen_name
     }));
 }
@@ -1280,7 +1283,7 @@ function saveAll() {
     settings.show_network_error = !!$('#show_network_error').attr('checked');
 
     Settings.save();
-    _showMsg(i18n.get("msg_save_success"), true);
+    ui.showTips(i18n.get("msg_save_success"), true);
 }
 
 //平滑滚动
@@ -1339,12 +1342,12 @@ function refreshAccountWarp(user, stat) {
     tapi.verify_credentials(user, function(data, textStatus, errorCode){
         user.blogtype = user.blogtype || 'tsina'; //兼容单微博版
         user.authtype = user.authtype || 'baseauth'; //兼容单微博版
-        var blogName = utils.T_NAMES[user.blogtype];
+        var blogName = CONST.T_NAMES[user.blogtype];
         if (errorCode){
             if (errorCode === 400) {
-                _showMsg(_u.i18n("msg_update_accounts_info_false").format({blogname:blogName, username:user.screen_name}));
+                ui.showTips(_u.i18n("msg_update_accounts_info_false").format({blogname:blogName, username:user.screen_name}));
             } else {
-                _showMsg(_u.i18n("msg_update_accounts_info_unknow_error").format({blogname:blogName, username:user.screen_name, errorcode:errorCode}));
+                ui.showTips(_u.i18n("msg_update_accounts_info_unknow_error").format({blogname:blogName, username:user.screen_name, errorcode:errorCode}));
             }
 //            userList[user.uniqueKey] = user;
             stat.errorCount++;
@@ -1354,7 +1357,7 @@ function refreshAccountWarp(user, stat) {
 //            stat.userList[i] = user;
 //            userList[data.uniqueKey] = data;
             stat.successCount++;
-            _showMsg(_u.i18n("msg_update_account_info_success").format({blogname:blogName, username:user.screen_name}), true);
+            ui.showTips(_u.i18n("msg_update_account_info_success").format({blogname:blogName, username:user.screen_name}), true);
         }
         if((stat.errorCount + stat.successCount) === stat.userList.length){
             // 全部刷新完，更新
@@ -1373,7 +1376,7 @@ function refreshAccountWarp(user, stat) {
 //                c_user = userList[c_user.uniqueKey.toLowerCase()];
                 setUser(c_user);
             }
-            _showMsg(_u.i18n("msg_update_accounts_info_complete").format({successCount:stat.successCount, errorCount:stat.errorCount}));
+            ui.showTips(_u.i18n("msg_update_accounts_info_complete").format({successCount:stat.successCount, errorCount:stat.errorCount}));
             $("#refresh-account").removeAttr("disabled");
             if ($("#needRefresh").css('display') !== 'none') { //如果是强制需要刷新用户信息的，则在刷新后刷新页面
                 window.location.reload(); //TODO: 修改为不用刷新页面的
