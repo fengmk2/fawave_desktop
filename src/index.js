@@ -2663,7 +2663,7 @@ function TimelineController() {
   $('#gototop').on('click', function () {
     var tab = $('.tabs .active');
     var activeTimeline = tab.data('type');
-    var warp = TimelineController.getWarp(activeTimeline);
+    var warp = TimelineController.getWrap(activeTimeline);
     warp.scrollTop(0);
   });
 
@@ -2798,12 +2798,25 @@ TimelineController.prototype.changeUser = function (fromUser, toUser) {
   var tab = $('.tabs .active');
   var timeline = tab.data('type');
   self.setLastTimeline(fromUser, timeline);
-  self.setScrollTop(fromUser, timeline, TimelineController.getWarp(timeline).scrollTop());
+  self.setScrollTop(fromUser, timeline, TimelineController.getWrap(timeline).scrollTop());
   tab.removeClass('active');
 
   // 清空所有当前用户的数据
   $('.list_warp ul').html('');
   $('.list_p').hide();
+
+  // 显示支持的timeline类型
+  var timelines = CONST.TIMELINE_LIST;
+  for (var i = 0; i < timelines.length; i++) {
+    var type = timelines[i];
+    var support = weibo.support(toUser, type);
+    var typeTab = $('.tab-' + type);
+    if (support) {
+      typeTab.show();
+    } else {
+      typeTab.hide();
+    }
+  }
 
   // 切换会上次用户正在查看的状态
   var lastTimeline = self.getLastTimeline(toUser);
@@ -2814,7 +2827,7 @@ TimelineController.prototype.checkScroll = function (event) {
   var self = event.data.controller;
   var tab = $('.tabs .active');
   var activeTimeline = tab.data('type');
-  var warp = TimelineController.getWarp(activeTimeline);
+  var warp = TimelineController.getWrap(activeTimeline);
   var btn = $('#gototop');
   var scrollTop = warp.scrollTop();
   if (scrollTop > 200) {
@@ -2838,7 +2851,7 @@ TimelineController.prototype.showMore = function (tab) {
   var user = User.getUser();
   var timeline = tab.data('type');
   var params = {};
-  var warp = TimelineController.getWarp(timeline);
+  var warp = TimelineController.getWrap(timeline);
   var li = warp.find('ul li:last');
   var max_id = li.data('id');
   var timestamp = li.data('timestamp');
@@ -2874,7 +2887,7 @@ TimelineController.prototype.showMore = function (tab) {
   });
 };
 
-TimelineController.getWarp = function (timeline) {
+TimelineController.getWrap = function (timeline) {
   return $('#' + timeline + '_timeline .list_warp');
 };
 
@@ -2885,17 +2898,24 @@ TimelineController.prototype.click = function (event) {
   var self = event.data.controller;
   var timeline = tab.data('type');
   var currentUser = User.getUser();
-  var warp = TimelineController.getWarp(timeline);
+  var warp = TimelineController.getWrap(timeline);
   var isEmpty = warp.find('ul li:first').length === 0;
   var timelineScrollTop = self.getScrollTop(currentUser, timeline) || 0;
   var scrollTop = active ? 0 : timelineScrollTop;
   var needRefresh = (active || isEmpty) && warp.scrollTop() <= 200;
 
   if (!needRefresh) {
+    // 有新消息并且scroll 前两个status view 高度, 则直接刷新
     var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
-    // 有新消息则直接刷新
-    if (unreadCount > 0) {
-      needRefresh = true;
+    if (unreadCount) {
+      var top2 = warp.find('ul li:lt(2)');
+      var limit = 0;
+      top2.each(function () {
+        limit += $(this).height();
+      });
+      if (warp.scrollTop() <= limit) {
+        needRefresh = true;
+      }
     }
   }
 
@@ -2925,7 +2945,7 @@ TimelineController.prototype.click = function (event) {
   if (!active) {
     // save the current active scrollTop
     var activeTimeline = $('.tabs .active').data('type');
-    var activeWarp = TimelineController.getWarp(activeTimeline);
+    var activeWarp = TimelineController.getWrap(activeTimeline);
     self.setScrollTop(currentUser, activeTimeline, activeWarp.scrollTop());
 
     // active click tab
@@ -2948,7 +2968,9 @@ TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
   self.setCacheStatuses(user, timeline, items);
 
   self.showItems(user, items, timeline, false);
-  if (items.length < 10) {
+  var wrap = TimelineController.getWrap(timeline);
+  if (wrap.find('ul li').length < 10) {
+    // 显示微博数少于10，则加载更多
     self.showMore(tab);
   }
 }
@@ -3396,13 +3418,13 @@ StatusCounterController.prototype.showCounts = function (user, statuses, timelin
   }
   var ids = Object.keys(map);
   var loading = $('#loading').show();
-  console.log(timeline + ' count() ids: ' + ids.length + ' ' + JSON.stringify(ids));
+  // console.log(timeline + ' count() ids: ' + ids.length + ' ' + JSON.stringify(ids));
   weibo.count(user, ids, function (err, counts) {
     loading.hide();
     if (err) {
       return ui.showErrorTips(err);
     }
-    console.log('got counts: '+ counts.length);
+    // console.log('got counts: '+ counts.length);
     var isTQQ = user.blogtype === 'tqq';
     var isStatus = timeline.indexOf('comment') < 0;
     for (var i = 0, l = counts.length; i < l; i++) {

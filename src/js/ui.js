@@ -204,9 +204,12 @@ function buildStatusHtml(statuses, t, c_user) {
     BUTTON_TPLS.commentCounts = BUTTON_TPLS.delTweetBtn = 
     BUTTON_TPLS.delDirectMsgBtn = BUTTON_TPLS.addFavoritesMsgBtn = 
     BUTTON_TPLS.delFavoritesMsgBtn = '';
-    BUTTON_TPLS.commentBtn = '<a class="commenttweet" href="javascript:void(0);" ' +
-      ' data-id="{{status.id}}" data-uid="{{status.user.id}}" data-screen_name="{{status.user.screen_name}}" ' +
-      ' data-cid="{{id}}" data-cuid="{{user.id}}" data-csn="{{user.screen_name}}" ' +
+    // 本身是评论
+    BUTTON_TPLS.commentBtn = '<a class="commenttweet" \
+      <?js if (tweet.status) { ?> \
+      data-id="#{tweet.status.id}" data-uid="#{tweet.status.user.id}" data-screen_name="#{tweet.status.user.screen_name}" \
+      <?js } ?> \
+      data-cid="#{tweet.id}" data-cuid="#{tweet.user.id}" data-csn="#{tweet.user.screen_name}" ' +
       ' title="' + i18n.get("btn_reply_comment_title") + '">' + i18n.get("abb_reply") + '</a>';
     break;
   case 'comments_by_me':
@@ -316,7 +319,11 @@ function buildStatusHtml(statuses, t, c_user) {
         tpl = '';
       }
       if (tpl) {
-        tpl = format(tpl, status);
+        if (t === 'comments_timeline' && key === 'commentBtn') {
+          tpl = Shotenjin.render(tpl, {tweet: status});
+        } else {
+          tpl = format(tpl, status);
+        }
       }
       buttons[key] = tpl;
     }

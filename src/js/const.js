@@ -44,6 +44,11 @@ exports = module.exports = {
   INCLUDE_ORIGINAL_COMMENT: 'idi_INCLUDE_ORIGINAL_COMMENT', // 回复评论的时候，是否带上原评论
 };
 
+exports.TIMELINE_LIST = [
+  'friends_timeline', 'mentions', 'comments_mentions', 'comments_timeline',
+  'direct_messages', 'favorites',
+];
+
 //需要不停检查更新的timeline的分类列表
 var T_LIST = exports.T_LIST = {
   all: ['friends_timeline', 'mentions', 'comments_timeline', 'direct_messages'],
