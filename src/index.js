@@ -3152,6 +3152,11 @@ StatusCounterController.prototype.showCounts = function (user, statuses, timelin
 function URLController() {
   this.events = [
     { events: 'click', selecter: 'a', handler: this.openLink },
+    { 
+      events: 'click', 
+      selecter: '.status_text_link, .status_text_link_expand, .status_hash_link', 
+      handler: this.openStatusLink
+    },
     { events: 'mousedown', selecter: 'a', handler: this.openRealLink },
   ];
 
@@ -3172,7 +3177,16 @@ URLController.prototype.openRealLink = function (event) {
 
 URLController.prototype.openLink = function (event) {
   var alink = $(this);
-  var url = alink.data('href') || alink.attr('href');;
+  var url = alink.data('href');
+  if (url && url.indexOf('http') === 0) {
+    openOnBrowser(url);
+    return false;
+  }
+};
+
+URLController.prototype.openStatusLink = function (event) {
+  var alink = $(this);
+  var url = alink.attr('href');
   if (url && url.indexOf('http') === 0) {
     openOnBrowser(url);
     return false;
