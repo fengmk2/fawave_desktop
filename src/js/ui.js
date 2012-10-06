@@ -320,7 +320,7 @@ function buildStatusHtml(statuses, t, c_user) {
         tpl = '';
       }
       if (tpl) {
-        if (t === 'comments_timeline' && key === 'commentBtn') {
+        if ((t === 'comments_timeline' || t === 'comments_mentions') && key === 'commentBtn') {
           tpl = Shotenjin.render(tpl, {tweet: status});
         } else {
           tpl = format(tpl, status);

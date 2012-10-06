@@ -58,13 +58,14 @@ function openOnBrowser(url) {
 
 function StatusController() {
   this.events = [
-    { events: 'mousedown', selecter: '.thumbnail_pic', handler: this.previewImage },
+    { events: 'mousedown', selecter: '.thumbnail_pic', handler: this.viewOriginalImage },
+    { events: 'click', selecter: '.thumbnail_pic', handler: this.previewImage },
   ];
   StatusController.super_.call(this);
 }
 inherits(StatusController, Controller);
 
-StatusController.prototype.previewImage = function (event) {
+StatusController.prototype.viewOriginalImage = function (event) {
   var self = event.data.controller;
   var img = $(this);
   var originalURL = img.attr('original').trim();
@@ -74,17 +75,25 @@ StatusController.prototype.previewImage = function (event) {
   if (event.which === 3) {
     openNewWindow(originalURL);
     return false;
-  } else if (event.which === 1) {
-    if (img.find('.img_loading').length === 0) {
-      img.append('<img class="img_loading" src="images/loading.gif" />');
-    } else {
-      img.find('.img_loading').show();
-    }
-    ui.popupBox.showImg(img.attr('bmiddle'), originalURL, function () {
-      img.find('.img_loading').hide();
-    });
-    return false;
   }
+};
+
+StatusController.prototype.previewImage = function (event) {
+  var self = event.data.controller;
+  var img = $(this);
+  var originalURL = img.attr('original').trim();
+  if (!originalURL) {
+    return;
+  }
+  if (img.find('.img_loading').length === 0) {
+    img.append('<img class="img_loading" src="images/loading.gif" />');
+  } else {
+    img.find('.img_loading').show();
+  }
+  ui.popupBox.showImg(img.attr('bmiddle'), originalURL, function () {
+    img.find('.img_loading').hide();
+  });
+  return false;
 };
 
 function initEvents() {
@@ -583,6 +592,7 @@ TextContentController.prototype.hideTextInput = function () {
   $("#submitWarp").data('status', 'hide').css('height', 0);
   $("#header .write").removeClass('active').find('b').removeClass('up');
   $("#doing").prependTo('#tl_tabs .btns');
+  this.$textContent.blur(); // 让它失去焦点，避免快捷键被输入了
   // ActionCache.set('showMsgInput', null);
 };
 

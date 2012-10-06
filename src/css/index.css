@@ -833,6 +833,10 @@ div.loading_bar span {
   width: 11px;
 }
 
+.comments {
+  display: none;
+}
+
 .comment_paging a {
   display: none;
 }
