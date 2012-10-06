@@ -16,7 +16,6 @@
 /**
  * 
 <cheatsheet>
-
 <pre>
 # Shortcuts Cheat Sheet
 
@@ -24,6 +23,8 @@
 * i: show text input. Hide it when it opened.
 * m: show shortcuts cheat sheet.
 * esc: exit the input mode, close the opening dialog and preview popbox.
+* f s: search status
+* f u: search user
 
 ## Account
 

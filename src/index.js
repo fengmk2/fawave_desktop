@@ -188,6 +188,14 @@ function init() {
   
 }
 
+function readImage(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function (event) {
+    callback(event.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
 function _get_clipboard_file(e, callback) {
   var f = null;
   var items = e.clipboardData && e.clipboardData.items;
@@ -202,11 +210,9 @@ function _get_clipboard_file(e, callback) {
     return callback();
   }
 
-  var reader = new FileReader();
-  reader.onload = function (event) {
-    callback(f, event.target.result);
-  };
-  reader.readAsDataURL(f);
+  readImage(f, function (image) {
+    callback(f, image);
+  });
 }
 
 function _init_image_preview(image_src, size, preview_id, btn_id, top_padding, left_padding) {
@@ -495,6 +501,7 @@ function TextContentController() {
   $('#btnSend').click(this.send.bind(this));
   $('#btnClearText').click(this.clearText.bind(this));
   $('#show_status_input').on('click', { controller: this }, this.toggleTextInput);
+  $('#fileDialog').on('change', { controller: this }, this.fileChange);
 
   // reply
   this.$replyText = $('#replyTextarea');
@@ -513,6 +520,19 @@ function TextContentController() {
 
   this.loadStates();
 }
+
+TextContentController.prototype.fileChange = function (event) {
+  var files = $(this).prop('files') || [];
+  if (files.length === 0) {
+    return;
+  }
+  var file = files[0];
+  readImage(file, function (image) {
+    window.imgForUpload = file;
+    window.imgForUpload.fileName = 'fawave.png';
+    _init_image_preview(image, file.size, 'upImgPreview', 'btnUploadPic');
+  });
+};
 
 TextContentController.prototype.hideReply = function (event) {
   var self = event.data.controller;

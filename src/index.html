@@ -51,9 +51,10 @@ var _u = {
         <img src="images/face.gif" /><script>_u.wi('comm_emotional')</script>
       </a>
       <script>_u.wia('#btnAddEmotional','title','btn_emotional_title');</script>&nbsp;
-      <a id="btnUploadPic" href="javascript:void(0);" onclick="openUploadImage();">
+      <a id="btnUploadPic" href="javascript:$('#fileDialog').click();">
         <img src="images/image.gif" /><script>_u.wi('comm_pic')</script>
       </a>
+      <input style="display:none;" id="fileDialog" type="file" />
       <script>_u.wia('#btnUploadPic','title','btn_pic_title');</script>&nbsp;
       <button id="btnClearText" class="btn"><script>_u.wi('comm_clear')</script></button>
       <!-- <span id="doingWarp"></span> -->
@@ -102,10 +103,10 @@ var _u = {
             <img class="arrow" src="images/layerArrow.gif"/>
             <script>_u.wia('#btnSearchUser','title','btn_search_user_title');</script>
           </span>
-      </span>
-      <a id="btnLongText" href="javascript:void(0);" class="quickUpImg" onclick="openLongText();"><img src="images/longtext.png" /><script>_u.wi('comm_longtext')</script></a>
-      <script>_u.wia('#btnLongText','title','btn_longtext_title');</script>
-        <a id="btnQuickUpImg" href="javascript:void(0);" class="quickUpImg" onclick="openUploadImage();"><img src="images/image.gif" /><script>_u.wi('comm_pic')</script></a>
+        </span>
+        <a id="btnLongText" href="javascript:void(0);" class="quickUpImg hide" onclick="openLongText();"><img src="images/longtext.png" /><script>_u.wi('comm_longtext')</script></a>
+        <script>_u.wia('#btnLongText','title','btn_longtext_title');</script>
+        <a id="btnQuickUpImg" href="javascript:void(0);" class="quickUpImg hide" onclick="openUploadImage();"><img src="images/image.gif" /><script>_u.wi('comm_pic')</script></a>
         <script>_u.wia('#btnQuickUpImg','title','btn_pic_title');</script>
       </span>
       <span id="topAd"></span>
@@ -138,7 +139,7 @@ var _u = {
       <li class="tab-comments_timeline timeline_tab" data-type="comments_timeline" href="#comments_timeline_timeline"><script>_u.wi('comm_TabName_comments_timeline')</script><span class="unreadCount"></span></li>
       <li class="tab-direct_messages_both timeline_tab" data-type="direct_messages_both" href="#direct_messages_both_timeline"><script>_u.wi('comm_TabName_direct_messages')</script><span class="unreadCount"></span></li>
       <li class="tab-favorites only_click timeline_tab" data-type="favorites" href="#favorites_timeline"><script>_u.wi('comm_TabName_favorites')</script><span class="unreadCount"></span></li>
-      <li class="tab-followers only_click timeline_tab" data-type="followers" href="#followers_timeline"><script>_u.wi('comm_TabName_followers')</script><span class="unreadCount"></span></li>
+      <li class="tab-followers only_click timeline_tab hide" data-type="followers" href="#followers_timeline"><script>_u.wi('comm_TabName_followers')</script><span class="unreadCount"></span></li>
       <li class="tab-user_timeline only_click timeline_tab" data-type="user_timeline" href="#user_timeline_timeline"><script>_u.wi('comm_TabName_user_timeline')</script><span class="unreadCount"></span></li>
     </ul>
     <div class="clearFix"></div>
@@ -832,16 +833,13 @@ var _u = {
 <script>
 var TEMPLATE = $("#tp_time_line").html();
 var TEMPLATE_RT = $("#tp_time_line_rt").html();
-var TEMPLATE_RT_RT = TEMPLATE_RT
-  .replace(/tweet\.retweeted_status/g, 'tweet.retweeted_status.retweeted_status')
-  .replace(/btn\.rt/g, 'btn.rtrt');
 var TEMPLATE_USER_INFO = $("#tp_user_info").html();
 var TEMPLATE_TIPBOX_USER_INFO = $("#tp_tipbox_user_info").html();
 var TEMPLATE_FANS = $("#tp_fans").html();
 var TEMPLATE_COMMENT_ITEM = $('#comment_item').html();
 </script>
 
-<script type="text/javascript">
+<script>
 
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-35349616-1']);

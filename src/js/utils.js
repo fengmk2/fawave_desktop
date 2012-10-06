@@ -133,5 +133,3 @@ function ubbCode(str) {
   }
   return result;
 }
-
-
