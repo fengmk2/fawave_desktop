@@ -43,24 +43,24 @@ var _u = {
 </div> -->
 <div class="other">
 	<ul id="navigation"> 
-		<li class="selected" target_id="#common_set"><a href="javascript:"><script>_u.wi('sett_TabName_common_set')</script></a></li> 
-		<li class="" target_id="#appearance_set"><a href="javascript:"><script>_u.wi('sett_TabName_appearance_set')</script></a></li> 
-		<li class="" target_id="#user_set" hide_save_btn="1"><a id="tab_user_set" href="javascript:"><script>_u.wi('sett_TabName_user_set')</script></a></li> 
-		<li class="" target_id="#advanced_set" ><a href="javascript:"><script>_u.wi('sett_TabName_advanced_set')</script></a></li> 
-		<li class="" target_id="#about_me" hide_save_btn="1"><a href="javascript:"><script>_u.wi('sett_TabName_about')</script></a></li> 
-		<li class="" ><a class="ignore" href="http://club.fawave.net4team.net/" target="_blank">Help & FAQ</a></li> 
+		<li class="hide" target_id="#common_set"><a href="javascript:;"><script>_u.wi('sett_TabName_common_set')</script></a></li> 
+		<li class="hide" target_id="#appearance_set"><a href="javascript:;"><script>_u.wi('sett_TabName_appearance_set')</script></a></li> 
+		<li class="selected" target_id="#user_set" hide_save_btn="1"><a id="tab_user_set" href="javascript:;"><script>_u.wi('sett_TabName_user_set')</script></a></li> 
+		<li class="hide" target_id="#advanced_set" ><a href="javascript:;"><script>_u.wi('sett_TabName_advanced_set')</script></a></li> 
+		<li class="hide" target_id="#about_me" hide_save_btn="1"><a href="javascript:;"><script>_u.wi('sett_TabName_about')</script></a></li> 
+		<li class="hide" ><a class="ignore" href="http://club.fawave.net4team.net/" target="_blank">Help & FAQ</a></li> 
 		<li class="shadow"></li> 
 	</ul>
 	<!-- 用户设置 START -->
-	<div id="user_set" class="set_wrap" style="display:none;">
+	<div id="user_set" class="set_wrap">
 		<div class="alert" id="needRefresh" style="display:none;">你看到这个是因为你的账户信息需要刷新FaWave才能继续使用，请点击“更新用户信息”进行刷新用户信息。</div>
 		<div>
 			<button class="button_white button_small" id="show-new-account"><img src="images/add.png" /><script>_u.wi('sett_btn_add_new_account')</script></button>
-			<button class="button_white button_small" id="refresh-account"><img src="images/refresh.png" /><script>_u.wi('sett_btn_update_accounts')</script></button>
+			<button class="button_white button_small hide" id="refresh-account"><img src="images/refresh.png" /><script>_u.wi('sett_btn_update_accounts')</script></button>
 			<span class="jTip" jTitle="" jWidth="320">?<span class="c"><script>_u.wi('sett_jTip_update_accounts')</script></span></span>
 		</div>
 
-		<div id="edit-account-info" style="display:none;">
+		<div id="edit-account-info">
 			<h3></h3>
 			<label class="title">当前编辑用户：</label><span class="ainfo"></span>
 		</div>
@@ -126,7 +126,7 @@ var _u = {
 	</div>
 	<!-- 用户设置END -->
 	<!-- 基本设置 -->
-	<table id="common_set" class="set_wrap">
+	<table id="common_set" class="set_wrap hide">
 		<tr>
 			<th>
 				<script>_u.wi('sett_itemName_g_refresh_time')</script>
@@ -289,7 +289,7 @@ var _u = {
 		</tr>
 	</table>
 	<!-- 外观设置 -->
-	<ul id="appearance_set" class="set_wrap" style="display:none;">
+	<ul id="appearance_set" class="set_wrap hide">
 	    <li>
 	       <label class="title"><script>_u.wi('sett_itemName_default_language')</script></label>
 	       <span>
@@ -355,7 +355,7 @@ var _u = {
 		</li>
 	</ul>
 	<!-- 高级设置 -->
-	<table id="advanced_set" class="set_wrap" style="display:none;">
+	<table id="advanced_set" class="set_wrap hide">
 		<tr>
 			<th><label class="title" for="isGeoEnabled"><script>_u.wi('sett_itemName_geo')</script></label></th>
 			<td>
@@ -457,7 +457,7 @@ var _u = {
 		</tr>
 	</table>
 	<!-- 关于与感谢 -->
-	<div id="about_me" class="set_wrap" style="display:none;">
+	<div id="about_me" class="set_wrap hide">
 		
 		<h3><script>_u.wi('sett_title_author')</script>(Net4 Team)：</h3>
 		<div class="clearFix">
@@ -496,7 +496,7 @@ var _u = {
 	</div>
 </div>
 <br>
-<button id="save-all" class="button_blue" style="width:100px;height:40px;margin-left:50px;"><script>_u.wi('sett_btn_save_all')</script></button>
+<button id="save-all" class="button_blue hide" style="width:100px;height:40px;margin-left:50px;"><script>_u.wi('sett_btn_save_all')</script></button>
 <button id="return-index-btn" class="button_green" onclick="javascript:window.location='index.html';" style="width:100px;height:40px;margin-left:50px;">返回首页</button>
 <div id="msgInfoWarp"></div>
 

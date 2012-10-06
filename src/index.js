@@ -696,6 +696,9 @@ function TextContentController() {
   $('.close_dialog').click({ controller: this }, this.hideReply);
   this.$replyText[0].onpaste = this.pasteOnReply;
 
+  at_user_autocomplete('#txtContent');
+  at_user_autocomplete('#replyTextarea');
+
   this.loadStates();
 }
 
@@ -2624,7 +2627,7 @@ TimelineController.prototype.cacheStatuses = function (user, timeline, statuses,
   statuses = statuses || [];
   var key = user.uniqueKey + ':' + timeline; 
   var list = this.list[key] || [];
-  console.log(key + ' before: ' + list.length);
+  // console.log(key + ' before: ' + list.length);
   if (append) {
     list = list.concat(statuses);
   } else {
@@ -2632,7 +2635,7 @@ TimelineController.prototype.cacheStatuses = function (user, timeline, statuses,
     list = statuses.concat(list);
   }
   this.list[key] = list;
-  console.log(key + ' after: ' + list.length);
+  // console.log(key + ' after: ' + list.length);
   return list;
 };
 
@@ -2732,7 +2735,7 @@ TimelineController.prototype.showMore = function (tab) {
       params.screen_name = userParams.screen_name;
     }
   }
-  console.log(timeline + ' showing more... ' + JSON.stringify(params));
+  // console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
   self.fetch(user, timeline, params, function (err, data) {
     tab.data('is_loading', false);
@@ -2839,8 +2842,8 @@ TimelineController.prototype.click = function (event) {
 TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
   var self = this;
   items = self.cacheStatuses(user, timeline, items, false);
-  if (items.length > 20) {
-    items = items.slice(0, 20);
+  if (items.length > 40) {
+    items = items.slice(0, 40);
   }
   // set cache and empty the views
   self.setCacheStatuses(user, timeline, items);
@@ -2883,7 +2886,7 @@ TimelineController.prototype.refreshUserTimeline = function (tab) {
   if (!userParams.uid && !userParams.screen_name) {
     userParams.uid = user.uid;
   }
-  console.log('user show ' + JSON.stringify(userParams))
+  // console.log('user show ' + JSON.stringify(userParams))
   weibo.user_show(user, userParams.uid, userParams.screen_name, function (err, info) {
     if (err) {
       return ui.showErrorTips(err);
@@ -2906,7 +2909,7 @@ TimelineController.prototype.refresh = function (tab) {
   var params = {};
 
   var unreadCount = parseInt(tab.find('.unreadCount').html(), 10) || 0;
-  console.log('read statuses ' + timeline + ' :' + unreadCount);
+  // console.log('read statuses ' + timeline + ' :' + unreadCount);
   var unreadStatuses = self.readUnreadStatuses(user, timeline);
   stateManager.emit('read_statuses', {
     uniqueKey: user.uniqueKey,
@@ -2927,7 +2930,7 @@ TimelineController.prototype.refresh = function (tab) {
       params.since_time = since_id.timestamp;
     }
   }
-  console.log(timeline + ' refreshing... since_id: ' + JSON.stringify(params));
+  // console.log(timeline + ' refreshing... since_id: ' + JSON.stringify(params));
   tab.data('is_loading', true);
   self.fetch(user, timeline, params, function (err, data) {
     tab.data('is_loading', false);
@@ -3245,8 +3248,8 @@ RefreshController.prototype.check = function (uniqueKey, timeline) {
       return ui.showErrorTips(err);
     }
     var items = result.items;
-    console.log(uniqueKey +' refresh ' + timeline +
-      ' since_id ' + JSON.stringify(since_id) + ': ' + items.length);
+    // console.log(uniqueKey +' refresh ' + timeline +
+    //   ' since_id ' + JSON.stringify(since_id) + ': ' + items.length);
     if (items.length > 0) {
       stateManager.emit('new_statuses', {
         uniqueKey: uniqueKey,
@@ -3260,16 +3263,20 @@ RefreshController.prototype.check = function (uniqueKey, timeline) {
 
 RefreshController.prototype.watch = function (user) {
   var uniqueKey = user.uniqueKey;
-  console.log('watch ' + uniqueKey);
+  // console.log('watch ' + uniqueKey);
   var timers = this.timers[uniqueKey] || {};
   var timelines = [
     ['friends_timeline', 60000],
     ['comments_timeline', 60000],
     ['comments_mentions', 60000],
     ['mentions', 60000],
+    ['direct_messages_both', 60000],
   ];
   timelines.forEach(function (item) {
     var timeline = item[0];
+    if (!weibo.support(user, timeline)) {
+      return;
+    }
     var timeout = item[1];
     var check = function () {
       stateManager.emit('check_timeline', uniqueKey, timeline);
@@ -3420,7 +3427,7 @@ URLController.prototype.openStatusLink = function (event) {
 
 URLController.prototype.checkLinks = function (user, items, timeline) {
   var links = $("#" + timeline + "_timeline ul.list a.status_text_link");
-  console.log(links.length + ' links need to expand');
+  // console.log(links.length + ' links need to expand');
   links.each(function () {
     var link = $(this);
     var url = link.attr('href');
@@ -3471,7 +3478,5 @@ $(function () {
     // chrome.tabs.create({url: 'options.html#user_set'});
     return;
   }
-
-  at_user_autocomplete("#txtContent");
 
 });

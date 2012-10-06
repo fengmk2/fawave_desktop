@@ -53,6 +53,8 @@
 * s + o + c: show original status comments
 * s + o + r: show original status reposts
 * s + p: show preview current status's photo, including repost.
+* s + u: show status user
+* s + o + u: show origianl status user
 
 ## Comment list Paging
 
@@ -65,13 +67,6 @@
 * a + r: add repost for current status
 * a + f: add favorite
 * a + d: add direct message to current status' user
-
-## Show
-
-* -: rt current status
-* -: show current status's user timeline
-* -: show current status's repost status's user timeline
-* -: show my user timeline
 
 </pre>
 </cheatsheet> 
@@ -328,6 +323,16 @@ var binds = {
   },
   's p': {
     selecter: 'currentStatus() .thumbnail_pic:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  's u': {
+    selecter: 'currentStatus() .user_link:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  's o u': {
+    selecter: 'currentStatus() .retweeted .user_link:first',
     method: 'click',
     type: 'sequence_combo'
   },

@@ -424,3 +424,7 @@ ul#navigation li.selected{
     -o-border-radius: 3px;
     border-radius: 3px;
 }
+
+.hide {
+  display: none;
+}
