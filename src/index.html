@@ -73,19 +73,19 @@ var _u = {
     <div class="user">
       <a class="face" href="#"><img class="icon" src="images/1.gif" /><img class="bt" src="images/1.gif" /></a>
       <span class="info">
-        <a class="name_link" href="#"><span class="name"></span><br/></a>
+        <a class="name_link user_link" href="#"><span class="name"></span><br/></a>
         <span class="nums"></span>
       </span>
       <span class="top_btns">
         <span class="search_span">
-          <a id="btnShowSearch" href="javascript:void(0);" class="search" 
-            onclick="Search.toggleInput(this);" title="_u.wi('btn_search_title')">
+          <a id="btnShowSearch" href="javascript:void(0);" 
+            class="search show_search_btn" title="_u.wi('btn_search_title')">
             <img src="images/search.png" /><script>_u.wi('comm_search')</script>
           </a>
           <script>_u.wia('#btnShowSearch','title','btn_search_title');</script>
           <span class="searchWrap">
             <input type="text" class="txtSearch" />
-            <a id="btnSearch" href="javascript:void(0);" class="btnSearch" onclick="Search.search();">
+            <a id="btnSearch" href="javascript:void(0);" class="btnSearch">
               <img src="images/search.png" />
             </a>
             <img class="arrow" src="images/layerArrow.gif"/>
@@ -93,11 +93,14 @@ var _u = {
           </span>
         </span>
         <span class="user_search_span">
-          <a id="btnShowSearchUser" href="javascript:void(0);" class="search search_user" onclick="Search.toggleInput(this);" title="_u.wi('btn_search_title')"><img src="images/face.gif" /><script>_u.wi('comm_search_user')</script></a>
+          <a id="btnShowSearchUser" href="javascript:void(0);" 
+            class="search search_user show_search_btn" title="_u.wi('btn_search_title')">
+            <img src="images/face.gif" /><script>_u.wi('comm_search_user')</script>
+          </a>
           <script>_u.wia('#btnShowSearchUser','title','btn_search_user_title');</script>
           <span class="searchWrap searchUserWrap">
             <input type="text" class="txtSearch" />
-            <a id="btnSearchUser" href="javascript:" class="btnSearch" onclick="Search.search();">
+            <a id="btnSearchUser" href="javascript:" class="btnSearch">
               <img src="images/search.png" />
             </a>
             <img class="arrow" src="images/layerArrow.gif"/>
@@ -116,13 +119,13 @@ var _u = {
       <span class="btns">
         <a class="hide" id="scs">scs</a>
         <a herf="javascript:;" href="javascript:window.location='options.html';">配置</a>
-        <a id="doingWithCapture" href="javascript:;"><img src="images/capture.png" /></a>
+        <a id="doingWithCapture" class="hide" href="javascript:;"><img src="images/capture.png" /></a>
         <script>_u.wia('#doingWithCapture','title','btn_share_title_with_capture');</script>
         <!--
         <a id="doing" href="javascript:void(0);"><img src="images/world_link.png" /></a>
         <script>_u.wia('#doing','title','btn_share_title');</script>
         -->
-        <a id="btnForceRefresh" href="javascript:;" onclick="forceRefresh(this)"><img src="images/refresh.png" /></a>
+        <a id="btnForceRefresh" class="hide" href="javascript:;" onclick="forceRefresh(this)"><img src="images/refresh.png" /></a>
         <script>_u.wia('#btnForceRefresh','title','btn_refresh_title');</script>
         <!-- 
         <a id="btnNewWinPopup" href="javascript:void(0);" onclick="openPopupInNewWin()"><img src="images/new_win.png" /></a> 
@@ -328,7 +331,7 @@ var _u = {
         <a href="javascript:void(0);" onclick="javascript:read_later(this, 'readitlater');" title="#{_u.i18n('btn_read_it_later_title')}">RIL</a>
         <?js } ?>
         #{ btn.addFavoritesMsgBtn + btn.delFavoritesMsgBtn + (tweet.favorite_count ? '<span class="commentCounts">(' + tweet.favorite_count + ')</span>' : '') + btn.replyBtn + btn.retweetBtn + btn.oretweetBtn + btn.repostBtn + btn.repostCounts + btn.commentBtn + btn.commentCounts + btn.new_msgBtn + btn.delTweetBtn + btn.delCommentBtn + btn.delDirectMsgBtn }
-        <a href="javascript:void(0);" onclick="javascript:translateText(this);" title="#{_u.i18n('btn_translate_title')}">#{_u.i18n("btn_translate")}</a>
+        <a href="javascript:void(0);" class="hide" title="#{_u.i18n('btn_translate_title')}">#{_u.i18n("btn_translate")}</a>
       </span>
     </div>
     <div class="msg">
@@ -472,7 +475,7 @@ var _u = {
         <a href="javascript:void(0);" onclick="javascript:read_later(this, 'readitlater');" title="#{_u.i18n('btn_read_it_later_title')}">RIL</a>
       <?js } ?>
         #{ btn.rtAddFavoritesMsgBtn + btn.rtReplyBtn + btn.rtRetweetBtn + btn.rtRepostBtn + btn.rtRepostCounts + btn.rtOretweetBtn + btn.rtCommentBtn + btn.rtCommentCounts }
-        <a href="javascript:void(0);" onclick="javascript:translateText(this);" title="#{_u.i18n('btn_translate_title')}">#{_u.i18n("btn_translate")}</a>
+        <a href="javascript:void(0);" class="hide" title="#{_u.i18n('btn_translate_title')}">#{_u.i18n("btn_translate")}</a>
       </span>
     </div>
 

@@ -252,6 +252,10 @@ function at_user_autocomplete(ele_id, match_all_text, select_callback) {
     var value = $text.val();
     var ele = $text.get(0);
     var screen_name = $select_li.data('screen_name');
+    var user = User.getUser();
+    if (user.blogtype === 'tqq') {
+      screen_name = $select_li.data('uid');
+    }
     if (ele.match_all_text) {
       $text.val(screen_name);
       $text.focus();
@@ -298,29 +302,13 @@ function _check_name(user, query_regex) {
 
 function init() {
   
-  // initTabs();
-  // initTxtContentEven();
-
-  // initChangeUserList();
-  
   // 显示上次打开的tab
   // var last_data_type = getBackgroundView().get_last_data_type(c_user.uniqueKey) || 'friends_timeline';
   // var last_data_type = 'friends_timeline';
   // _change_tab(last_data_type);
   
-  // addUnreadCountToTabs();
   // initIamDoing();
 
-  // initScrollPaging();
-  
-  // support @ autocomplete
-  // at_user_autocomplete("#txtContent", false, function () {
-  //   // 计数
-  //   countInputText();
-  // });
-  // at_user_autocomplete("#replyTextarea", false, function () {
-  //   countReplyText();
-  // });
   // at_user_autocomplete("#direct_message_user", true, function (user) {
   //   // 选中则发私信
   //   doNewMessage($("#direct_message_user").get(0), user.screen_name, user.id);
@@ -990,133 +978,6 @@ function initIamDoing() {
     // 分享正在查看，并带上截图
     $("#doingWithCapture").click(shareDoing(true));
 }
-
-// 搜索
-var Search = {
-  current_search: '', // 默认当前搜索类型 search, search_user
-  current_keyword: '',
-  toggleInput: function (ele) {
-    $('.searchWrap').hide();
-    var $search_wrap = $(ele).nextAll('.searchWrap');
-    var search_type = $search_wrap.hasClass('searchUserWrap') ? 'search_user' : 'search';
-    if (search_type === Search.current_search) {
-      Search.current_search = '';
-      return;
-    }
-    Search.current_search = search_type;
-    $search_wrap.toggle();
-    var $text = $search_wrap.find(".txtSearch").focus().keyup(function (event) {
-      Search.current_keyword = $(this).val();
-      if (event.which === 13) {
-        Search.search();
-      }
-    });
-    Search.current_keyword = $text.val();
-  },
-  search: function (read_more) {
-    var c_user = User.getUser();
-    var q = Search.current_keyword.trim();
-    if (!q) {
-      return;
-    }
-    // http://www.google.com/search?q=twitter&source=fawave&tbs=mbl:1
-    // if(c_user.blogType == 'twitter') {
-    //      chrome.tabs.create({url: 'http://www.google.com/search?q=' + q + '&source=fawave&tbs=mbl:1', selected: false});
-    //   return;
-    //  }
-    var $tab = $("#tl_tabs .tab-user_timeline");
-    $tab.attr('statusType', 'search');
-
-    var $ul = $("#user_timeline_timeline ul.list");
-    var max_id = null;
-    var page = 1;
-    var cursor = null;
-    var config = tapi.get_config(c_user);
-    var support_search_max_id = config.support_search_max_id;
-    var support_cursor_only = config.support_cursor_only;
-    if (read_more) {
-      // 滚动的话，获取上次的参数
-      max_id = $tab.attr('max_id');
-      cursor = $tab.attr('cursor');
-      page = Number($tab.attr('page') || 1);
-    }  else {
-      // 第一次搜索
-      $ul.html('');
-    }
-    var params = { count: CONST.PAGE_SIZE, q: q, user: c_user };
-    if (support_cursor_only) { // 只支持cursor方式分页
-      if (cursor) {
-        params.cursor = cursor;
-      }
-    } else {
-        if (support_search_max_id) {
-            if (max_id) {
-                params.max_id = max_id;
-            }
-        } else {
-            params.page = page;
-        }
-    }
-    showLoading();
-    var timeline_type = 'user_timeline';
-    var method = 'search';
-    var data_type = 'status';
-    if (Search.current_search === 'search_user') {
-      method = 'user_search';
-      data_type = 'user';
-    }
-    setUserTimelineParams({
-      type: method,
-      q: q
-    });
-    hideReadMore(timeline_type);
-    tapi[method](params, function (data, textStatus) {
-      hideLoading();
-      hideReadMoreLoading(timeline_type);
-      // 如果用户已经切换，则不处理
-      var now_user = getUser();
-      if (now_user.uniqueKey !== c_user.uniqueKey) {
-          return;
-      }
-      var statuses = data.results || data.items || data;
-      if (!statuses) { // 异常
-          return;
-      }
-      if (data.next_cursor !== undefined) {
-          $tab.attr('cursor', data.next_cursor);
-      }
-      if (statuses.length > 0){
-          var c_tb = getCurrentTab();
-          var want_tab = "#" + timeline_type + "_timeline";
-          if (c_tb !== want_tab) {
-              //添加当前激活的状态
-              $tab.siblings().removeClass('active').end().addClass('active');
-              //切换tab前先保护滚动条位置
-              var old_t = c_tb.replace('#','').replace(/_timeline$/i,'');
-              saveScrollTop(old_t);
-              //切换tab
-              $('.list_p').hide();
-              
-              $(want_tab).show();
-              $ul.html('');
-
-              currentTab = want_tab;
-          }
-          statuses = addPageMsgs(statuses, timeline_type, true, data_type);
-          // 保存数据，用于翻页
-          $tab.attr('page', page + 1);
-      }
-      if (statuses.length >= PAGE_SIZE / 2) {
-          max_id = data.max_id || String(statuses[statuses.length - 1].id);
-          $tab.attr('max_id', max_id);
-          showReadMore(timeline_type);
-      } else {
-          hideReadMore(timeline_type, true); //没有分页了
-      }
-      checkShowGototop();
-    });
-  }
-};
 
 // 初始化用户选择视图
 function initSelectSendAccounts() {
@@ -2452,36 +2313,6 @@ function showblocking(read_more) {
     return false;
 };
 
-function create_blocking(ele, user_id) {
-  var $ele = $(ele);
-  $ele.hide();
-  getBackgroundView().BlockingUser.create(user_id, function (data) {
-    if (data === true || (data && !data.error)) {
-      showMsg(i18n.get("create_blocking_success"));
-      $ele.prev('.follow').show();
-    } else {
-      var msg = (data && data.error) || i18n.get("create_blocking_fail");
-      showMsg(msg);
-      $ele.show();
-    }
-  });
-};
-
-function destroy_blocking(ele, user_id) {
-  var $ele = $(ele);
-  $ele.hide();
-  getBackgroundView().BlockingUser.destroy(user_id, function (data) {
-    if (data === true || (data && !data.error)) {
-      showMsg(i18n.get("destroy_blocking_success"));
-      $ele.next('.follow').show();
-    } else {
-      var msg = (data && data.error) || i18n.get("destroy_blocking_fail");
-      showMsg(msg);
-      $ele.show();
-    }
-  });
-};
-
 var stateManager = new EventEmitter();
 
 function Controller() {
@@ -2519,9 +2350,18 @@ function TimelineController() {
     return false;
   };
 
+  var textSearchEnter = function (event) {
+    if (event.which === 13) {
+      $(this).blur().next('.btnSearch').click();
+    }
+  };
+
   this.events = [
     { events: 'click', selecter: '.timeline_tab', handler: this.click },
-    { events: 'click', selecter: '.user_link, .at_user_link', handler: showUser }
+    { events: 'click', selecter: '.user_link, .at_user_link', handler: showUser },
+    { events: 'click', selecter: '.show_search_btn', handler: this.toggleSearchInput },
+    { events: 'click', selecter: '.btnSearch', handler: this.checkSearch },
+    { events: 'keyup', selecter: '.txtSearch', handler: textSearchEnter },
   ];
 
   $(".list_warp").on('scrollstop', { controller: this }, this.checkScroll);
@@ -2683,6 +2523,21 @@ TimelineController.prototype.changeUser = function (fromUser, toUser) {
     }
   }
 
+  // 显示支持的搜索类型
+  var searchPanel = $('.search_span');
+  if (weibo.support(toUser, 'search')) {
+    searchPanel.show();
+  } else {
+    searchPanel.hide();
+  }
+
+  var searchUserPanel = $('.user_search_span');
+  if (weibo.support(toUser, 'user_search')) {
+    searchUserPanel.show();
+  } else {
+    searchUserPanel.hide();
+  }
+
   // 切换会上次用户正在查看的状态
   var lastTimeline = self.getLastTimeline(toUser);
   $('.tab-' + lastTimeline).click();
@@ -2708,6 +2563,41 @@ TimelineController.prototype.checkScroll = function (event) {
   }
 };
 
+TimelineController.prototype.showMoreSearch = function (tab, user) {
+  var self = this;
+  var key = user.uniqueKey + '_uid';
+  var tabParams = tab.data(key);
+  var method = tabParams.type;
+  
+  var warp = TimelineController.getWrap('user_timeline');
+  var li = warp.find('ul li:last');
+  var page = li.data('page') || 1;
+  var cursor = {
+    count: CONST.PAGE_SIZE,
+    page: page
+  };
+
+  var loading = $('#loading').show();
+  tab.data('is_loading', true);
+  // console.log(tabParams.q + ' : ' + JSON.stringify(cursor))
+  weibo[method](user, tabParams.q, cursor, function (err, result) {
+    tab.data('is_loading', false);
+    loading.hide();
+    if (err) {
+      return ui.showErrorTips(err);
+    }
+    var items = result.items;
+    // if (data.cursor) {
+    //   tab.data('cursor', data.cursor);
+    // }
+    var playload = method === 'user_search' ? 'user' : 'status';
+    self.showItems(user, items, 'user_timeline', true, playload);
+
+    var nextPage = parseInt(cursor.page, 10) + 1;
+    warp.find('ul li:last').data('page', nextPage);
+  });
+}
+
 TimelineController.prototype.showMore = function (tab) {
   if (tab.data('is_loading')) {
     return;
@@ -2726,15 +2616,23 @@ TimelineController.prototype.showMore = function (tab) {
       params.max_time = timestamp;
     }
   }
-  var key = user.uniqueKey + '_uid';
-  var userParams = tab.data(key);
-  if (userParams) {
-    if (userParams.uid) {
-      params.uid = userParams.uid;
-    } else if (userParams.screen_name) {
-      params.screen_name = userParams.screen_name;
+
+  if (timeline === 'user_timeline') {
+    var key = user.uniqueKey + '_uid';
+    var tabParams = tab.data(key) || {};
+    var datatype = tabParams.type || 'user_timeline';
+    if (datatype !== 'user_timeline') {
+      // search or user_search
+      return self.showMoreSearch(tab, user);
+    }
+
+    if (tabParams.uid) {
+      params.uid = tabParams.uid;
+    } else if (tabParams.screen_name) {
+      params.screen_name = tabParams.screen_name;
     }
   }
+
   // console.log(timeline + ' showing more... ' + JSON.stringify(params));
   tab.data('is_loading', true);
   self.fetch(user, timeline, params, function (err, data) {
@@ -2856,6 +2754,58 @@ TimelineController.prototype.mergeNew = function (tab, user, timeline, items) {
   }
 }
 
+TimelineController.prototype.toggleSearchInput = function (event) {
+  var btn = $(this);
+  var $search_wrap = btn.nextAll('.searchWrap');
+  if ($search_wrap.is(':visible')) {
+    $search_wrap.hide();
+    return;
+  }
+
+  $('.searchWrap').hide();
+
+  // show input
+  $search_wrap.toggle();
+  $search_wrap.find('.txtSearch').select();
+  // .keyup(function (event) {
+  //   Search.current_keyword = $(this).val();
+  //   if (event.which === 13) {
+  //     Search.search();
+  //   }
+  // });
+};
+
+TimelineController.prototype.checkSearch = function (event) {
+  var btn = $(this);
+  var self = event.data.controller;
+  var searchType = btn.attr('id') === 'btnSearchUser' ? 'user_search' : 'search';
+  var q = $('.txtSearch:visible').val().trim();
+  if (!q) {
+    // do nothing
+    return;
+  }
+
+  self.showSearchTimeline(q, searchType);
+};
+
+/**
+ * Show search results
+ * 
+ * @param {String} q
+ * @param {String} type, search type, must be 'search' or 'user_search'
+ */
+TimelineController.prototype.showSearchTimeline = function (q, type) {
+  var self = this;
+  var user = User.getUser();
+
+  self.setCacheStatuses(user, 'user_timeline', []);
+  
+  var tab = $('.tab-user_timeline');
+  var key = user.uniqueKey + '_uid';
+  tab.data(key, {q: q, type: type});
+  tab.click();
+};
+
 TimelineController.prototype.showUserTimeline = function (uid, screen_name) {
   var timeline = 'user_timeline';
   var self = this;
@@ -2868,7 +2818,7 @@ TimelineController.prototype.showUserTimeline = function (uid, screen_name) {
   }
   var tab = $('.tab-user_timeline');
   var key = user.uniqueKey + '_uid';
-  tab.data(key, {uid: uid, screen_name: screen_name});
+  tab.data(key, {uid: uid, screen_name: screen_name, type: 'user_timeline'});
   tab.click();
 };
 
@@ -2879,20 +2829,25 @@ TimelineController.prototype.refreshUserTimeline = function (tab) {
   var wrap = $("#" + timeline + "_timeline ul.list");
 
   self.setCacheStatuses(user, timeline, []);
-  wrap.html('');
 
   var key = user.uniqueKey + '_uid';
-  var userParams = tab.data(key) || {};
-  if (!userParams.uid && !userParams.screen_name) {
-    userParams.uid = user.uid;
-  }
-  // console.log('user show ' + JSON.stringify(userParams))
-  weibo.user_show(user, userParams.uid, userParams.screen_name, function (err, info) {
-    if (err) {
-      return ui.showErrorTips(err);
+  var params = tab.data(key) || {};
+  var datatype = params.type || 'user_timeline';
+
+  if (datatype === 'user_timeline') {
+
+    if (!params.uid && !params.screen_name) {
+      params.uid = user.uid;
     }
-    wrap.prepend(ui.buildUserInfo(info));
-  });
+    // console.log('user show ' + JSON.stringify(userParams))
+    weibo.user_show(user, params.uid, params.screen_name, function (err, info) {
+      if (err) {
+        return ui.showErrorTips(err);
+      }
+      wrap.prepend(ui.buildUserInfo(info));
+    });
+
+  }
 
   // load statuses
   self.showMore(tab);
@@ -2955,22 +2910,22 @@ TimelineController.prototype.refresh = function (tab) {
   });
 };
 
-TimelineController.prototype.showItems = function (user, items, timeline, append, dataType) {
+TimelineController.prototype.showItems = function (user, items, timeline, append, playload) {
   if (!items || !items.length) {
     return;
   }
   var _ul = $("#" + timeline + "_timeline ul.list");
-  dataType = dataType || 'status';
+  playload = playload || 'status';
   var method = append ? 'append' : 'prepend';
   var direct = append ? 'last' : 'first';
-  var htmls = dataType === 'status' ? ui.buildStatusHtml(items, timeline, user) : ui.buildUsersHtml(items, timeline);
+  var htmls = playload === 'status' ? ui.buildStatusHtml(items, timeline, user) : ui.buildUsersHtml(items, timeline);
   
   _ul[method](htmls.join(''));
 
-  if (dataType === 'status') {
+  if (playload === 'status') {
     ViewCache.setItems(items);
+    stateManager.emit('show_statuses', user, items, timeline);
   }
-  stateManager.emit('show_statuses', user, items, timeline);
 };
 
 TimelineController.prototype.fetch = function (user, timeline, params, callback) {
@@ -3107,7 +3062,7 @@ AccountController.prototype.newStatuses = function (data) {
 
 AccountController.prototype.showHeader = function (user) {
   var header = $("#header .user");
-  header.find('.face, .name_link').attr('href', user.t_url);
+  header.find('.face, .name_link').attr('rhref', user.t_url).data('uid', user.id);
   header.find('.face .icon').attr('src', user.profile_image_url);
   header.find('.face .bt').attr('src', 'images/blogs/' + user.blogType + '_16.png');
   header.find('.info .name').html(user.screen_name);

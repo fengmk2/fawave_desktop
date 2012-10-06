@@ -271,6 +271,10 @@ function buildStatusHtml(statuses, t, c_user) {
   default:
     break;
   }
+
+  // 暂时屏蔽 @ 回复
+  BUTTON_TPLS.replyBtn = BUTTON_TPLS.rtReplyBtn = BUTTON_TPLS.rtrtReplyBtn = '';
+
   var comments_count_tpl = '<a href="javascript:void(0);" title="' +
     i18n.get("btn_show_comments_title") + '"">{{comments_count}}</a>';
   var support_follow = c_user.blogtype !== 'douban' && c_user.blogtype !== 'renren';
@@ -450,9 +454,10 @@ function buildTipboxUserInfo(user, show_fullname) {
   return Shotenjin.render(window.TEMPLATE_TIPBOX_USER_INFO, context);
 }
 
-function  needFullname(user) {
+function needFullname(user) {
   return user.blogtype === 'tqq' || user.blogtype === 'twitter';
 }
+exports.needFullname = needFullname;
 
 // 生成用户信息
 function buildUserInfo(user) {

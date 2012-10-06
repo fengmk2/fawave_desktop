@@ -56,10 +56,16 @@
 * s + u: show status user
 * s + o + u: show origianl status user
 
+## User
+
+ * u + f: follow the user
+ * u + u + f: unfollow the user
+ * u + t: my user timeline
+
 ## Comment list Paging
 
- * ctrl + n: next page
- * ctrl + p: prev page
+* ctrl + n: next page
+* ctrl + p: prev page
 
 ## Operations
 
@@ -139,7 +145,8 @@ function goBottom() {
 }
 
 function globalPreCondition() {
-  return $('#submitWarp').css('height') === '0px' && $('#ye_dialog_window').is(':hidden');
+  return $('#submitWarp').css('height') === '0px' && $('#ye_dialog_window').is(':hidden') &&
+    !$('.txtSearch:visible').is(':focus');
 }
 
 var binds = {
@@ -173,6 +180,8 @@ var binds = {
       }
       $('.comments').hide();
       $('#popup_box .pb_close').click();
+
+      $('.searchWrap').hide();
     }
   },
 
@@ -263,40 +272,40 @@ var binds = {
     handler: prevPage
   },
   '1': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(0)',
+    selecter: '.tabs .timeline_tab:visible:eq(0)',
     method: 'click',
   },
   '2': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(1)',
+    selecter: '.tabs .timeline_tab:visible:eq(1)',
     method: 'click',
   },
   '3': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(2)',
+    selecter: '.tabs .timeline_tab:visible:eq(2)',
     method: 'click',
   },
   '4': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(3)',
+    selecter: '.tabs .timeline_tab:visible:eq(3)',
     method: 'click',
   },
   '5': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(4)',
+    selecter: '.tabs .timeline_tab:visible:eq(4)',
     method: 'click',
   },
 
   '7': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(-4)',
+    selecter: '.tabs .timeline_tab:visible:eq(-4)',
     method: 'click',
   },
   '8': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(-3)',
+    selecter: '.tabs .timeline_tab:visible:eq(-3)',
     method: 'click',
   },
   '9': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(-2)',
+    selecter: '.tabs .timeline_tab:visible:eq(-2)',
     method: 'click',
   },
   '0': {
-    selecter: '.tabs .timeline_tab:not(:hidden):eq(-1)',
+    selecter: '.tabs .timeline_tab:visible:eq(-1)',
     method: 'click',
   },
 
@@ -337,6 +346,18 @@ var binds = {
     type: 'sequence_combo'
   },
 
+  // Search
+  'f s': {
+    selecter: '#btnShowSearch:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  'f u': {
+    selecter: '#btnShowSearchUser:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+
   // Operations
   'a c': {
     selecter: 'currentStatus() .commenttweet:first',
@@ -359,7 +380,12 @@ var binds = {
     type: 'sequence_combo'
   },
   'a f': {
-    selecter: 'currentStatus() .li_wrap .add_favorite_btn:first',
+    selecter: 'currentStatus() .li_wrap .add_favorite_btn:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  'a n f': {
+    selecter: 'currentStatus() .li_wrap .del_favorite_btn:visible:first',
     method: 'click',
     type: 'sequence_combo'
   },
@@ -371,12 +397,29 @@ var binds = {
   
   // Paging
   'ctrl n': {
-    selecter: 'currentStatus() .comments:not(:hidden) .next_page:not(:hidden):first',
+    selecter: 'currentStatus() .comments:not(:hidden) .next_page:visible:first',
     method: 'click',
   },
   'ctrl p': {
-    selecter: 'currentStatus() .comments:not(:hidden) .pre_page:not(:hidden):first',
+    selecter: 'currentStatus() .comments:not(:hidden) .pre_page:visible:first',
     method: 'click',
+  },
+
+  // User
+  'u f': {
+    selecter: '.userinfo_detail .follow_btn:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  'u n f': {
+    selecter: '.userinfo_detail .unfollow_btn:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  'u t': {
+    selecter: '.user .name_link:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
   },
 };
 
