@@ -7,15 +7,25 @@
     "weibo": ">=0.6.5"
   },
   "window": {
-    "icon": "images/icon128.png",
-    "toolbar": true,
+    "icon": "src/icons/icon128.png",
+    "toolbar": false,
     "width": 650,
-    "height": 600,
+    "height": 700,
     "position": "center",
     "min_width": 600,
-    "min_height": 600
+    "min_height": 600,
+    "as_desktop": true
   },
   "webkit": {
     "webgl-disabled": true
-  }
+  },
+  "maintainers": [
+    { "name": "fengmk2", "email": "fengmk2@gmail.com", "web": "http://fengmk2.github.com" }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fengmk2/fawave_desktop.git"
+  },
+  "bugs": "https://github.com/fengmk2/fawave_desktop/issues",
+  "license": "MIT"
 }

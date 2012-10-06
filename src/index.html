@@ -54,12 +54,12 @@ var _u = {
       <a id="btnUploadPic" href="javascript:$('#fileDialog').click();">
         <img src="images/image.gif" /><script>_u.wi('comm_pic')</script>
       </a>
-      <input style="display:none;" id="fileDialog" type="file" />
+      <input class="hide" id="fileDialog" type="file" />
       <script>_u.wia('#btnUploadPic','title','btn_pic_title');</script>&nbsp;
       <button id="btnClearText" class="btn"><script>_u.wi('comm_clear')</script></button>
       <!-- <span id="doingWarp"></span> -->
-      <span>
-      <a id="urlShortenBtn" href="javascript:" onclick="addShortenUrl()"><img src="images/link_add.png" /></a>
+      <span class="hide">
+      <a id="urlShortenBtn" href="javascript:;" onclick="addShortenUrl()"><img src="images/link_add.png" /></a>
       <script>_u.wia('#urlShortenBtn','title','comm_url_shorten');</script>
       <input type="text" id="urlShortenInp" />
       </span>
