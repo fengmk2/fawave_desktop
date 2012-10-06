@@ -1148,7 +1148,7 @@ var FANS_HTML_CACHE = {};
 //获取用户的粉丝列表
 function _getFansList(to_t, read_more) {
     to_t = to_t || $("#fans_tab .active").attr('t');
-    var c_user = getUser();
+    var c_user = User.getUser();
     if(!c_user){
         return;
     }
@@ -1211,7 +1211,7 @@ function _getFansList(to_t, read_more) {
 //    log(c_user.uniqueKey + ': ' + cursor + ' ' + read_more);
     tapi[to_t](params, function(data, textStatus, statuCode){
         // 如果用户已经切换，则不处理
-        var now_user = getUser();
+        var now_user = User.getUser();
         if (now_user.uniqueKey !== c_user.uniqueKey) {
             return;
         }
@@ -1432,7 +1432,7 @@ function sendMsg(msg){
             }
         });
     }else if(!$("#accountsForSend li").length){
-        users.push(getUser());
+        users.push(User.getUser());
     }else{
         showMsg(i18n.get("msg_need_select_account"));
         btn.removeAttr('disabled');
@@ -1739,7 +1739,7 @@ function resizeWindow(w, h) {
  * 根据当前配置，初始化文本的基本属性
  */
 function _initText($text, config) {
-  config = config || tapi.get_config(getUser());
+  config = config || tapi.get_config(User.getUser());
   $text.data('max_text_length', config.max_text_length)
     .data('support_double_char', config.support_double_char);
 }
@@ -1932,7 +1932,7 @@ function sendOretweet(ele, screen_name, tweetId) {//twitter锐推
     var _a = $(ele);
     var _aHtml = _a[0].outerHTML;
     _a.hide();
-    var user = getUser();
+    var user = User.getUser();
     var t = getCurrentTab().replace('#','').replace(/_timeline$/i,'');
     var title = _a.attr('title');
     tapi.retweet({ id: tweetId, user: user }, function (data, textStatus) {
@@ -1944,7 +1944,7 @@ function sendOretweet(ele, screen_name, tweetId) {//twitter锐推
             if (_a.html()) {
                 _a.html(i18n.get("comm_has") + _a.html());
             }
-            var c_user = getUser();
+            var c_user = User.getUser();
             var cacheKey = c_user.uniqueKey + t + '_tweets';
             var b_view = getBackgroundView();
             if (b_view && b_view.tweets[cacheKey]) {

@@ -1098,34 +1098,30 @@ function delAccount(uniqueKey) {
     var userList = User.getUserList('all');
     var new_list = [];
     var delete_user = {};
-    var b_view = getBackgroundView();
-    for (var i in userList) {
+    for (var i = 0; i < userList.length; i++) {
         var user = userList[i];
         if (user.uniqueKey.toLowerCase() === uniqueKey.toLowerCase()) {
             delete_user = user;
             //TODO: 删除该用户的缓存数据？
             for (var key in localStorage) {
                 if (key.indexOf(uniqueKey) >-1 ){
-                    if (key !== USER_LIST_KEY && key !== CURRENT_USER_KEY) {
+                    if (key !== CONST.USER_LIST_KEY && key !== CONST.CURRENT_USER_KEY) {
                         localStorage.removeItem(key);
                     }
                 }
             }
-            var c_user = getUser();
-            if (c_user && c_user.uniqueKey.toLowerCase() === uniqueKey.toLowerCase()) {
-                if (b_view) {
-                    b_view.setUser('');
-                    b_view.onChangeUser();
-                }
-            }
+            // var c_user = getUser();
+            // if (c_user && c_user.uniqueKey.toLowerCase() === uniqueKey.toLowerCase()) {
+            //     if (b_view) {
+            //         b_view.setUser('');
+            //         b_view.onChangeUser();
+            //     }
+            // }
         } else {
             new_list.push(user);
         }
     }
-    saveUserList(new_list);
-    if (b_view) {
-        b_view.RefreshManager.restart();
-    }
+    User.saveUserList(new_list);
     ui.showTips(i18n.get("msg_del_account_success").format({
         blogname: CONST.T_NAMES[delete_user.blogtype], 
         username: delete_user.screen_name
