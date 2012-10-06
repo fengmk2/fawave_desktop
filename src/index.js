@@ -230,11 +230,16 @@ function ToolbarController() {
     { events: 'click', selecter: '.deltweet', handler: this.destroyStatus },
     { events: 'click', selecter: '.follow_btn', handler: this.follow },
     { events: 'click', selecter: '.unfollow_btn', handler: this.unfollow },
+    { events: 'click', selecter: '#scs', handler: this.showSCS },
   ];
 
   ToolbarController.super_.call(this);
 }
 inherits(ToolbarController, Controller);
+
+ToolbarController.prototype.showSCS = function () {
+  ui.popupBox.showShortcutsCheatSheet();
+};
 
 ToolbarController.prototype.follow = function (event) {
   var self = event.data.controller;

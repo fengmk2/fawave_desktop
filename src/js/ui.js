@@ -18,6 +18,14 @@ var getUser = User.getUser;
 var Settings = setting.Settings;
 var format = require('weibo/lib/utils').format;
 var moment = require('moment');
+var fs = require('fs');
+var path = require('path');
+
+var shortcutsFilepath = path.join(__dirname, 'shortcuts.js');
+var scs = fs.readFileSync(shortcutsFilepath, 'utf8');
+var start = '<cheatsheet>';
+var end = '</cheatsheet>';
+var shortcutsCheatSheet = scs.substring(scs.indexOf(start) + start.length, scs.indexOf(end));
 
 
 //格式化时间输出。示例：new Date().format("yyyy-MM-dd hh:mm:ss");
@@ -687,7 +695,10 @@ var popupBox = exports.popupBox = {
     popupBox.box.find('.pb_title .t, .pb_footer .t').html(title);
     popupBox.box.find('.pb_content').html(content);
     popupBox.show();
-  }
+  },
+  showShortcutsCheatSheet: function () {
+    this.showHtmlBox('Shortcuts Cheat Sheet', shortcutsCheatSheet);
+  },
 };
 
 function showTips(message) {

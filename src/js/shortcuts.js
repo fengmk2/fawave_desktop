@@ -6,16 +6,24 @@
 
 /**
  * Shortcuts defines: https://github.com/fengmk2/fawave_desktop/issues/3
- *
+ * 
+ * Base on [Keypress](http://dmauro.github.com/Keypress/).
+ * Support [vim basic shortcuts](http://shortcutkeys.org/software-shortcuts/linux/vim).
+ * 
+ */
 
-Base on [Keypress](http://dmauro.github.com/Keypress/).
 
-Support [vim basic shortcuts](http://shortcutkeys.org/software-shortcuts/linux/vim).
+/**
+ * 
+<cheatsheet>
+
+<pre>
+# Shortcuts Cheat Sheet
 
 ## Global
 * i: show text input. Hide it when it opened.
-* p: show photo input window
-* esc: close the input and dialog
+* m: show shortcuts cheat sheet.
+* esc: exit the input mode, close the opening dialog and preview popbox.
 
 ## Account
 
@@ -64,7 +72,9 @@ Support [vim basic shortcuts](http://shortcutkeys.org/software-shortcuts/linux/v
 * -: show current status's repost status's user timeline
 * -: show my user timeline
 
- * 
+</pre>
+</cheatsheet> 
+ *
  */
 
 $(function() {
@@ -146,11 +156,11 @@ var binds = {
   // Global
   'i': {
     selecter: '#show_status_input',
-    method: 'click'
+    method: 'click',
   },
-  'shift r': {
-    selecter: '.tabs .active',
-    method: 'click'
+  'm': {
+    selecter: '#scs',
+    method: 'click',
   },
   'escape': {
     precondition: function () {
@@ -233,6 +243,10 @@ var binds = {
   },
   'l': {
     selecter: '.tabs .active +',
+    method: 'click'
+  },
+  'shift r': {
+    selecter: '.tabs .active',
     method: 'click'
   },
   'g g': {
