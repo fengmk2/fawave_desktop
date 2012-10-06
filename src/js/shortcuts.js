@@ -382,50 +382,52 @@ Object.keys(binds).forEach(function (keys) {
     }
     if (item.handler) {
       item.handler();
-    } else {
-      var selecter = item.selecter;
-
-      // expression selecter will compile at the first time. 
-      if (selecter.indexOf(':prev(') > 0) {
-        var prevIndex = selecter.indexOf(':prev(');
-        item.selecter1 = selecter.substring(0, prevIndex);
-        item.selecter2 = selecter.substring(prevIndex + 6, selecter.lastIndexOf(')'));
-        item.handler = function () {
-          var e = $(this.selecter1).prevAll(this.selecter2 + ':visible:first');
-          if (e.length === 0) {
-            e = $(this.selecter1).siblings(this.selecter2 + ':visible:last');
-          }
-          e[this.method]();
-        };
-        item.handler();
-        return;
-      }
-      if (selecter.indexOf(':next(') > 0) {
-        var nextIndex = selecter.indexOf(':next(');
-        item.selecter1 = selecter.substring(0, nextIndex);
-        item.selecter2 = selecter.substring(nextIndex + 6, selecter.lastIndexOf(')'));
-        item.handler = function () {
-          var e = $(this.selecter1).nextAll(this.selecter2 + ':visible:first');
-          if (e.length === 0) {
-            e = $(this.selecter1).siblings(this.selecter2 + ':visible:first');
-          }
-          e[this.method]();
-        };
-        item.handler();
-        return;
-      }
-      if (selecter.indexOf('currentStatus()') >= 0) {
-        item.selecter = selecter.replace('currentStatus()', '');
-        item.handler = function () {
-          var current = findCurrentStatusView().ele;
-          current.find(this.selecter)[this.method]();
-        };
-        item.handler();
-        return;
-      }
-
-      $(selecter)[item.method]();
+      return false;
     }
+
+    var selecter = item.selecter;
+
+    // expression selecter will compile at the first time. 
+    if (selecter.indexOf(':prev(') > 0) {
+      var prevIndex = selecter.indexOf(':prev(');
+      item.selecter1 = selecter.substring(0, prevIndex);
+      item.selecter2 = selecter.substring(prevIndex + 6, selecter.lastIndexOf(')'));
+      item.handler = function () {
+        var e = $(this.selecter1).prevAll(this.selecter2 + ':visible:first');
+        if (e.length === 0) {
+          e = $(this.selecter1).siblings(this.selecter2 + ':visible:last');
+        }
+        e[this.method]();
+      };
+      item.handler();
+      return false;
+    }
+    if (selecter.indexOf(':next(') > 0) {
+      var nextIndex = selecter.indexOf(':next(');
+      item.selecter1 = selecter.substring(0, nextIndex);
+      item.selecter2 = selecter.substring(nextIndex + 6, selecter.lastIndexOf(')'));
+      item.handler = function () {
+        var e = $(this.selecter1).nextAll(this.selecter2 + ':visible:first');
+        if (e.length === 0) {
+          e = $(this.selecter1).siblings(this.selecter2 + ':visible:first');
+        }
+        e[this.method]();
+      };
+      item.handler();
+      return false;
+    }
+    if (selecter.indexOf('currentStatus()') >= 0) {
+      item.selecter = selecter.replace('currentStatus()', '');
+      item.handler = function () {
+        var current = findCurrentStatusView().ele;
+        current.find(this.selecter)[this.method]();
+      };
+      item.handler();
+      return false;
+    }
+
+    $(selecter)[item.method]();
+    return false;
   });
 });
 

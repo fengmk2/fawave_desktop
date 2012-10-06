@@ -508,13 +508,15 @@ function TextContentController() {
   }, this.keypress).on('input focus', { controller: this }, this.count);
 
   $('#replySubmit').click(this.sendReply.bind(this));
-  $('.close_dialog').click(this.hideReply);
+  $('.close_dialog').click({ controller: this }, this.hideReply);
   this.$replyText[0].onpaste = this.pasteOnReply;
 
   this.loadStates();
 }
 
 TextContentController.prototype.hideReply = function (event) {
+  var self = event.data.controller;
+  self.$replyText.blur();
   var dialog = $('#ye_dialog_window');
   $('#btnFaceBoxClose').click();
   dialog.hide();
@@ -2987,7 +2989,7 @@ AccountController.prototype.change = function (event) {
   }
   
   var currentUser = User.getUser();
-  
+
   // 获取当前的tab
   var currentTab = $(".tabs li.active");
   if (currentUser.uniqueKey === uniqueKey && currentTab.length > 0) {
