@@ -115,14 +115,16 @@ function prevStatus() {
   } else {
     current.ele.find('.edit').show();
   }
-  getCurrentWrap().scrollTop(current.top - prev.height());
+  var height = prev.height();
+  getCurrentWrap().scrollTop(current.top - height);
 }
 
 function nextStatus() {
   var current = findCurrentStatusView();
   current.ele.find('.edit').removeAttr('style');
   current.ele.next().find('.edit').show();
-  getCurrentWrap().scrollTop(current.top + current.ele.height());
+  var height = current.ele.height();
+  getCurrentWrap().scrollTop(current.top + height);
 }
 
 function nextPage() {

@@ -72,26 +72,26 @@ T_LIST.t_taobao = T_LIST.fanfou = T_LIST.renjian = T_LIST.leihou = T_LIST.twitte
   T_LIST.identi_ca = T_LIST.tumblr = T_LIST.digu;
 
 var T_NAMES = exports.T_NAMES = {
-  tsina: '新浪微博',
+  // tsina: '新浪微博',
   weibo: '新浪微博(V2.0 不支持私信)',
   tqq: '腾讯微博',
-  tsohu: '搜狐微博',
-  t163: '网易微博',
-  douban: '豆瓣',
-  fanfou: '饭否',
-  diandian: '点点网',
-  renren: '人人网',
-  googleplus: 'Google+',
-  digu: '嘀咕',
-  tianya: '天涯微博',
-  // zuosa: '做啥',
-  leihou: '雷猴',
-  // renjian: '人间网',
-  twitter: 'Twitter',
-  facebook: 'Facebook',
-  plurk: 'Plurk',
-  identi_ca: 'identi.ca',
-  t_taobao: '@AiTa'
+  // tsohu: '搜狐微博',
+  // t163: '网易微博',
+  // douban: '豆瓣',
+  // fanfou: '饭否',
+  // diandian: '点点网',
+  // renren: '人人网',
+  // googleplus: 'Google+',
+  // digu: '嘀咕',
+  // tianya: '天涯微博',
+  // // zuosa: '做啥',
+  // leihou: '雷猴',
+  // // renjian: '人间网',
+  // twitter: 'Twitter',
+  // facebook: 'Facebook',
+  // plurk: 'Plurk',
+  // identi_ca: 'identi.ca',
+  // t_taobao: '@AiTa'
 //    'tumblr': 'Tumblr'
 };
 
