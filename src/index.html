@@ -442,13 +442,11 @@ var _u = {
     <div class="userName">
       <?js if (is_rt_rt) { ?>
       <span class="showtip">
-      <a class="user_link" data-uid="#{tweet.retweeted_status.user.id}">
-        <img class="small_head" src="#{tweet.retweeted_status.user.profile_image_url}" 
-          alt="#{tweet.retweeted_status.user.screen_name}" />
-        @#{tweet.retweeted_status.user.screen_name}
-      </a>
-      <?js if (show_fullname) { ?><span class="fullname">#{tweet.retweeted_status.user.name}</span> <?js } ?>
-      #{buildTipboxUserInfo(tweet.retweeted_status.user, show_fullname)}
+        <a class="user_link" data-uid="#{tweet.user.id}">
+          @#{tweet.user.screen_name}
+        </a>
+        <?js if (show_fullname) { ?><span class="fullname">#{tweet.user.name}</span> <?js } ?>
+        #{buildTipboxUserInfo(tweet.user, show_fullname)}
       </span>
       <?js } ?>
       <?js if ((tType === 'comments_timeline' || tType === 'comments_mentions') && !is_rt_rt) { ?> 

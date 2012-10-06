@@ -2852,7 +2852,7 @@ FavoriteController.prototype.del = function (event) {
 function AccountController() {
   this.events = [
     { events: 'click', selecter: '#accountListDock ul li', handler: this.change }
-  ];
+  ];  
   AccountController.super_.call(this);
 
   this.refresh();
@@ -2960,6 +2960,7 @@ AccountController.prototype.refresh = function () {
       user.unreadTips += ' (' + unreadTips.join(', ') + ')'; 
     }
     user.unreadCount = user.unreadCount || '';
+    user._current = '';
     if (user.uniqueKey === currentUser.uniqueKey) {
       user._current = 'current';
     } else {
@@ -2986,14 +2987,12 @@ AccountController.prototype.change = function (event) {
   }
   
   var currentUser = User.getUser();
+  
   // 获取当前的tab
   var currentTab = $(".tabs li.active");
-  if (currentTab.length === 0) {
-    // TODO: 一般不会出现这种情况
-    currentTab = $(".tabs li:first");
-  }
-
-  if (currentUser.uniqueKey === uniqueKey) {
+  if (currentUser.uniqueKey === uniqueKey && currentTab.length > 0) {
+    // 如果是当前用户，又不是第一次加载，那么当做点击当前tab处理
+    // 否则全部按照切换用户情况进行处理
     currentTab.click();
     return;
   }
@@ -3009,7 +3008,27 @@ function RefreshController() {
   stateManager.on('user_add', this.watch.bind(this));
   stateManager.on('user_remove', this.unwatch.bind(this));
   stateManager.on('check_timeline', this.check.bind(this));
+  this.loading = {};
 };
+
+// RefreshController.prototype.fetchNew = function (user, timeline, callback) {
+//   var ukey = user.uniqueKey + timeline;
+//   if (this.loading[ukey]) {
+//     return;
+//   }
+//   var params = {};
+//   var since_id = user.since_ids && user.since_ids[timeline];
+//   if (since_id && since_id.id) {
+//     params.since_id = since_id.id;
+//     if (since_id.timestamp) {
+//       params.since_time = since_id.timestamp;
+//     }
+//   }
+//   weibo[timeline](user, params, function (err, result) {
+    
+//     callback(err, result);
+//   });
+// };
 
 RefreshController.prototype.check = function (uniqueKey, timeline) {
   var user = User.getUserByUniqueKey(uniqueKey);
@@ -3228,9 +3247,9 @@ $(function () {
   $(window).resize(resizeWindow);
 
   console.log('controllers init...');
-  new RefreshController();
-
   new AccountController();
+  new RefreshController();
+  
   new TimelineController();
   new FavoriteController();
 

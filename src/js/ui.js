@@ -392,9 +392,10 @@ function buildStatusHtml(statuses, t, c_user) {
         html = html.replace(rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT, context));
         if (rt_status.retweeted_status) {
           context.is_rt_rt = true;
-          context.retweeted_status_user = rt_status.user || {};
+          // context.retweeted_status_user = rt_status.user || {};
           rt_status.retweeted_status.user = rt_status.retweeted_status.user || {};
-          html = html.replace(rt_rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT_RT, context));
+          context.tweet = rt_status;
+          html = html.replace(rt_rt_replace_pre, Shotenjin.render(window.TEMPLATE_RT, context));
         }
       }
       htmls.push(html);

@@ -232,7 +232,7 @@ var binds = {
 
   // Timeline View
   'h': {
-    selecter: '.tabs .active:prev()',
+    selecter: '.tabs .active:prev(.timeline_tab)',
     method: 'click'
   },
   'j': {
@@ -242,7 +242,7 @@ var binds = {
     handler: prevStatus
   },
   'l': {
-    selecter: '.tabs .active +',
+    selecter: '.tabs .active:next(.timeline_tab)',
     method: 'click'
   },
   'shift r': {
@@ -379,25 +379,53 @@ Object.keys(binds).forEach(function (keys) {
     var precondition = item.precondition || globalPreCondition;
     if (!precondition()) {
       return;
-    } 
+    }
     if (item.handler) {
       item.handler();
     } else {
       var selecter = item.selecter;
-      var ele;
-      if (selecter.indexOf(':prev()') > 0) {
-        ele = $(selecter.replace(':prev()', '')).prev();
-      } else if (selecter.indexOf(':next()') > 0) {
-        ele = $(selecter.replace(':next()', ' +'));
-      } else if (selecter.indexOf('currentStatus()') >= 0) {
-        var current = findCurrentStatusView().ele;
-        ele = current.find(selecter.replace('currentStatus()', ''));
-      } else {
-        ele = $(selecter);
+
+      // expression selecter will compile at the first time. 
+      if (selecter.indexOf(':prev(') > 0) {
+        var prevIndex = selecter.indexOf(':prev(');
+        item.selecter1 = selecter.substring(0, prevIndex);
+        item.selecter2 = selecter.substring(prevIndex + 6, selecter.lastIndexOf(')'));
+        item.handler = function () {
+          var e = $(this.selecter1).prevAll(this.selecter2 + ':visible:first');
+          if (e.length === 0) {
+            e = $(this.selecter1).siblings(this.selecter2 + ':visible:last');
+          }
+          e[this.method]();
+        };
+        item.handler();
+        return;
       }
-      ele[item.method]();
+      if (selecter.indexOf(':next(') > 0) {
+        var nextIndex = selecter.indexOf(':next(');
+        item.selecter1 = selecter.substring(0, nextIndex);
+        item.selecter2 = selecter.substring(nextIndex + 6, selecter.lastIndexOf(')'));
+        item.handler = function () {
+          var e = $(this.selecter1).nextAll(this.selecter2 + ':visible:first');
+          if (e.length === 0) {
+            e = $(this.selecter1).siblings(this.selecter2 + ':visible:first');
+          }
+          e[this.method]();
+        };
+        item.handler();
+        return;
+      }
+      if (selecter.indexOf('currentStatus()') >= 0) {
+        item.selecter = selecter.replace('currentStatus()', '');
+        item.handler = function () {
+          var current = findCurrentStatusView().ele;
+          current.find(this.selecter)[this.method]();
+        };
+        item.handler();
+        return;
+      }
+
+      $(selecter)[item.method]();
     }
-    return false;
   });
 });
 
