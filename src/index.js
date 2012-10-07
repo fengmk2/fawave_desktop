@@ -67,11 +67,12 @@ inherits(StatusController, Controller);
 
 StatusController.prototype.viewOriginalImage = function (event) {
   var self = event.data.controller;
-  var img = $(this);
+  var img = jq(this);
   var originalURL = img.attr('original').trim();
   if (!originalURL) {
     return;
   }
+  console.log('md ' + event.which);
   if (event.which === 3) {
     openNewWindow(originalURL);
     return false;
@@ -80,7 +81,7 @@ StatusController.prototype.viewOriginalImage = function (event) {
 
 StatusController.prototype.previewImage = function (event) {
   var self = event.data.controller;
-  var img = $(this);
+  var img = jq(this);
   var originalURL = img.attr('original').trim();
   if (!originalURL) {
     return;
@@ -2365,8 +2366,8 @@ function TimelineController() {
   ];
 
   $(".list_warp").on('scrollstop', { controller: this }, this.checkScroll);
-  $('#gototop').on('click', function () {
-    var tab = $('.tabs .active');
+  jq('#gototop').on('click', function () {
+    var tab = jq('.tabs .active');
     var activeTimeline = tab.data('type');
     var warp = TimelineController.getWrap(activeTimeline);
     warp.scrollTop(0);
@@ -2547,16 +2548,16 @@ TimelineController.prototype.checkScroll = function (event) {
   var self = event.data.controller;
   var tab = $('.tabs .active');
   var activeTimeline = tab.data('type');
-  var warp = TimelineController.getWrap(activeTimeline);
+  var wrap = TimelineController.getWrap(activeTimeline);
   var btn = $('#gototop');
-  var scrollTop = warp.scrollTop();
+  var scrollTop = wrap.scrollTop();
   if (scrollTop > 200) {
     btn.show();
   } else {
     btn.hide();
   }
   if (scrollTop > 0) {
-    var scrollHeight = warp.prop('scrollHeight') - warp.height();
+    var scrollHeight = wrap.prop('scrollHeight') - wrap.height();
     if (scrollTop >= scrollHeight) {
       self.showMore(tab);
     }
@@ -2914,7 +2915,7 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
   if (!items || !items.length) {
     return;
   }
-  var _ul = $("#" + timeline + "_timeline ul.list");
+  var _ul = jq("#" + timeline + "_timeline ul.list");
   playload = playload || 'status';
   var method = append ? 'append' : 'prepend';
   var direct = append ? 'last' : 'first';
@@ -2929,7 +2930,7 @@ TimelineController.prototype.showItems = function (user, items, timeline, append
 };
 
 TimelineController.prototype.fetch = function (user, timeline, params, callback) {
-  var loading = $('#loading').show();
+  var loading = jq('#loading').show();
   var self = this;
   weibo[timeline](user, params, function (err, data) {
     loading.hide();
@@ -3238,7 +3239,7 @@ RefreshController.prototype.watch = function (user) {
     };
     var timer = setInterval(check, timeout);
     timers[timeline] = timer;
-    check();
+    setTimeout(check, 5000);
   });
   this.timers[uniqueKey] = timers;
 };

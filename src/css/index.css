@@ -636,23 +636,27 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 }
 #accountListDock li a img {
   margin: 0;
-    border: solid 1px #ccc;
-  padding:2px;
+  border: solid 1px #ccc;
+  padding: 2px;
   background: #fff;
-  height:30px;
-  width:30px;
-  opacity:0.7;
-    -webkit-transition: all .2s;
-    -webkit-transform-origin: bottom;
-    border-radius: 3px;
+  height:25px;
+  width:25px;
+  opacity:0.3;
+  -webkit-transition: all .2s;
+  -webkit-transform-origin: bottom;
+  border-radius: 3px;
 }
 #accountListDock li.current a img{
-  opacity:1; width:40px;height:40px; background: #9C3; border-color: green;
+  opacity: 0.3;
+  width: 30px;
+  height: 30px; 
+  background: #9C3;
+  border-color: green;
 }
 #accountListDock li:hover a img, a:focus img {
   -webkit-transition: width height background opacity border-color 1s ease;
-  width:50px;
-  height:50px;
+  width:40px;
+  height:40px;
   background: #F77004;
   border-color:green;
   opacity: 1;
@@ -660,7 +664,7 @@ div.mainContent{word-wrap: break-word; line-height:1.5em;}
 #accountListDock li .blogType{
   opacity:0.5;
   right: -2px;
-  bottom:0px;
+  bottom: 0px;
   position: absolute;
 }
 #accountListDock li:hover .blogType{

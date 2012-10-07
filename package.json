@@ -1,6 +1,6 @@
 {
   "version": "0.0.2",
-  "name": "fawave",
+  "name": "FaWave",
   "main": "src/index.html",
   "dependencies": {
     "moment": ">=1.7.0",
@@ -8,7 +8,7 @@
   },
   "window": {
     "icon": "src/icons/icon128.png",
-    "toolbar": false,
+    "toolbar": true,
     "width": 650,
     "height": 700,
     "position": "center",

@@ -3,6 +3,7 @@ REPORTER = spec
 TIMEOUT = 10000
 MOCHA_OPTS =
 G =
+NW_DIR = $HOME/apps/nw
 
 test:
 	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
@@ -24,11 +25,11 @@ test-cov:
 lib-cov:
 	@jscoverage lib $@
 
-build:
-	browserify src/index.js -o src/bundle.js -v
+build-nw:
+	zip -r ../${PWD##*/}.nw *
 
-watch:
-	browserify src/index.js -o src/bundle.js --watch -v
+build-win32:
+	unzip 
 
 dev:
 	/Applications/nw.app/Contents/MacOS/node-webkit ./ --developer

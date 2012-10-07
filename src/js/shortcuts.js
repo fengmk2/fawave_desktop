@@ -53,6 +53,7 @@
 * s + o + c: show original status comments
 * s + o + r: show original status reposts
 * s + p: show preview current status's photo, including repost.
+* s + o + p: show origianl photo.
 * s + u: show status user
 * s + o + u: show origianl status user
 
@@ -92,7 +93,7 @@ function findCurrentStatusView() {
   var items = wrap.find('li.tweetItem');
   var scrollTop = wrap.scrollTop();
   var ele = null;
-  var height = 0;
+  var height = wrap.find('.userinfo_detail').height() || 0;
   items.each(function (i) {
     var e = $(this);
     height += e.height();
@@ -335,6 +336,11 @@ var binds = {
     method: 'click',
     type: 'sequence_combo'
   },
+  's o p': {
+    selecter: 'currentStatus() .thumbnail_pic:first',
+    event: {type: 'mousedown', which: 3},
+    type: 'sequence_combo'
+  },
   's u': {
     selecter: 'currentStatus() .user_link:first',
     method: 'click',
@@ -423,6 +429,14 @@ var binds = {
   },
 };
 
+function trigger(ele, item) {
+  if (item.event) {
+    ele.trigger(item.event);
+  } else {
+    ele[item.method]();
+  }
+}
+
 Object.keys(binds).forEach(function (keys) {
   var item = binds[keys];
   var m = item.type || 'combo';
@@ -448,7 +462,7 @@ Object.keys(binds).forEach(function (keys) {
         if (e.length === 0) {
           e = $(this.selecter1).siblings(this.selecter2 + ':visible:last');
         }
-        e[this.method]();
+        trigger(e, this);
       };
       item.handler();
       return false;
@@ -462,7 +476,7 @@ Object.keys(binds).forEach(function (keys) {
         if (e.length === 0) {
           e = $(this.selecter1).siblings(this.selecter2 + ':visible:first');
         }
-        e[this.method]();
+        trigger(e, this);
       };
       item.handler();
       return false;
@@ -471,13 +485,14 @@ Object.keys(binds).forEach(function (keys) {
       item.selecter = selecter.replace('currentStatus()', '');
       item.handler = function () {
         var current = findCurrentStatusView().ele;
-        current.find(this.selecter)[this.method]();
+        var e = current.find(this.selecter);
+        trigger(e, this);
       };
       item.handler();
       return false;
     }
 
-    $(selecter)[item.method]();
+    trigger($(selecter), item);
     return false;
   });
 });
