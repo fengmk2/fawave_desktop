@@ -90,6 +90,7 @@ function getCurrentWrap() {
 
 function findCurrentStatusView() {
   var wrap = getCurrentWrap();
+  // var hoverItem = wrap.find('li.tweetItem:hover');
   var items = wrap.find('li.tweetItem');
   var scrollTop = wrap.scrollTop();
   var ele = null;
