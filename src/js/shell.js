@@ -16,7 +16,7 @@ var child_process = require('child_process');
 
 var cmd;
 if (process.platform === 'win32') {
-  cmd = 'start';
+  cmd = 'start "%ProgramFiles%\Internet Explorer\iexplore.exe"';
 } else if (process.platform === 'linux') {
   cmd = 'xdg-open';
 } else if (process.platform === 'darwin') {
