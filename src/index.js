@@ -2897,7 +2897,9 @@ TimelineController.prototype.refresh = function (tab, isFirstTime) {
 
   // console.log(timeline + ' refreshing... since_id: ' + JSON.stringify(params));
   tab.data('is_loading', true);
+  var loading = jq('#loading').show();
   RefreshController.fetchNew(timeline, user, {}, isFirstTime, function (err, data) {
+    loading.hide();
     tab.data('is_loading', false);
     if (err) {
       ui.showErrorTips(err);
