@@ -1,5 +1,7 @@
 # FaWave on Desktop
 
+![logo](https://raw.github.com/fengmk2/fawave_desktop/master/logo.png)
+
 ## Requires
 
 * [node-weibo](https://github.com/fengmk2/node-weibo)
