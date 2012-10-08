@@ -1109,7 +1109,7 @@ function toggleSelectAllSendAccount() {
 // 显示粉丝列表
 function showFollowers(to_t, screen_name, user_id) {
   //添加当前激活的状态
-  $t = $('#tl_tabs .tab-followers');
+  var $t = $('#tl_tabs .tab-followers');
   $t.siblings().removeClass('active').end().addClass('active');
   //切换tab
   $('.list_p').hide();

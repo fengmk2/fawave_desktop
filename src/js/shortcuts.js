@@ -72,7 +72,10 @@
 
 * a + c: add comment for current status
 * a + r: add repost for current status
-* a + f: add favorite
+* a + f: favorite current status
+* a + n + f: unfavorite current status
+* a + o + f: favorite origianl status
+* a + n + o + f: unfavorite origianl status
 * a + d: add direct message to current status' user
 
 </pre>
@@ -391,8 +394,18 @@ var binds = {
     method: 'click',
     type: 'sequence_combo'
   },
+  'a o f': {
+    selecter: 'currentStatus() .retweeted .add_favorite_btn:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
   'a n f': {
     selecter: 'currentStatus() .li_wrap .del_favorite_btn:visible:first',
+    method: 'click',
+    type: 'sequence_combo'
+  },
+  'a n o f': {
+    selecter: 'currentStatus() .retweeted .del_favorite_btn:visible:first',
     method: 'click',
     type: 'sequence_combo'
   },
