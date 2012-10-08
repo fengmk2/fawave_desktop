@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "name": "cache-test",
+  "main": "index.html",
+  "window": {
+    "toolbar": true,
+    "width": 650,
+    "height": 700,
+    "position": "center",
+    "min_width": 600,
+    "min_height": 600,
+    "as_desktop": true
+  }
+}
