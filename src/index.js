@@ -3208,7 +3208,11 @@ RefreshController.fetchNew = function (timeline, user, params, firstTime, callba
   }
 
   RefreshController.loading[ukey] = true;
-  weibo[timeline](user, params, function (err, result) {
+  var method = timeline;
+  if (timeline === 'comments_timeline') {
+    method = 'comments_to_me';
+  }
+  weibo[method](user, params, function (err, result) {
     RefreshController.loading[ukey] = false;
     if (err) {
       return callback(err);
