@@ -4,7 +4,8 @@
   "main": "src/index.html",
   "dependencies": {
     "moment": ">=1.7.0",
-    "weibo": ">=0.6.6"
+    "weibo": ">=0.6.6",
+    "snyk": "^1.231.0"
   },
   "window": {
     "icon": "src/icons/icon128.png",
@@ -20,12 +21,21 @@
     "webgl-disabled": true
   },
   "maintainers": [
-    { "name": "fengmk2", "email": "fengmk2@gmail.com", "web": "http://fengmk2.github.com" }
+    {
+      "name": "fengmk2",
+      "email": "fengmk2@gmail.com",
+      "web": "http://fengmk2.github.com"
+    }
   ],
   "repository": {
     "type": "git",
     "url": "git://github.com/fengmk2/fawave_desktop.git"
   },
   "bugs": "https://github.com/fengmk2/fawave_desktop/issues",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
